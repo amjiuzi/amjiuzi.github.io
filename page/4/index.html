@@ -160,6 +160,95 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/09/20/stringr/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/09/20/stringr/" class="post-title-link" itemprop="url">字符串管家 stringr包 案例赏析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-09-20 20:02:34" itemprop="dateCreated datePublished" datetime="2017-09-20T20:02:34+08:00">2017-09-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:48" itemprop="dateModified" datetime="2020-08-23T21:16:48+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Text/" itemprop="url" rel="index"><span itemprop="name">Text</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习</p>
+<h3 id="str-detect"><a href="#str-detect" class="headerlink" title="str_detect()"></a>str_detect()</h3><p>detects the presence or absence of a pattern and returns a logical vector (similar to grepl()). str_subset() returns the elements of a character vector that match a regular expression (similar to grep() with value = TRUE).</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Which strings contain phone numbers?</span></span><br><span class="line">str_detect(strings, phone)</span><br><span class="line"><span class="comment">#&gt; [1] FALSE  TRUE  TRUE  TRUE</span></span><br></pre></td></tr></table></figure>
+<h3 id="str-subset"><a href="#str-subset" class="headerlink" title="str_subset()"></a>str_subset()</h3><p>Each pattern matching function has the same first two arguments, a character vector of strings to process and a single pattern to match. stringr provides pattern matching functions to detect, locate, extract, match, replace, and split strings. I’ll illustrate how they work with some strings and a regular expression designed to match (US) phone numbers:</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">strings &lt;- c(</span><br><span class="line">  <span class="string">&quot;apple&quot;</span>, </span><br><span class="line">  <span class="string">&quot;219 733 8965&quot;</span>, </span><br><span class="line">  <span class="string">&quot;329-293-8753&quot;</span>, </span><br><span class="line">  <span class="string">&quot;Work: 579-499-7527; Home: 543.355.3679&quot;</span></span><br><span class="line">)</span><br><span class="line">phone &lt;- <span class="string">&quot;([2-9][0-9]&#123;2&#125;)[- .]([0-9]&#123;3&#125;)[- .]([0-9]&#123;4&#125;)&quot;</span></span><br><span class="line"></span><br><span class="line">str_subset(strings, phone)</span><br><span class="line"><span class="comment">#&gt; [1] &quot;219 733 8965&quot;                          </span></span><br><span class="line"><span class="comment">#&gt; [2] &quot;329-293-8753&quot;                          </span></span><br><span class="line"><span class="comment">#&gt; [3] &quot;Work: 579-499-7527; Home: 543.355.3679&quot;</span></span><br><span class="line"></span><br><span class="line">str_sub(strings,start=<span class="number">1</span>,end=<span class="number">4</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;appl&quot;</span> <span class="string">&quot;219 &quot;</span> <span class="string">&quot;329-&quot;</span> <span class="string">&quot;Work&quot;</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/09/20/stringr/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/09/16/rep_dt1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -983,100 +1072,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/08/15/svd-image/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar1.gif">
-      <meta itemprop="name" content="amjiuzi">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2017/08/15/svd-image/" class="post-title-link" itemprop="url">SVD的R实现及在图像处理中简单应用</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2017-08-15 20:36:37" itemprop="dateCreated datePublished" datetime="2017-08-15T20:36:37+08:00">2017-08-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-23 21:16:48" itemprop="dateModified" datetime="2020-08-23T21:16:48+08:00">2020-08-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Algorithm/Image/" itemprop="url" rel="index"><span itemprop="name">Image</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>之前看过一些有SVD的资料,大多以原理介绍为主,本文对原理推导不再细讲(有兴趣请参考<a target="_blank" rel="noopener" href="http://www.cnblogs.com/LeftNotEasy/archive/2011/01/19/svd-and-applications.html">强大的矩阵奇异值分解(SVD)</a>), 以下是自己的学习笔记<br>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习</p>
-<h2 id="A-SVD在图像压缩上的应用"><a href="#A-SVD在图像压缩上的应用" class="headerlink" title="A. SVD在图像压缩上的应用"></a>A. SVD在图像压缩上的应用</h2><h3 id="1-原始资料"><a href="#1-原始资料" class="headerlink" title="1. 原始资料"></a>1. 原始资料</h3><p>首先上一张原始图片</p>
-<p><img src="https://i.loli.net/2017/08/17/5994f9c817c2b.gif" alt="svd0.gif"></p>
-<h3 id="2-生成数据"><a href="#2-生成数据" class="headerlink" title="2. 生成数据"></a>2. 生成数据</h3><p>如果像素是白色就取 1, 黑色就取 0.得到以下矩阵<br>细看不难发现图像其实是以下 3 部分组成的</p>
-<p><img src="https://i.loli.net/2017/08/17/5994f9c8191a4.jpg" alt="svd1.jpg"></p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">prt1 &lt;- rep(<span class="number">1</span>,<span class="number">25</span>)</span><br><span class="line">prt2 &lt;- c(rep(<span class="number">1</span>,<span class="number">5</span>),rep(<span class="number">0</span>,<span class="number">15</span>),rep(<span class="number">1</span>,<span class="number">5</span>))</span><br><span class="line">prt3 &lt;- c(rep(<span class="number">1</span>,<span class="number">5</span>),rep(<span class="number">0</span>,<span class="number">3</span>),rep(<span class="number">1</span>,<span class="number">9</span>),rep(<span class="number">0</span>,<span class="number">3</span>),rep(<span class="number">1</span>,<span class="number">5</span>))</span><br><span class="line">dt1 &lt;- matrix(c(rep(prt1,<span class="number">2</span>),rep(prt2,<span class="number">3</span>),rep(prt3,<span class="number">5</span>),rep(prt2,<span class="number">3</span>),rep(prt1,<span class="number">2</span>)),</span><br><span class="line">                byrow = <span class="literal">FALSE</span>,ncol = <span class="number">15</span>) </span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2017/08/15/svd-image/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1148,20 +1143,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">111</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

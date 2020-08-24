@@ -160,6 +160,96 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/11/23/kmeans1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/11/23/kmeans1/" class="post-title-link" itemprop="url">大数据聚类之kmeans</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-11-23 16:02:34" itemprop="dateCreated datePublished" datetime="2017-11-23T16:02:34+08:00">2017-11-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:26" itemprop="dateModified" datetime="2020-08-23T21:16:26+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Cluster/" itemprop="url" rel="index"><span itemprop="name">Cluster</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿服务，请出门左转 <a href="izuoye.taobao.com">Convenient Entrance</a>, 合作愉快  </p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>层次聚类对于小样本很实用，kmeans能处理更大的数据量<br>K-means算法是聚类分析中使用最广泛的算法之一。它把n个对象根据他们的属性分为k个聚类以便使得所获得的聚类满足：同一聚类中的对象相似度较高；而不同聚类中的对象相似度较小。其聚类过程可以用下图表示<br><img src="https://i.loli.net/2017/12/28/5a444088d8b27.png" alt="kmeans1.png"><br>如图所示，数据样本用圆点表示，每个簇的中心点用叉叉表示。(a)刚开始时是原始数据，杂乱无章，没有label，看起来都一样，都是绿色的。(b)假设数据集可以分为两类，令K=2，随机在坐标上选两个点，作为两个类的中心点。(c-f)演示了聚类的两种迭代。先划分，把每个数据样本划分到最近的中心点那一簇；划分完后，更新每个簇的中心，即把该簇的所有数据点的坐标加起来去平均值。这样不断进行”划分—更新—划分—更新”，直到每个簇的中心不在移动为止</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/11/23/kmeans1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/11/19/ligtgbm1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -975,95 +1065,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/09/20/stringr/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar1.gif">
-      <meta itemprop="name" content="amjiuzi">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2017/09/20/stringr/" class="post-title-link" itemprop="url">字符串管家 stringr包 案例赏析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2017-09-20 20:02:34" itemprop="dateCreated datePublished" datetime="2017-09-20T20:02:34+08:00">2017-09-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-23 21:16:48" itemprop="dateModified" datetime="2020-08-23T21:16:48+08:00">2020-08-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Text/" itemprop="url" rel="index"><span itemprop="name">Text</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习</p>
-<h3 id="str-detect"><a href="#str-detect" class="headerlink" title="str_detect()"></a>str_detect()</h3><p>detects the presence or absence of a pattern and returns a logical vector (similar to grepl()). str_subset() returns the elements of a character vector that match a regular expression (similar to grep() with value = TRUE).</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Which strings contain phone numbers?</span></span><br><span class="line">str_detect(strings, phone)</span><br><span class="line"><span class="comment">#&gt; [1] FALSE  TRUE  TRUE  TRUE</span></span><br></pre></td></tr></table></figure>
-<h3 id="str-subset"><a href="#str-subset" class="headerlink" title="str_subset()"></a>str_subset()</h3><p>Each pattern matching function has the same first two arguments, a character vector of strings to process and a single pattern to match. stringr provides pattern matching functions to detect, locate, extract, match, replace, and split strings. I’ll illustrate how they work with some strings and a regular expression designed to match (US) phone numbers:</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">strings &lt;- c(</span><br><span class="line">  <span class="string">&quot;apple&quot;</span>, </span><br><span class="line">  <span class="string">&quot;219 733 8965&quot;</span>, </span><br><span class="line">  <span class="string">&quot;329-293-8753&quot;</span>, </span><br><span class="line">  <span class="string">&quot;Work: 579-499-7527; Home: 543.355.3679&quot;</span></span><br><span class="line">)</span><br><span class="line">phone &lt;- <span class="string">&quot;([2-9][0-9]&#123;2&#125;)[- .]([0-9]&#123;3&#125;)[- .]([0-9]&#123;4&#125;)&quot;</span></span><br><span class="line"></span><br><span class="line">str_subset(strings, phone)</span><br><span class="line"><span class="comment">#&gt; [1] &quot;219 733 8965&quot;                          </span></span><br><span class="line"><span class="comment">#&gt; [2] &quot;329-293-8753&quot;                          </span></span><br><span class="line"><span class="comment">#&gt; [3] &quot;Work: 579-499-7527; Home: 543.355.3679&quot;</span></span><br><span class="line"></span><br><span class="line">str_sub(strings,start=<span class="number">1</span>,end=<span class="number">4</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;appl&quot;</span> <span class="string">&quot;219 &quot;</span> <span class="string">&quot;329-&quot;</span> <span class="string">&quot;Work&quot;</span></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2017/09/20/stringr/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1135,20 +1136,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">111</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

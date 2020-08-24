@@ -160,6 +160,99 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2018/03/03/class1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/03/03/class1/" class="post-title-link" itemprop="url">R中各分类模型准确率比较</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-03-03 20:02:34" itemprop="dateCreated datePublished" datetime="2018-03-03T20:02:34+08:00">2018-03-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:12" itemprop="dateModified" datetime="2020-08-23T21:16:12+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Classify/" itemprop="url" rel="index"><span itemprop="name">Classify</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿帮助，请出门左转 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">Convenient Entrance</a>, 合作愉快</p>
+<p>参加了几次数据竞赛成绩平平,但对分类模型有了更宽的认识<br>常用模型罗列如下,仅供后续参考</p>
+<p>注: 本文重在比较R中常用分类模型预测准确率,时效暂不在此范围内</p>
+<h2 id="A-案例数据"><a href="#A-案例数据" class="headerlink" title="A. 案例数据"></a>A. 案例数据</h2><p>本文采用 UCI的 Adult 数据集, 下载链接<br><a target="_blank" rel="noopener" href="http://archive.ics.uci.edu/ml/datasets/Adult">Adult Data Set </a><br>目标 ： 建模预测adult年薪能否达到 50k</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">setwd(<span class="string">&#x27;xx/class&#x27;</span>)</span><br><span class="line"><span class="keyword">library</span>(data.table)</span><br><span class="line">train1 &lt;- fread(<span class="string">&#x27;./adult/adult_train.csv&#x27;</span>,</span><br><span class="line">                header = <span class="literal">TRUE</span>,encoding = <span class="string">&#x27;UTF-8&#x27;</span>)</span><br><span class="line">test1 &lt;- fread(<span class="string">&#x27;./adult/adult_test.csv&#x27;</span>,</span><br><span class="line">               header = <span class="literal">TRUE</span>,encoding = <span class="string">&#x27;UTF-8&#x27;</span>)</span><br><span class="line">str(train1)</span><br><span class="line"></span><br><span class="line">Classes ‘data.table’ and <span class="string">&#x27;data.frame&#x27;</span>:	<span class="number">32561</span> obs. of  <span class="number">15</span> variables:</span><br><span class="line"> $ age           : int  <span class="number">39</span> <span class="number">50</span> <span class="number">38</span> <span class="number">53</span> <span class="number">28</span> <span class="number">37</span> <span class="number">49</span> <span class="number">52</span> <span class="number">31</span> <span class="number">42</span> <span class="keyword">...</span></span><br><span class="line"> $ workclass     : chr  <span class="string">&quot;State-gov&quot;</span> <span class="string">&quot;Self-emp-not-inc&quot;</span> <span class="string">&quot;Private&quot;</span> <span class="string">&quot;Private&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ fnlwgt        : int  <span class="number">77516</span> <span class="number">83311</span> <span class="number">215646</span> <span class="number">234721</span> <span class="number">338409</span> <span class="number">284582</span> <span class="number">160187</span> <span class="number">209642</span> <span class="number">45781</span> <span class="number">159449</span> <span class="keyword">...</span></span><br><span class="line"> $ education     : chr  <span class="string">&quot;Bachelors&quot;</span> <span class="string">&quot;Bachelors&quot;</span> <span class="string">&quot;HS-grad&quot;</span> <span class="string">&quot;11th&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ education-num : int  <span class="number">13</span> <span class="number">13</span> <span class="number">9</span> <span class="number">7</span> <span class="number">13</span> <span class="number">14</span> <span class="number">5</span> <span class="number">9</span> <span class="number">14</span> <span class="number">13</span> <span class="keyword">...</span></span><br><span class="line"> $ marital-status: chr  <span class="string">&quot;Never-married&quot;</span> <span class="string">&quot;Married-civ-spouse&quot;</span> <span class="string">&quot;Divorced&quot;</span> <span class="string">&quot;Married-civ-spouse&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ occupation    : chr  <span class="string">&quot;Adm-clerical&quot;</span> <span class="string">&quot;Exec-managerial&quot;</span> <span class="string">&quot;Handlers-cleaners&quot;</span> <span class="string">&quot;Handlers-cleaners&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ relationship  : chr  <span class="string">&quot;Not-in-family&quot;</span> <span class="string">&quot;Husband&quot;</span> <span class="string">&quot;Not-in-family&quot;</span> <span class="string">&quot;Husband&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ race          : chr  <span class="string">&quot;White&quot;</span> <span class="string">&quot;White&quot;</span> <span class="string">&quot;White&quot;</span> <span class="string">&quot;Black&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ sex           : chr  <span class="string">&quot;Male&quot;</span> <span class="string">&quot;Male&quot;</span> <span class="string">&quot;Male&quot;</span> <span class="string">&quot;Male&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ capital-gain  : int  <span class="number">2174</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">14084</span> <span class="number">5178</span> <span class="keyword">...</span></span><br><span class="line"> $ capital-loss  : int  <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="keyword">...</span></span><br><span class="line"> $ hours-per-week: int  <span class="number">40</span> <span class="number">13</span> <span class="number">40</span> <span class="number">40</span> <span class="number">40</span> <span class="number">40</span> <span class="number">16</span> <span class="number">45</span> <span class="number">50</span> <span class="number">40</span> <span class="keyword">...</span></span><br><span class="line"> $ native-country: chr  <span class="string">&quot;United-States&quot;</span> <span class="string">&quot;United-States&quot;</span> <span class="string">&quot;United-States&quot;</span> <span class="string">&quot;United-States&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ class         : chr  <span class="string">&quot;&lt;=50K&quot;</span> <span class="string">&quot;&lt;=50K&quot;</span> <span class="string">&quot;&lt;=50K&quot;</span> <span class="string">&quot;&lt;=50K&quot;</span> <span class="keyword">...</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/03/03/class1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2018/01/06/poisson2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -989,96 +1082,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/11/23/kmeans1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar1.gif">
-      <meta itemprop="name" content="amjiuzi">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2017/11/23/kmeans1/" class="post-title-link" itemprop="url">大数据聚类之kmeans</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2017-11-23 16:02:34" itemprop="dateCreated datePublished" datetime="2017-11-23T16:02:34+08:00">2017-11-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-23 21:16:26" itemprop="dateModified" datetime="2020-08-23T21:16:26+08:00">2020-08-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Algorithm/Cluster/" itemprop="url" rel="index"><span itemprop="name">Cluster</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿服务，请出门左转 <a href="izuoye.taobao.com">Convenient Entrance</a>, 合作愉快  </p>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>层次聚类对于小样本很实用，kmeans能处理更大的数据量<br>K-means算法是聚类分析中使用最广泛的算法之一。它把n个对象根据他们的属性分为k个聚类以便使得所获得的聚类满足：同一聚类中的对象相似度较高；而不同聚类中的对象相似度较小。其聚类过程可以用下图表示<br><img src="https://i.loli.net/2017/12/28/5a444088d8b27.png" alt="kmeans1.png"><br>如图所示，数据样本用圆点表示，每个簇的中心点用叉叉表示。(a)刚开始时是原始数据，杂乱无章，没有label，看起来都一样，都是绿色的。(b)假设数据集可以分为两类，令K=2，随机在坐标上选两个点，作为两个类的中心点。(c-f)演示了聚类的两种迭代。先划分，把每个数据样本划分到最近的中心点那一簇；划分完后，更新每个簇的中心，即把该簇的所有数据点的坐标加起来去平均值。这样不断进行”划分—更新—划分—更新”，直到每个簇的中心不在移动为止</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2017/11/23/kmeans1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1150,20 +1153,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">111</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
