@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快   简介层次聚类对于小样本很实用，kmeans能处理更大的数据量K-means算法是聚类分析中使用最广泛的算法之一。它把n个对象根据他们的属性分为k个聚类以便使得所获得的聚类满足：同一聚类中的对象相似度较高；而不同聚类中的对象相似度较小。其聚类过程可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大数据聚类之kmeans">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2017/11/23/kmeans1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快   简介层次聚类对于小样本很实用，kmeans能处理更大的数据量K-means算法是聚类分析中使用最广泛的算法之一。它把n个对象根据他们的属性分为k个聚类以便使得所获得的聚类满足：同一聚类中的对象相似度较高；而不同聚类中的对象相似度较小。其聚类过程可">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2017/12/28/5a444088d8b27.png">
+<meta property="og:image" content="https://i.loli.net/2017/12/28/5a4446e66637d.png">
+<meta property="og:image" content="https://i.loli.net/2017/11/06/5a00387ada872.png">
+<meta property="og:image" content="https://i.loli.net/2017/11/06/5a0038a68adb7.png">
+<meta property="og:image" content="https://i.loli.net/2017/11/06/5a0038bb2b7f0.png">
+<meta property="og:image" content="https://i.loli.net/2017/11/06/5a0038d9bba3e.png">
+<meta property="og:image" content="https://i.loli.net/2017/11/06/5a0038edeabc1.png">
+<meta property="og:image" content="https://i.loli.net/2017/11/06/5a00390aaf10e.png">
+<meta property="article:published_time" content="2017-11-23T08:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:26.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="kmeans">
+<meta property="article:tag" content="kmeans ++">
+<meta property="article:tag" content="聚类">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2017/12/28/5a444088d8b27.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2017/11/23/kmeans1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>大数据聚类之kmeans | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/11/23/kmeans1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          大数据聚类之kmeans
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-11-23 16:02:34" itemprop="dateCreated datePublished" datetime="2017-11-23T16:02:34+08:00">2017-11-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:26" itemprop="dateModified" datetime="2020-08-23T21:16:26+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Cluster/" itemprop="url" rel="index"><span itemprop="name">Cluster</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿服务，请出门左转 <a href="izuoye.taobao.com">Convenient Entrance</a>, 合作愉快  </p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>层次聚类对于小样本很实用，kmeans能处理更大的数据量<br>K-means算法是聚类分析中使用最广泛的算法之一。它把n个对象根据他们的属性分为k个聚类以便使得所获得的聚类满足：同一聚类中的对象相似度较高；而不同聚类中的对象相似度较小。其聚类过程可以用下图表示<br><img src="https://i.loli.net/2017/12/28/5a444088d8b27.png" alt="kmeans1.png"><br>如图所示，数据样本用圆点表示，每个簇的中心点用叉叉表示。(a)刚开始时是原始数据，杂乱无章，没有label，看起来都一样，都是绿色的。(b)假设数据集可以分为两类，令K=2，随机在坐标上选两个点，作为两个类的中心点。(c-f)演示了聚类的两种迭代。先划分，把每个数据样本划分到最近的中心点那一簇；划分完后，更新每个簇的中心，即把该簇的所有数据点的坐标加起来去平均值。这样不断进行”划分—更新—划分—更新”，直到每个簇的中心不在移动为止</p>
+<a id="more"></a>
+<p>该算法过程比较简单，但有些东西我们还是需要关注一下，此处，我想说一下”求点中心的算法”</p>
+<p>一般来说，求点群中心点的算法你可以很简的使用各个点的X/Y坐标的平均值。也可以用另三个求中心点的的公式：<br>1）Minkowski Distance 公式 —— λ 可以随意取值，可以是负数，也可以是正数，或是无穷大。<br>$$d_{i,j}=\sqrt[\lambda]{\sum_{k=1}^{n} \left |x_{ik}-x_{jk} \right |^{\lambda}}$$</p>
+<p>2）Euclidean Distance 公式 —— 也就是第一个公式 λ=2 的情况<br>$$d_{i,j}=\sqrt{\sum_{k=1}^{n} (x_{ik}-x_{jk} )^2}$$</p>
+<p>3）CityBlock Distance 公式 —— 也就是第一个公式 λ=1 的情况<br>$$d_{i,j}=\sum_{k=1}^{n} \left |x_{ik}-x_{jk} \right |$$</p>
+<p>这三个公式的求中心点有一些不一样的地方，我们看下图（对于第一个 λ 在 0-1之间）。<br><img src="https://i.loli.net/2017/12/28/5a4446e66637d.png" alt="kmeans2.png"></p>
+<p>上面这几个图的大意是他们是怎么个逼近中心的，第一个图以星形的方式，第二个图以同心圆的方式，第三个图以菱形的方式。</p>
+<p>Kmeans算法的缺陷:<br>聚类中心的个数K 需要事先给定，但在实际中这个 K 值的选定是非常难以估计的，很多时候，事先并不知道给定的数据集应该分成多少个类别才最合适<br>Kmeans需要人为地确定初始聚类中心，不同的初始聚类中心可能导致完全不同的聚类结果。（可以使用Kmeans++算法来解决）<br>针对上述第2个缺陷，可以使用Kmeans++算法来解决</p>
+<h2 id="聚类分析基本步骤"><a href="#聚类分析基本步骤" class="headerlink" title="聚类分析基本步骤"></a>聚类分析基本步骤</h2><p>有效的聚类分析是多步骤决策的过程，其中每一步都可能影响聚类结果的质量和有效性。以下是11个典型的步骤：</p>
+<ul>
+<li>选择合适的变量. 选择你感觉可能对识别和理解数据中不同观测值分组有重要影响的变量</li>
+<li>寻找异常点. 许多聚类方法对异常值十分敏感. 可以通过 outliers 包中的函数来筛选异常单变量离群点. mvoutlier 包能识别多元变量的离群点的函数. 另一种方法是使用对异常值稳健的聚类方法, 比如划分聚类.</li>
+<li>缩放数据. 标准化数据, 最常用的方法是将每个变量标准化为均值0和标准差为1的变量, 代替方法包括变量减均值并除以标准差or中位数标准差 或者 变量减最小值除以最大值减最小值. 代码为: <figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">df1 &lt;- apply(mydata, <span class="number">2</span>, <span class="keyword">function</span>(x)&#123;(x-mean(x))/sd(x)&#125;) <span class="comment"># 可以使用scale()函数</span></span><br><span class="line">df2 &lt;- apply(mydata, <span class="number">2</span>, <span class="keyword">function</span>(x)&#123;(x-mean(x))/mad(x)&#125;)</span><br><span class="line">df3 &lt;- apply(mydata, <span class="number">2</span>, <span class="keyword">function</span>(x)&#123;(x-min(x))/(max(x)-min(x))&#125;)</span><br></pre></td></tr></table></figure></li>
+<li>计算距离. 虽然所使用的算法差异大,但是通常都需要计算被聚类的实体之间的距离. 最常用欧几里得距离, 其他可选曼哈顿距离/兰式距离/非对称二元距离/最大距离和闵可夫斯基距离（?dist查看详细信息）。</li>
+<li>选择聚类算法。层次聚类对于小样本很实用，划分的方法能处理更大的数据量。</li>
+<li>获得一种或多种聚类方法。使用步骤（5）选择的方法。</li>
+<li>确定类的数目。NbClust 包中的 NbClust() 函数提供了30个不同的指标来帮助如何选择。</li>
+<li>获得最终的聚类解决方案。</li>
+<li>结果可视化。</li>
+<li>解读类。</li>
+<li>验证结果. 采用不同的聚类方法或补贴的样本，是否会产生相同的类？fcp,clv,clValid 包 包含了评估聚类解的稳定性的函数。</li>
+</ul>
+<h2 id="确定最佳聚类数量的方法"><a href="#确定最佳聚类数量的方法" class="headerlink" title="确定最佳聚类数量的方法"></a>确定最佳聚类数量的方法</h2><ul>
+<li><p>Mclust 包<br>Mclust 包方法有点“暴力”，聚类数目自定义，比如我选取的从1到20，然后一共14种模型，每一种模型都计算聚类数目从1到20的BIC值，最终确定最佳聚类数目，这种方法的思想很直接了当，但是弊端也就显然易见了–时间复杂度太高，效率低</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(mclust)</span><br><span class="line">m_clust &lt;- Mclust(as.matrix(dataset), G=<span class="number">1</span>:<span class="number">20</span>) <span class="comment">#聚类数目从1一直试到20</span></span><br><span class="line">summary(m_clust)</span><br></pre></td></tr></table></figure></li>
+<li><p>Nbclust 包</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(NbClust)</span><br><span class="line">set.seed(<span class="number">1234</span>) <span class="comment">#因为method选择的是kmeans，所以如果不设定种子，每次跑得结果可能不同</span></span><br><span class="line">nb_clust &lt;- NbClust(dataset,  distance = <span class="string">&quot;euclidean&quot;</span>,</span><br><span class="line">       min.nc=<span class="number">2</span>, max.nc=<span class="number">15</span>, method = <span class="string">&quot;kmeans&quot;</span>,</span><br><span class="line">       index = <span class="string">&quot;alllong&quot;</span>, alphaBeale = <span class="number">0.1</span>)</span><br><span class="line">barplot(table(nb_clust$Best.nc[<span class="number">1</span>,]),xlab = <span class="string">&quot;聚类数&quot;</span>,ylab = <span class="string">&quot;支持指标数&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/11/06/5a00387ada872.png" alt="nclus1"></p>
+</li>
+<li><p>PAM (Partitioning Around Medoids) 围绕中心点的分割算法<br>k-means算法取得是均值，那么对于异常点其实对其的影响非常大，很可能这种孤立的点就聚为一类，一个改进的方法就是PAM算法，也叫 k-medoids clustering<br>首先通过fpc包中的pamk函数得到最佳聚类数目</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 最优分类</span></span><br><span class="line"><span class="keyword">library</span>(fpc)</span><br><span class="line">select&lt;-sample(<span class="number">1</span>:nrow(factos),<span class="number">1000</span>)</span><br><span class="line"><span class="comment">#必须抽样，因为pamk函数很耗时</span></span><br><span class="line">pamk.best &lt;- pamk(dataset[select,])</span><br><span class="line">pamk.best$nc</span><br><span class="line"><span class="comment"># 分类可视化</span></span><br><span class="line"><span class="keyword">library</span>(cluster)</span><br><span class="line">clusplot(pam(dataset, pamk.best$nc))</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Calinsky criterion<br>k是聚类数，N是样本数，SSw是我们之前提到过的组内平方和误差， SSb是组与组之间的平方和误差，SSw越小，SSb越大聚类效果越好，所以Calinsky criterion值一般来说是越大，聚类效果越好</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(vegan)</span><br><span class="line">ca_clust &lt;- cascadeKM(iris[,-<span class="number">5</span>], <span class="number">1</span>, <span class="number">10</span>, iter = <span class="number">1000</span>)</span><br><span class="line">ca_clust$results</span><br><span class="line">         <span class="number">1</span> groups <span class="number">2</span> groups  <span class="number">3</span> groups  <span class="number">4</span> groups  <span class="number">5</span> groups  <span class="number">6</span> groups  <span class="number">7</span> groups  <span class="number">8</span> groups  <span class="number">9</span> groups <span class="number">10</span> groups</span><br><span class="line">SSE      <span class="number">681.3706</span> <span class="number">152.3480</span>  <span class="number">78.85144</span>  <span class="number">57.22847</span>  <span class="number">46.44618</span>  <span class="number">39.03999</span>  <span class="number">34.29823</span>  <span class="number">29.98894</span>  <span class="number">27.78609</span>  <span class="number">25.83405</span></span><br><span class="line">calinski       <span class="literal">NA</span> <span class="number">513.9245</span> <span class="number">561.62776</span> <span class="number">530.76581</span> <span class="number">495.54149</span> <span class="number">473.85061</span> <span class="number">449.64104</span> <span class="number">440.62046</span> <span class="number">414.57528</span> <span class="number">394.72066</span></span><br><span class="line"></span><br><span class="line">calinski.best &lt;- as.numeric(which.max(ca_clust$results[<span class="number">2</span>,]))</span><br><span class="line">calinski.best</span><br><span class="line">[<span class="number">1</span>] <span class="number">3</span></span><br><span class="line"><span class="comment"># 可视化</span></span><br><span class="line"> plot(ca_clust, sortg = <span class="literal">TRUE</span>, grpmts.plot = <span class="literal">TRUE</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/11/06/5a0038a68adb7.png" alt="clus_ca"><br>.   .可以看到calinski在聚类数为3时达到最大值</p>
+</li>
+<li><p>Affinity propagation (AP) clustering<br>AP算法的基本思想是将全部样本看作网络的节点，然后通过网络中各条边的消息传递计算出各样本的聚类中心。聚类过程中，共有两种消息在各节点间传递，分别是吸引度( responsibility)和归属度(availability) 。AP算法通过迭代过程不断更新每一个点的吸引度和归属度值，直到产生m个高质量的Exemplar（类似于质心），同时将其余的数据点分配到相应的聚类中<br>本质上是类似kmeans或者层次聚类一样，是一种聚类方法，因为不需要像kmeans一样提供聚类数，会自动算出最佳聚类数，因此也放到这里作为一种计算最佳聚类数目的方法</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ibrary(apcluster)</span><br><span class="line">ap_clust &lt;- apcluster(negDistMat(r=<span class="number">2</span>), dataset)</span><br><span class="line">length(ap_clust@clusters)</span><br><span class="line">heatmap(ap_clust)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>轮廓系数Average silhouette method<br>轮廓系数是类的密集与分散程度的评价指标,公式如下:<br>$$s_{i}=\frac{b_{i}-a_{i}}{max(b_{i},a_{i})}$$<br>$a_{i}$是测量组内的相似度,$b_{i}$是测量组间的相似度，$s_{i}$范围从-1到1，值越大说明组内吻合越高，组间距离越远——也就是说，轮廓系数值越大，聚类效果越好</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(factoextra)</span><br><span class="line">fviz_nbclust(iris_scaled, kmeans, method = <span class="string">&quot;silhouette&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/11/06/5a0038bb2b7f0.png" alt="clus_outline"><br>可以看到是在聚类数为2时轮廓系数达到了峰值，即最佳聚类数为2</p>
+</li>
+</ul>
+<h2 id="Kmeans-实例解析"><a href="#Kmeans-实例解析" class="headerlink" title="Kmeans 实例解析"></a>Kmeans 实例解析</h2><h3 id="1-函数基本介绍"><a href="#1-函数基本介绍" class="headerlink" title="1. 函数基本介绍"></a>1. 函数基本介绍</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">kmeans(x, centers, iter.max = <span class="number">10</span>, nstart = <span class="number">1</span>,</span><br><span class="line">       algorithm = c(<span class="string">&quot;Hartigan-Wong&quot;</span>, <span class="string">&quot;Lloyd&quot;</span>, <span class="string">&quot;Forgy&quot;</span>,</span><br><span class="line">                     <span class="string">&quot;MacQueen&quot;</span>), trace=<span class="literal">FALSE</span>)</span><br><span class="line"><span class="comment"># x - 数值型变量组成的矩阵</span></span><br><span class="line"><span class="comment"># centers - 设定的聚类数量(k),或者初始聚类中心点</span></span><br><span class="line"><span class="comment"># iter.max - 允许的最大迭代次数</span></span><br><span class="line"><span class="comment"># nstart - 设定 centers=k 后,随机选取多少个随机数作为初始点候选, the more the better</span></span><br><span class="line"><span class="comment"># algorithm - 使用的算法基础,默认&#x27;Hartigan-Wong&#x27;,在nstart&gt;1是表现会比&quot;Lloyd&quot;, &quot;Forgy&quot;,&quot;MacQueen&quot;好很多</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-实用解码"><a href="#2-实用解码" class="headerlink" title="2. 实用解码"></a>2. 实用解码</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">iris_scale &lt;- scale(iris[,<span class="number">1</span>:<span class="number">4</span>])</span><br><span class="line">d_iris &lt;- dist(iris_scale)</span><br><span class="line"><span class="keyword">library</span>(NbClust)</span><br><span class="line">set.seed(<span class="number">123</span>)</span><br><span class="line">nc &lt;- NbClust(iris_scale, distance = <span class="string">&quot;euclidean&quot;</span>,</span><br><span class="line">              min.nc=<span class="number">2</span>, max.nc=<span class="number">15</span>, method=<span class="string">&quot;kmeans&quot;</span>)</span><br><span class="line"></span><br><span class="line">                   ***** Conclusion *****                            </span><br><span class="line"> </span><br><span class="line">* According to the majority rule, the best number of clusters is  <span class="number">3</span></span><br><span class="line">* </span><br><span class="line">table(nc$Best.n[<span class="number">1</span>,])</span><br><span class="line"> <span class="number">0</span>  <span class="number">2</span>  <span class="number">3</span>  <span class="number">5</span> <span class="number">10</span> <span class="number">15</span> </span><br><span class="line"> <span class="number">2</span>  <span class="number">8</span> <span class="number">10</span>  <span class="number">1</span>  <span class="number">2</span>  <span class="number">3</span></span><br><span class="line"></span><br><span class="line">barplot(table(nc$Best.n[<span class="number">1</span>,]),</span><br><span class="line">        xlab = <span class="string">&quot;Number of Clusters&quot;</span>, ylab = <span class="string">&quot;Number of Criteria&quot;</span>,</span><br><span class="line">        main = <span class="string">&quot;Number of Clusters Chosen by 150 Criteria&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/11/06/5a0038d9bba3e.png" alt="nbclus_kmns"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">km.res &lt;- kmeans(iris_scale,<span class="number">3</span>)</span><br><span class="line">table(km.res$cluster,nc$Best.partition)</span><br><span class="line">     <span class="number">1</span>  <span class="number">2</span>  <span class="number">3</span></span><br><span class="line">  <span class="number">1</span> <span class="number">50</span>  <span class="number">0</span>  <span class="number">0</span></span><br><span class="line">  <span class="number">2</span>  <span class="number">0</span> <span class="number">53</span>  <span class="number">0</span></span><br><span class="line">  <span class="number">3</span>  <span class="number">0</span>  <span class="number">0</span> <span class="number">47</span></span><br><span class="line"><span class="keyword">library</span>(factoextra)</span><br><span class="line">fviz_cluster(km.res, data = iris_scale,main = <span class="string">&#x27;Cluster of Kmeans&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/11/06/5a0038edeabc1.png" alt="res_kms"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">comp2 &lt;- svd(iris_scale)$u[,<span class="number">1</span>:<span class="number">2</span>] %*% diag(svd(iris_scale)$d[<span class="number">1</span>:<span class="number">2</span>])</span><br><span class="line"><span class="keyword">library</span>(ggplot2)</span><br><span class="line">ggplot(data = <span class="literal">NULL</span>) + geom_point(aes(x=comp2[,<span class="number">1</span>],y=comp2[,<span class="number">2</span>],</span><br><span class="line">                                     col=as.factor(nc$Best.partition),</span><br><span class="line">                                     shape=iris$Species))+</span><br><span class="line">  labs(title=<span class="string">&#x27;Kmeans of IRIS&#x27;</span>,x=<span class="string">&#x27;&#x27;</span>,y=<span class="string">&#x27;&#x27;</span>)+</span><br><span class="line">  theme(legend.position = <span class="string">&#x27;none&#x27;</span>,</span><br><span class="line">        axis.ticks = element_blank(),</span><br><span class="line">        axis.text = element_blank(),</span><br><span class="line">        plot.title = element_text(hjust = <span class="number">0.5</span>))</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/11/06/5a00390aaf10e.png" alt="kms1"></p>
+<h2 id="B-kmeans的改进算法–谱聚类"><a href="#B-kmeans的改进算法–谱聚类" class="headerlink" title="B. kmeans的改进算法–谱聚类"></a>B. kmeans的改进算法–谱聚类</h2><p>详情参考博主另一片文章<br><a target="_blank" rel="noopener" href="https://amjiuzi.github.io/2017/11/27/specClust1/">谱聚类的R解释</a></p>
+<h2 id="C-kmeans的改进算法–kmeans"><a href="#C-kmeans的改进算法–kmeans" class="headerlink" title="C. kmeans的改进算法–kmeans++"></a>C. kmeans的改进算法–kmeans++</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">kmeansp2 &lt;- <span class="keyword">function</span>(x, k, iter.max = <span class="number">10</span>, nstart = <span class="number">1</span>, <span class="keyword">...</span>) &#123;</span><br><span class="line">  n &lt;- nrow(x) <span class="comment"># number of data points</span></span><br><span class="line">  centers &lt;- numeric(k) <span class="comment"># IDs of centers</span></span><br><span class="line">  distances &lt;- matrix(numeric(n * (k - <span class="number">1</span>)), ncol = k - <span class="number">1</span>) <span class="comment"># distances[i, j]: The distance between x[i,] and x[centers[j],]</span></span><br><span class="line">  res.best &lt;- list(tot.withinss = <span class="literal">Inf</span>) <span class="comment"># the best result among &lt;nstart&gt; iterations</span></span><br><span class="line">  <span class="keyword">for</span> (rep <span class="keyword">in</span> <span class="number">1</span>:nstart) &#123;</span><br><span class="line">    pr &lt;- rep(<span class="number">1</span>, n) <span class="comment"># probability for sampling centers</span></span><br><span class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:(k - <span class="number">1</span>)) &#123;</span><br><span class="line">      centers[i] &lt;- sample.int(n, <span class="number">1</span>, prob = pr) <span class="comment"># Pick up the ith center</span></span><br><span class="line">      distances[, i] &lt;- colSums((t(x) - x[centers[i], ])^<span class="number">2</span>) <span class="comment"># Compute (the square of) distances to the center</span></span><br><span class="line">      pr &lt;- distances[cbind(<span class="number">1</span>:n, max.col(-distances[, <span class="number">1</span>:i, drop = <span class="literal">FALSE</span>]))] <span class="comment"># Compute probaiblity for the next sampling</span></span><br><span class="line">    &#125;</span><br><span class="line">    centers[k] &lt;- sample.int(n, <span class="number">1</span>, prob = pr)</span><br><span class="line">    <span class="comment">## Perform k-means with the obtained centers</span></span><br><span class="line">    res &lt;- kmeans(x, x[centers, ], iter.max = iter.max, nstart = <span class="number">1</span>, <span class="keyword">...</span>)</span><br><span class="line">    res$inicial.centers &lt;- x[centers, ]</span><br><span class="line">    <span class="comment">## Store the best result</span></span><br><span class="line">    <span class="keyword">if</span> (res$tot.withinss &lt; res.best$tot.withinss) &#123;</span><br><span class="line">      res.best &lt;- res</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  res.best</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">x &lt;- rbind(matrix(rnorm(<span class="number">1e6</span>, <span class="number">0</span>, <span class="number">1</span>), ncol=<span class="number">2</span>), matrix(rnorm(<span class="number">1e6</span>, <span class="number">5</span>, <span class="number">1</span>), ncol=<span class="number">2</span>))</span><br><span class="line">t &lt;- numeric(<span class="number">10</span>)</span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">10</span>) t[i] &lt;- system.time(kmeans(x, <span class="number">2</span>))[<span class="number">1</span>]; mean(t)</span><br><span class="line">[<span class="number">1</span>] <span class="number">0.5734</span>  </span><br><span class="line">install.packages(<span class="string">&quot;devtools&quot;</span>)</span><br><span class="line"><span class="keyword">library</span>(devtools)</span><br><span class="line">source_gist(<span class="string">&quot;ef54a3b17fff4629f106&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">10</span>) t[i] &lt;- system.time(kmeansp2(x, <span class="number">2</span>))[<span class="number">1</span>]; mean(t)</span><br><span class="line">[<span class="number">1</span>] <span class="number">0.6614</span></span><br><span class="line">install.packages(<span class="string">&quot;LICORS&quot;</span>)</span><br><span class="line"><span class="keyword">library</span>(LICORS)</span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">10</span>) t[i] &lt;- system.time(kmeanspp(x, <span class="number">2</span>, nstart = <span class="number">1</span>))[<span class="number">1</span>]; mean(t)</span><br><span class="line">[<span class="number">1</span>] <span class="number">2.7971</span></span><br><span class="line">install.packages(<span class="string">&quot;pracma&quot;</span>)</span><br><span class="line"><span class="keyword">library</span>(pracma)</span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">10</span>) t[i] &lt;- system.time(kmpp(x, <span class="number">2</span>))[<span class="number">1</span>]; mean(t)</span><br><span class="line">[<span class="number">1</span>] <span class="number">4.7541</span></span><br><span class="line"><span class="comment"># -----------------------------------------</span></span><br><span class="line">x &lt;- matrix(runif(<span class="number">3e6</span>), ncol=<span class="number">3</span>)  <span class="comment"># データ数1,000,000，次元数3</span></span><br><span class="line">q &lt;- runif(<span class="number">3</span>)</span><br><span class="line">dist &lt;- numeric(nrow(x))  <span class="comment"># 結果を入れるベクトル</span></span><br><span class="line">system.time(<span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:nrow(x)) dist[i] &lt;- sqrt(sum((q - x[i,])^<span class="number">2</span>)))</span><br><span class="line">   user  system elapsed</span><br><span class="line">  <span class="number">2.017</span>   <span class="number">0.007</span>   <span class="number">2.024</span></span><br><span class="line">system.time(dist &lt;- apply(x, <span class="number">1</span>, <span class="keyword">function</span>(x) sqrt(sum((x - q)^<span class="number">2</span>))))</span><br><span class="line">   user  system elapsed</span><br><span class="line">  <span class="number">2.392</span>   <span class="number">0.027</span>   <span class="number">2.418</span></span><br><span class="line">system.time(dist &lt;- sqrt(colSums((t(x) - q)^<span class="number">2</span>)))</span><br><span class="line">   user  system elapsed</span><br><span class="line">  <span class="number">0.023</span>   <span class="number">0.001</span>   <span class="number">0.023</span></span><br></pre></td></tr></table></figure>
+<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
+<li><a target="_blank" rel="noopener" href="http://www.jianshu.com/p/18dd0ce65bb8">R中层次聚类与划分聚类-王诗翔</a></li>
+<li><a target="_blank" rel="noopener" href="https://yq.aliyun.com/articles/229138">机器学习之确定最佳聚类数目的10种方法</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.cnblogs.com/hunttown/p/5453305.html">R语言：K-means聚类算法</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.csdn.net/loadstar_kun/article/details/39450615">Kmeans、Kmeans++和KNN算法比较</a></li>
+<li><a target="_blank" rel="noopener" href="http://mahito.info/kmeansp2.html">kmeans++ In R</a></li>
+<li><a target="_blank" rel="noopener" href="http://mahito.info/files/Sugiyama_NII_datamining_2017_07.pdf">Clustering</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/kmeans/" rel="tag"># kmeans</a>
+              <a href="/tags/kmeans/" rel="tag"># kmeans ++</a>
+              <a href="/tags/%E8%81%9A%E7%B1%BB/" rel="tag"># 聚类</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/11/19/ligtgbm1/" rel="prev" title="微软大杀器 LightGBM 在R中安装及使用注解">
+      <i class="fa fa-chevron-left"></i> 微软大杀器 LightGBM 在R中安装及使用注解
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/11/27/specClust1/" rel="next" title="谱聚类的R解释">
+      谱聚类的R解释 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%9A%E7%B1%BB%E5%88%86%E6%9E%90%E5%9F%BA%E6%9C%AC%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.</span> <span class="nav-text">聚类分析基本步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A1%AE%E5%AE%9A%E6%9C%80%E4%BD%B3%E8%81%9A%E7%B1%BB%E6%95%B0%E9%87%8F%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">确定最佳聚类数量的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kmeans-%E5%AE%9E%E4%BE%8B%E8%A7%A3%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text">Kmeans 实例解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%87%BD%E6%95%B0%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="nav-number">4.1.</span> <span class="nav-text">1. 函数基本介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%AE%9E%E7%94%A8%E8%A7%A3%E7%A0%81"><span class="nav-number">4.2.</span> <span class="nav-text">2. 实用解码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-kmeans%E7%9A%84%E6%94%B9%E8%BF%9B%E7%AE%97%E6%B3%95%E2%80%93%E8%B0%B1%E8%81%9A%E7%B1%BB"><span class="nav-number">5.</span> <span class="nav-text">B. kmeans的改进算法–谱聚类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-kmeans%E7%9A%84%E6%94%B9%E8%BF%9B%E7%AE%97%E6%B3%95%E2%80%93kmeans"><span class="nav-number">6.</span> <span class="nav-text">C. kmeans的改进算法–kmeans++</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">7.</span> <span class="nav-text">References:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

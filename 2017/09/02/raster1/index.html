@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="教程将引导你了解在R中使用raster数据的基本原理有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习完成此活动后，你将能够：   导入多个raster栅格数据 并创建 多图层数据堆栈。 在R中绘制 RGB 3 频带 图像 导出 单频带 和 多频带 raster图像原英文版链接  Authors: Leah A. Wasser, Megan A. Jones  安装相关程序包">
+<meta property="og:type" content="article">
+<meta property="og:title" content="raster包 处理RGB图像 \[译\]">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2017/09/02/raster1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="教程将引导你了解在R中使用raster数据的基本原理有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习完成此活动后，你将能够：   导入多个raster栅格数据 并创建 多图层数据堆栈。 在R中绘制 RGB 3 频带 图像 导出 单频带 和 多频带 raster图像原英文版链接  Authors: Leah A. Wasser, Megan A. Jones  安装相关程序包">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2017/09/06/59aff00b9b47e.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/06/59afd1c742cb3.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/06/59afd1c76c26d.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b0b9a1ea4ea.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b096df03eb0.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b0984dd1538.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b0984ec5a1b.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/06/59afd1c76c26d.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b0b9a1ecc4d.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b0a6b41c7a0.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b0a6b56010a.png">
+<meta property="article:published_time" content="2017-09-02T12:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:42.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="图像处理">
+<meta property="article:tag" content="raster">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2017/09/06/59aff00b9b47e.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2017/09/02/raster1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>raster包 处理RGB图像 \[译\] | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/09/02/raster1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          raster包 处理RGB图像 \[译\]
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-09-02 20:02:34" itemprop="dateCreated datePublished" datetime="2017-09-02T20:02:34+08:00">2017-09-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:42" itemprop="dateModified" datetime="2020-08-23T21:16:42+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Image/" itemprop="url" rel="index"><span itemprop="name">Image</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>教程将引导你了解在R中使用raster数据的基本原理<br>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>完成此活动后，你将能够： </p>
+<ol>
+<li>导入多个raster栅格数据 并创建 多图层数据堆栈。</li>
+<li>在R中绘制 RGB 3 频带 图像</li>
+<li>导出 单频带 和 多频带 raster图像<br><a target="_blank" rel="noopener" href="http://neondataskills.org/R/Image-Raster-Data-In-R/">原英文版链接</a>  Authors: Leah A. Wasser, Megan A. Jones</li>
+</ol>
+<h2 id="安装相关程序包"><a href="#安装相关程序包" class="headerlink" title="安装相关程序包"></a>安装相关程序包</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">raster: install.packages(<span class="string">&quot;raster&quot;</span>)</span><br><span class="line">rgdal: install.packages(<span class="string">&quot;rgdal&quot;</span>)</span><br><span class="line">sp: install.packages(<span class="string">&quot;sp&quot;</span>) </span><br></pre></td></tr></table></figure>
+
+<h2 id="下载数据集"><a href="#下载数据集" class="headerlink" title="下载数据集"></a>下载数据集</h2><p><a target="_blank" rel="noopener" href="https://ndownloader.figshare.com/files/7907590">Download NEON Teaching Data Subset: Field Site Spatial Data</a><br>这些遥感数据文件提供了国家生态观测站网络San Joaquin实验范围和Soaproot Saddle野外现场的植被信息. 该数据旨在用于教育目的,为了访问所有数据以进行研究,请访问NEON数据门户网站.<br>此数据下载包含几个文件. 您将只需要本教程的RGB .tif文件. 该文件的路径是：NEON-DS-Field-Site-Spatial-Data/SJER/RGB/*. 下载的数据目录中的其他数据文件用于相关教程. 您应该将工作目录设置为SJER目录以完全遵循代码.</p>
+<h2 id="推荐阅读资料"><a href="#推荐阅读资料" class="headerlink" title="推荐阅读资料"></a>推荐阅读资料</h2><p>在本教程之前，您可以从以下相关教程中获益：<br><a target="_blank" rel="noopener" href="http://neondataskills.org/GIS-spatial-data/Working-With-Rasters/">The Relationship Between Raster Resolution, Spatial Extent &amp; Number of Pixels - in R.</a><br><a target="_blank" rel="noopener" href="http://neondataskills.org/R/Raster-Data-In-R/">Please read “Raster Data in R - The Basics.</a><br><a target="_blank" rel="noopener" href="http://cran.r-project.org/web/packages/raster/raster.pdf">The raster R package documentation.</a></p>
+<h2 id="Raster-数据"><a href="#Raster-数据" class="headerlink" title="Raster 数据"></a>Raster 数据</h2><p>光栅或“网格”数据是以像素保存的数据.在空间世界中,每个像素代表地球表面上的一个区域.彩色图像光栅与其他光栅有点不同,因为它具有多个 频带 .每个 频带 表示 特定颜色或光谱 的反射率值.如果图像是RGB,那么这些 频带 则是电磁频谱的 红/绿/蓝 色部分.这些颜色一起创造了我们所知的全彩图像</p>
+<a id="more"></a>
+<p><img src="https://i.loli.net/2017/09/06/59aff00b9b47e.png" alt="RGBimage1"><br><em>加利福尼亚NEON圣华金实验区（SJER）现场的彩色图像。 图像中的每个像素表示电磁光谱的红色，绿色和蓝色部分中的组合反射率。 资料来源：国家生态观测网（NEON）</em></p>
+<h2 id="多图层数据"><a href="#多图层数据" class="headerlink" title="多图层数据"></a>多图层数据</h2><p>在上一章节<a target="_blank" rel="noopener" href="http://neondataskills.org/R/Raster-Data-In-R/">RasterDataInR</a>,我们实现了R中的单图层(频带)加载,确保我们你弄明白了CRS(坐标参考系)和其他关键元数据属性的范围.彼图层(频带)是一个 数字高程模型(DEM),因此它是一个每个像素点代表该点地面海拔的单图层数据.<br>当我们处理彩色图像,会有多个图层来表示各个频带,让我们来开始学习多图层数据</p>
+<h3 id="A-多图层堆栈-Raster-Stacks"><a href="#A-多图层堆栈-Raster-Stacks" class="headerlink" title="A. 多图层堆栈 (Raster Stacks)"></a>A. 多图层堆栈 (Raster Stacks)</h3><p>一个图层堆栈就是多个图层(频带)的集合,堆栈中的每一个图层(频带)都需要有相同的:</p>
+<ul>
+<li>投影(projection,CRS坐标体参考系)</li>
+<li>空间范围 (spatial extent)</li>
+<li>解析度 (resolution)<br>出于不同的原因你可能需要多图层(频带)堆栈,比如:</li>
+<li>你需要将 降水或温度 的时间序列通过多图层(频带)来进行分组</li>
+<li>你需要通过 红/绿/蓝 频带派生出的多图层(频带) 合成一张 彩色图像</li>
+</ul>
+<p>本教程将从多频段图像中叠放 3个频段来创建一个 复合RGB图像</p>
+<h4 id="1-加载必要的工具包"><a href="#1-加载必要的工具包" class="headerlink" title="1. 加载必要的工具包"></a>1. 加载必要的工具包</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># load the raster, sp, and rgdal packages</span></span><br><span class="line"><span class="keyword">library</span>(raster)</span><br><span class="line"><span class="keyword">library</span>(sp)</span><br><span class="line"><span class="keyword">library</span>(rgdal)</span><br><span class="line"><span class="comment"># set the working directory to the data</span></span><br><span class="line"><span class="comment">#setwd(&quot;pathToDirHere&quot;)</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-创建一个图层堆栈"><a href="#2-创建一个图层堆栈" class="headerlink" title="2. 创建一个图层堆栈"></a>2. 创建一个图层堆栈</h4><p>图层堆栈包含以下图层:</p>
+<blockquote>
+<p>blue:  band 19, 473.8nm<br>green: band 34, 548.9nm<br>red;   band 58, 669.1nm</p>
+</blockquote>
+<ul>
+<li>way1:<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># import tiffs</span></span><br><span class="line">band19 &lt;- <span class="string">&quot;RGB/band19.tif&quot;</span></span><br><span class="line">band34 &lt;- <span class="string">&quot;RGB/band34.tif&quot;</span></span><br><span class="line">band58 &lt;- <span class="string">&quot;RGB/band58.tif&quot;</span></span><br><span class="line"><span class="comment"># create raster stack</span></span><br><span class="line">rgbRaster &lt;- stack(band19,band34,band58)</span><br></pre></td></tr></table></figure></li>
+<li>way2<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># create list of files to make raster stack</span></span><br><span class="line">rasterlist1 &lt;-  list.files(<span class="string">&#x27;data/SJER/RGB&#x27;</span>, full.names=<span class="literal">TRUE</span>)</span><br><span class="line"><span class="comment"># rasterlist2 &lt;-  list.files(&#x27;data/SJER/RGB&#x27;, full.names=TRUE, pattern=&quot;tif&quot;) </span></span><br><span class="line">rasterlist1</span><br><span class="line">rasterlist2</span><br><span class="line"><span class="comment"># example syntax for stack from a list</span></span><br><span class="line">rstack1 &lt;- stack(rasterlist1[<span class="number">1</span>:<span class="number">3</span>])</span><br><span class="line">rstack1</span><br><span class="line"></span><br><span class="line">class       : RasterStack </span><br><span class="line">dimensions  : <span class="number">502</span>, <span class="number">477</span>, <span class="number">239454</span>, <span class="number">3</span>  (nrow, ncol, ncell, nlayers)</span><br><span class="line">resolution  : <span class="number">1</span>, <span class="number">1</span>  (x, y)</span><br><span class="line">extent      : <span class="number">256521</span>, <span class="number">256998</span>, <span class="number">4112069</span>, <span class="number">4112571</span>  (xmin, xmax, ymin, ymax)</span><br><span class="line">coord. ref. : +proj=utm +zone=<span class="number">11</span> +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span> </span><br><span class="line">names       : band19, band34, band58 </span><br><span class="line">min values  :     <span class="number">84</span>,    <span class="number">116</span>,    <span class="number">123</span> </span><br><span class="line">max values  :  <span class="number">13805</span>,  <span class="number">15677</span>,  <span class="number">14343</span> </span><br><span class="line"></span><br><span class="line">dim(rstack1)</span><br><span class="line">[<span class="number">1</span>] <span class="number">502</span> <span class="number">477</span>   <span class="number">3</span></span><br></pre></td></tr></table></figure>
+<h4 id="3-stack-展示"><a href="#3-stack-展示" class="headerlink" title="3. stack 展示"></a>3. stack 展示</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plot(rstack1)</span><br></pre></td></tr></table></figure>
+<img src="https://i.loli.net/2017/09/06/59afd1c742cb3.png" alt="rstack1"></li>
+</ul>
+<p>通过上图我们看到 3 个图片 可以看到各自图层的 投影/解析度/展示范围,<br>请留意 不同 频带 之间 阴影部分的不同,这是因为景观在被 红/绿/蓝光谱上的投影不相同导致的.<br>查看比例尺。 他们代表什么？<br><em>该反射率数据对于大气效应进行了辐射校正.数据通常是无单位的,范围为0-1.NEON机载观测平台的数据来自这些光栅，其比例因子为10,000</em></p>
+<h4 id="4-RGB-作图"><a href="#4-RGB-作图" class="headerlink" title="4. RGB 作图"></a>4. RGB 作图</h4><p>我们可以通过来自图层堆栈的数据绘制RGB复合图像. 当你执行此操作时需要首先确定图层(频带)的顺序. 在这个raster堆栈中,红色图层(频带)对应的是读入的第 3 个文件(band58.tif);绿色图层(频带)对应的是读入的第 2 个文件(band34.tif);红色图层(频带)对应的是读入的第 1 个文件(band19.tif),因此RGB图像的顺序为 ‘r=3,g=2,b=1’从而保证 红色频带 的数据能首先被识别并渲染为红色  </p>
+<p>我们将使用 plotRGB() 绘制图像, 需要写明以下要素：  </p>
+<ul>
+<li>将被用于绘图的 R数据对象</li>
+<li>图层(频带)与 RGB颜色的对应关系</li>
+<li>拉伸,允许增强对比度.选项有’lin’和’hist’<br>let’s 开整:<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># plot an RGB version of the stack</span></span><br><span class="line">plotRGB(rstack1,r=<span class="number">3</span>,g=<span class="number">2</span>,b=<span class="number">1</span>, stretch = <span class="string">&quot;lin&quot;</span>)</span><br><span class="line"><span class="comment"># 每个图层是一个颜色,即</span></span><br><span class="line"><span class="comment"># red   = as.array(rstack1)[,,3]</span></span><br><span class="line"><span class="comment"># green = as.array(rstack1)[,,2]</span></span><br><span class="line"><span class="comment"># blue  = as.array(rstack1)[,,1]</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><img src="https://i.loli.net/2017/09/06/59afd1c76c26d.png" alt="rgb1"><br><em>注: 请阅读 raster 包文档来熟悉 用来提升和调整图像的 其他参数(如 scale)</em><br>变色调整</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plotRGB(rstack1,r=<span class="number">3</span>,g=<span class="number">2</span>,b=<span class="number">1</span>, stretch = <span class="string">&quot;lin&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/09/07/59b0b9a1ea4ea.png" alt="rgb2"></p>
+<h4 id="5-浏览光栅数据直方图"><a href="#5-浏览光栅数据直方图" class="headerlink" title="5. 浏览光栅数据直方图"></a>5. 浏览光栅数据直方图</h4><p>我们同样可以浏览光栅数据, 直方图可以让我们观察 各像素点上 值的分布情况</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># view histogram of reflectance values for all rasters</span></span><br><span class="line">hist(rstack1)</span><br><span class="line"></span><br><span class="line"><span class="comment">## Warning in .hist1(raster(x, y[i]), maxpixels = maxpixels, main =</span></span><br><span class="line"><span class="comment">## main[y[i]], : 42% of the raster cells were used. 100000 values used.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## Warning in .hist1(raster(x, y[i]), maxpixels = maxpixels, main =</span></span><br><span class="line"><span class="comment">## main[y[i]], : 42% of the raster cells were used. 100000 values used.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## Warning in .hist1(raster(x, y[i]), maxpixels = maxpixels, main =</span></span><br><span class="line"><span class="comment">## main[y[i]], : 42% of the raster cells were used. 100000 values used.</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/09/07/59b096df03eb0.png" alt="hist1"></p>
+<p><em>关于警告的注意事项：R默认只显示直方图中的前100,000个值，因此如果您有一个较大的栅格，则可能看不到所有值。 如果您有大量数据集，这将防止长时间等待或R的崩溃</em></p>
+<h4 id="6-截取并局部放大图像"><a href="#6-截取并局部放大图像" class="headerlink" title="6. 截取并局部放大图像"></a>6. 截取并局部放大图像</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 确定展示范围</span></span><br><span class="line">rgbCrop &lt;- c(<span class="number">256770.7</span>,<span class="number">256959</span>,<span class="number">4112140</span>,<span class="number">4112284</span>)</span><br><span class="line"><span class="comment"># 截取设定范围内的图像数据</span></span><br><span class="line">rstack1_crop &lt;- crop(rstack1, rgbCrop)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 观察截取的图像堆栈</span></span><br><span class="line">plot(rstack1_crop)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/09/07/59b0984dd1538.png" alt="crop1.png"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># RGB 局部放大展示</span></span><br><span class="line">plotRGB(rstack1_crop,r=<span class="number">3</span>,g=<span class="number">2</span>,b=<span class="number">1</span>, stretch = <span class="string">&quot;lin&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/09/07/59b0984ec5a1b.png" alt="crop2.png"></p>
+<h3 id="B-图像砖-raster-bricks"><a href="#B-图像砖-raster-bricks" class="headerlink" title="B. 图像砖(raster bricks)"></a>B. 图像砖(raster bricks)</h3><p>在rgbRaster对象–图像堆栈中，有个各图层(频带)的列表. 这些图层有着完全相同的展示范围/CRS/分辨率. 通过创建图像砖，将可以创建一个包含原始所有图层的单一图层对象，以此对象可以快速创建RGB图像.图像砖是处理较大数据集时更有效的对象.因为计算机不需要费力来查找数据 - 它直接被包含在brick对象中</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># create raster brick</span></span><br><span class="line">rgbBrick &lt;- brick(rstack1)</span><br><span class="line"><span class="comment"># check attributes</span></span><br><span class="line">rgbBrick</span><br><span class="line">class       : RasterBrick </span><br><span class="line">dimensions  : <span class="number">502</span>, <span class="number">477</span>, <span class="number">239454</span>, <span class="number">3</span>  (nrow, ncol, ncell, nlayers)</span><br><span class="line">resolution  : <span class="number">1</span>, <span class="number">1</span>  (x, y)</span><br><span class="line">extent      : <span class="number">256521</span>, <span class="number">256998</span>, <span class="number">4112069</span>, <span class="number">4112571</span>  (xmin, xmax, ymin, ymax)</span><br><span class="line">coord. ref. : +proj=utm +zone=<span class="number">11</span> +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span> </span><br><span class="line">data <span class="keyword">source</span> : <span class="keyword">in</span> memory</span><br><span class="line">names       : band19, band34, band58 </span><br><span class="line">min values  :     <span class="number">84</span>,    <span class="number">116</span>,    <span class="number">123</span> </span><br><span class="line">max values  :  <span class="number">13805</span>,  <span class="number">15677</span>,  <span class="number">14343</span> </span><br></pre></td></tr></table></figure>
+<p>尽管 图像堆栈 和 图像砖 在概念上有点相似,但当我们观察他们各自的大小时就能发现还是有不同之处的:  </p>
+<ul>
+<li>图像砖 是一个单一对象,它存储了图像数据对象中的所有图层</li>
+<li>图像堆栈 是一个虚拟对象,它存储的是各图层的链接或对缓存在pc的文件的引用</li>
+</ul>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># view object size</span></span><br><span class="line">object.size(rgbBrick)</span><br><span class="line"><span class="number">5759744</span> bytes</span><br><span class="line">object.size(rstack1)</span><br><span class="line"><span class="number">41352</span> bytes</span><br><span class="line"><span class="comment"># view raster brick</span></span><br><span class="line">plotRGB(rgbBrick,r=<span class="number">3</span>,g=<span class="number">2</span>,b=<span class="number">1</span>, stretch = <span class="string">&quot;Lin&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/09/06/59afd1c76c26d.png" alt="rgb1"></p>
+<p>变色调整测试</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plotRGB(multiRasterB,r=<span class="number">3</span>,g=<span class="number">2</span>,b=<span class="number">1</span>, stretch=<span class="string">&quot;lin&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/09/07/59b0b9a1ecc4d.png" alt="rgb3"><br><em>留意作图速度,对于绘制类似本案例的小规模图像数据差别是很细微的,但当面临大数据集它的优势是让人心悦诚服的</em></p>
+<h2 id="多图层数据-导出存储为-GeoTIFF文件"><a href="#多图层数据-导出存储为-GeoTIFF文件" class="headerlink" title="多图层数据 导出存储为 GeoTIFF文件"></a>多图层数据 导出存储为 GeoTIFF文件</h2><p>我们可以将图像数据 导出存储为 GeoTIFF格式 的图像文件.当如是做时，将复制原有的CRS/范围/分辨率信息近新的文件中,以便数据未来能被正确读取到GIS程序中.   注意，这种写入存储是有顺序要求的. 在本例中,blue(band19)是排在第一位,但大多数程序要求按照RGB的顺序(red-green-blue)进行存储.<br>如果出现了本案例RGB顺序不符合要求的情况,我们可以重新生成一个新的图像堆栈,并将图层(频带)按照RGB顺序排列 或者 坚持贯彻RGB顺序来创建 图像堆栈!</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Make a new stack in the order we want the data in </span></span><br><span class="line">orderRGBstack &lt;- stack(rstack1$band58,rstack1$band34,rstack1$band19)</span><br><span class="line"><span class="comment"># write the geotiff</span></span><br><span class="line"><span class="comment"># change overwrite=TRUE to FALSE if you want to make sure you don&#x27;t overwrite your files!</span></span><br><span class="line">writeRaster(orderRGBstack,<span class="string">&quot;data/SJER/RGB/rgbRaster.tif&quot;</span>,<span class="string">&quot;GTiff&quot;</span>, overwrite=<span class="literal">TRUE</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="导入多图层数据"><a href="#导入多图层数据" class="headerlink" title="导入多图层数据"></a>导入多图层数据</h2><p>刚才我们将编辑好的多图层图像数据导出为GeoTIFF文件,同样我们也可以将外部的 GeoTIFF文件读入R中.<br>由于 raster 函数默认只能导入 单一图层数据, 我们可以选择 stack/brick 函数</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># import multi-band raster as stack</span></span><br><span class="line">multiRasterS &lt;- stack(<span class="string">&quot;data/SJER/RGB/rgbRaster.tif&quot;</span>) </span><br><span class="line"><span class="comment"># import multi-band raster direct to brick</span></span><br><span class="line">multiRasterB &lt;- brick(<span class="string">&quot;data/SJER/RGB/rgbRaster.tif&quot;</span>) </span><br><span class="line">object.size(multiRasterS)</span><br><span class="line"><span class="number">41424</span> bytes</span><br><span class="line">object.size(multiRasterB)</span><br><span class="line"><span class="number">12544</span> bytes</span><br><span class="line">plot(multiRasterB)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/09/07/59b0a6b41c7a0.png" alt="brick1"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plotRGB(multiRasterB,r=<span class="number">1</span>,g=<span class="number">2</span>,b=<span class="number">3</span>, stretch=<span class="string">&quot;lin&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/09/07/59b0a6b56010a.png" alt="brick2"></p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag"># 图像处理</a>
+              <a href="/tags/raster/" rel="tag"># raster</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/08/28/histEq1/" rel="prev" title="直方图均衡化算法(HistogramEqualization)原理R语言白话版">
+      <i class="fa fa-chevron-left"></i> 直方图均衡化算法(HistogramEqualization)原理R语言白话版
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/09/05/imgEm1/" rel="next" title="在R中测试2种图像增强方式">
+      在R中测试2种图像增强方式 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%9B%B8%E5%85%B3%E7%A8%8B%E5%BA%8F%E5%8C%85"><span class="nav-number">1.</span> <span class="nav-text">安装相关程序包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">2.</span> <span class="nav-text">下载数据集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB%E8%B5%84%E6%96%99"><span class="nav-number">3.</span> <span class="nav-text">推荐阅读资料</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Raster-%E6%95%B0%E6%8D%AE"><span class="nav-number">4.</span> <span class="nav-text">Raster 数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E5%9B%BE%E5%B1%82%E6%95%B0%E6%8D%AE"><span class="nav-number">5.</span> <span class="nav-text">多图层数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E5%A4%9A%E5%9B%BE%E5%B1%82%E5%A0%86%E6%A0%88-Raster-Stacks"><span class="nav-number">5.1.</span> <span class="nav-text">A. 多图层堆栈 (Raster Stacks)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%8A%A0%E8%BD%BD%E5%BF%85%E8%A6%81%E7%9A%84%E5%B7%A5%E5%85%B7%E5%8C%85"><span class="nav-number">5.1.1.</span> <span class="nav-text">1. 加载必要的工具包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%9B%BE%E5%B1%82%E5%A0%86%E6%A0%88"><span class="nav-number">5.1.2.</span> <span class="nav-text">2. 创建一个图层堆栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-stack-%E5%B1%95%E7%A4%BA"><span class="nav-number">5.1.3.</span> <span class="nav-text">3. stack 展示</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-RGB-%E4%BD%9C%E5%9B%BE"><span class="nav-number">5.1.4.</span> <span class="nav-text">4. RGB 作图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E6%B5%8F%E8%A7%88%E5%85%89%E6%A0%85%E6%95%B0%E6%8D%AE%E7%9B%B4%E6%96%B9%E5%9B%BE"><span class="nav-number">5.1.5.</span> <span class="nav-text">5. 浏览光栅数据直方图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-%E6%88%AA%E5%8F%96%E5%B9%B6%E5%B1%80%E9%83%A8%E6%94%BE%E5%A4%A7%E5%9B%BE%E5%83%8F"><span class="nav-number">5.1.6.</span> <span class="nav-text">6. 截取并局部放大图像</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-%E5%9B%BE%E5%83%8F%E7%A0%96-raster-bricks"><span class="nav-number">5.2.</span> <span class="nav-text">B. 图像砖(raster bricks)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E5%9B%BE%E5%B1%82%E6%95%B0%E6%8D%AE-%E5%AF%BC%E5%87%BA%E5%AD%98%E5%82%A8%E4%B8%BA-GeoTIFF%E6%96%87%E4%BB%B6"><span class="nav-number">6.</span> <span class="nav-text">多图层数据 导出存储为 GeoTIFF文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5%E5%A4%9A%E5%9B%BE%E5%B1%82%E6%95%B0%E6%8D%AE"><span class="nav-number">7.</span> <span class="nav-text">导入多图层数据</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

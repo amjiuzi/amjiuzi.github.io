@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="以前一直以为 网络爬虫 是高大上的, 涉及到网页知识&#x2F;编程代码&#x2F;正则…等等一系列想想就头疼的物件儿，一次偶然的机会看到了rvest(向 hadley 大师傅献上最真诚的膝盖)，一股如厕后的畅快感油然而生,原来爬数也可以 谈笑间,樯橹灰飞烟灭…废话不多说,请看大屏幕有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance">
+<meta property="og:type" content="article">
+<meta property="og:title" content="R语言轻松完成 网络爬虫(rvest和Rselenium)">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2017/08/21/Rselenium/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="以前一直以为 网络爬虫 是高大上的, 涉及到网页知识&#x2F;编程代码&#x2F;正则…等等一系列想想就头疼的物件儿，一次偶然的机会看到了rvest(向 hadley 大师傅献上最真诚的膝盖)，一股如厕后的畅快感油然而生,原来爬数也可以 谈笑间,樯橹灰飞烟灭…废话不多说,请看大屏幕有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2017/08/25/599fcf03a581d.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/25/599fcf03a6717.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/25/599fcf039111e.png">
+<meta property="og:image" content="https://i.loli.net/2018/01/11/5a56bc9dd1e97.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/25/599fd2d8824a5.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/25/59a005a42e6ad.png">
+<meta property="article:published_time" content="2017-08-21T04:07:17.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:44.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="爬虫">
+<meta property="article:tag" content="crawl">
+<meta property="article:tag" content="rvest">
+<meta property="article:tag" content="rselenium">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2017/08/25/599fcf03a581d.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2017/08/21/Rselenium/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>R语言轻松完成 网络爬虫(rvest和Rselenium) | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/08/21/Rselenium/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          R语言轻松完成 网络爬虫(rvest和Rselenium)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-21 12:07:17" itemprop="dateCreated datePublished" datetime="2017-08-21T12:07:17+08:00">2017-08-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:44" itemprop="dateModified" datetime="2020-08-23T21:16:44+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Crawl/" itemprop="url" rel="index"><span itemprop="name">Crawl</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>以前一直以为 <em>网络爬虫</em> 是高大上的, 涉及到网页知识/编程代码/正则…等等一系列想想就头疼的物件儿，一次偶然的机会看到了rvest(<em>向 hadley 大师傅献上最真诚的膝盖</em>)，一股如厕后的畅快感油然而生,原来爬数也可以 谈笑间,樯橹灰飞烟灭…废话不多说,请看大屏幕<br>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿帮助，请出门左转 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">Convenient Entrance</a>, 合作愉快</p>
+<h2 id="A-Rvest"><a href="#A-Rvest" class="headerlink" title="A. Rvest"></a>A. Rvest</h2><h3 id="1-Install"><a href="#1-Install" class="headerlink" title="1. Install"></a>1. Install</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">install.package(<span class="string">&#x27;rvest&#x27;</span>)</span><br><span class="line"><span class="comment"># 想获取最新版，可以github安装</span></span><br><span class="line"><span class="comment"># install.packages(&quot;devtools&quot;)</span></span><br><span class="line">devtools::install_github(<span class="string">&quot;hadley/rvest&quot;</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="2-Frame-and-Params"><a href="#2-Frame-and-Params" class="headerlink" title="2. Frame and Params"></a>2. Frame and Params</h3><h4 id="2-1-Read-info-from-website"><a href="#2-1-Read-info-from-website" class="headerlink" title="2.1 Read info from website"></a>2.1 Read info from website</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">info1 &lt;- read_html(url/pageSource)</span><br></pre></td></tr></table></figure>
+<h4 id="2-2-Node-resolutions"><a href="#2-2-Node-resolutions" class="headerlink" title="2.2 Node resolutions"></a>2.2 Node resolutions</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">html_node(x,css/xpath) / html_nodes(x,css/xpath)</span><br><span class="line"><span class="comment"># only one node: </span></span><br><span class="line">html_node(x,css/xpath)</span><br><span class="line"><span class="comment"># 2 and  more nodes: </span></span><br><span class="line">html_nodes(x,css/xpath)</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+<p><img src="https://i.loli.net/2017/08/25/599fcf03a581d.png" alt="nodes1"></p>
+<h4 id="2-3-CSS-VS-Xpath"><a href="#2-3-CSS-VS-Xpath" class="headerlink" title="2.3 CSS VS Xpath"></a>2.3 CSS VS Xpath</h4><h5 id="2-3-1-CSS"><a href="#2-3-1-CSS" class="headerlink" title="2.3.1 CSS"></a>2.3.1 CSS</h5><p><a target="_blank" rel="noopener" href="http://www.w3school.com.cn/cssref/css_selectors.asp">CSS selecter manual</a><br>在Chrome浏览器中，通过右击所需要查看的元素，单击“检查”，在开发者模式中，通过右击被蓝色覆盖（即被选中）的部分，单击Copy，单击Copy selecter，即可得到 css</p>
+<h5 id="2-3-2-Xpath"><a href="#2-3-2-Xpath" class="headerlink" title="2.3.2 Xpath"></a>2.3.2 Xpath</h5><p><a target="_blank" rel="noopener" href="http://www.w3school.com.cn/xpath/index.asp">xpath manual</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/28894826">xpath experience notes</a><br>在Chrome浏览器中，通过右击所需要查看的元素，单击“检查”，在开发者模式中，通过右击被蓝色覆盖（即被选中）的部分，单击Copy，单击Copy Xpath，即可得到Xpath</p>
+<p>xpath 中常用参数总结：</p>
+<ul>
+<li>“/“ 与 “//“ 的区别<br>“/“ 表示 当前结构下的次一级结构，”//“表示当前结构下的所有次级别结构(次一级,次二级…)</li>
+<li>text()的使用<br>text()下提取的文本结果会被并列存放入一个变量中</li>
+<li>not()<br>满足 不 xxx 条件的子元素</li>
+<li>last()的使用<br>last() 可以定义某结构下的最后一个子元素</li>
+<li>@attribute=”xxx”的使用<br>定义 属性 attribute 为 xxx 的子元素</li>
+</ul>
+<h4 id="2-4-Info-wget"><a href="#2-4-Info-wget" class="headerlink" title="2.4 Info wget"></a>2.4 Info wget</h4><h5 id="2-4-1-html-text"><a href="#2-4-1-html-text" class="headerlink" title="2.4.1 html_text()"></a>2.4.1 html_text()</h5><p><img src="https://i.loli.net/2017/08/25/599fcf03a6717.png" alt="text1"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">read_html() %&gt;% html_node(css=<span class="string">&#x27;p.blog-summary&#x27;</span>) %&gt;% html_text()</span><br><span class="line">[<span class="number">1</span>] 摘要：</span><br><span class="line">[<span class="number">2</span>] 本文简单介绍循环神经网络RNN的发展过程,....  </span><br><span class="line"></span><br><span class="line">html_nodes(css=<span class="string">&#x27;div.details.clear div.address p:nth-child(2)&#x27;</span>) %&gt;% </span><br><span class="line">    html_text() %&gt;% regmatches(.,regexpr(<span class="string">&#x27;[0-9.\\-]+&#x27;</span>,.)) %&gt;%</span><br><span class="line">    &#123;<span class="keyword">if</span>(length(.)==<span class="number">0</span>) <span class="string">&#x27;wu&#x27;</span> <span class="keyword">else</span> .&#125;</span><br></pre></td></tr></table></figure>
+<p>介于 p 节点 之间的 非html 语法的文本都会被提取  </p>
+<h5 id="2-4-2-html-attr"><a href="#2-4-2-html-attr" class="headerlink" title="2.4.2 html_attr()"></a>2.4.2 html_attr()</h5><p><img src="https://i.loli.net/2017/08/25/599fcf039111e.png" alt="attr1"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">read_html() %&gt;% html_node(css=<span class="string">&#x27;span.name&#x27;</span>) %&gt;% html_attr(<span class="string">&#x27;href&#x27;</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="string">&#x27;/u/3283d485c98a&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Crawl-cases"><a href="#3-Crawl-cases" class="headerlink" title="3. Crawl cases"></a>3. Crawl cases</h3><h4 id="3-1-Functions"><a href="#3-1-Functions" class="headerlink" title="3.1 Functions"></a>3.1 Functions</h4><h5 id="3-1-1-html-nodes"><a href="#3-1-1-html-nodes" class="headerlink" title="3.1.1 html_nodes"></a>3.1.1 html_nodes</h5><p>如果想获取下图中 被选中的信息 则  </p>
+<p><img src="https://i.loli.net/2018/01/11/5a56bc9dd1e97.png" alt="node-src"></p>
+<p>目标信息包含在 $&lt;a\ class=‘title\ name’ &gt; </a>$ 下，可以通过 如果class=’title name’，可以用 html_nodes(‘a.title.name’)</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">web1 %&gt;% html_nodes(css=<span class="string">&#x27;a.title&#x27;</span>) %&gt;% html_text()</span><br><span class="line"></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;International Journal&quot;</span></span><br><span class="line">[<span class="number">2</span>] <span class="string">&quot;Nano Reports&quot;</span></span><br><span class="line">[<span class="number">3</span>] <span class="string">&quot;Computational Social Networks&quot;</span></span><br><span class="line">[<span class="number">4</span>] <span class="string">&quot;Journal of Family Voilences&quot;</span></span><br><span class="line"><span class="keyword">...</span> <span class="keyword">...</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-1-2-html-attr"><a href="#3-1-2-html-attr" class="headerlink" title="3.1.2 html_attr"></a>3.1.2 html_attr</h5><p><img src="https://i.loli.net/2017/08/25/599fd2d8824a5.png" alt="attr-src"></p>
+<p>获取 被选中 信息,可运行</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">web1 %&gt;% html_nodes(css=<span class="string">&#x27;a.title&#x27;</span>) %&gt;% html_attr(<span class="string">&#x27;href&#x27;</span>)</span><br><span class="line"></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;/journal/10143&quot;</span>  <span class="string">&quot;/journal/10144&quot;</span> <span class="string">&quot;/journal/10145&quot;</span></span><br><span class="line">[<span class="number">4</span>] <span class="string">&quot;/journal/40134&quot;</span>  <span class="string">&quot;/journal/40149&quot;</span>  <span class="string">&quot;/journal/58521&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-1-3-html-table"><a href="#3-1-3-html-table" class="headerlink" title="3.1.3 html_table"></a>3.1.3 html_table</h5><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(magrittr)</span><br><span class="line">Library(rvest)</span><br><span class="line">url1 &lt;- <span class="string">&#x27;https://amjiuzi.github.io/2017/08/13/ggradar/&#x27;</span></span><br><span class="line">read_html(url1) %&gt;% html_table() %&gt;% extract2(<span class="number">3</span>) <span class="comment">#提取第3张表</span></span><br><span class="line">        type price price2 allowance YouHao</span><br><span class="line"><span class="number">1</span>     bought <span class="number">4.122</span>  <span class="number">4.109</span>     <span class="number">4.139</span>  <span class="number">4.122</span></span><br><span class="line"><span class="number">2</span> considered <span class="number">4.109</span>  <span class="number">4.108</span>     <span class="number">4.133</span>  <span class="number">4.109</span></span><br><span class="line"><span class="number">3</span> NoInterest <span class="number">4.126</span>  <span class="number">4.125</span>     <span class="number">4.107</span>  <span class="number">4.126</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-Samples"><a href="#3-2-Samples" class="headerlink" title="3.2 Samples"></a>3.2 Samples</h4><h5 id="3-2-1-Sample-1"><a href="#3-2-1-Sample-1" class="headerlink" title="3.2.1 Sample 1"></a>3.2.1 Sample 1</h5><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(rvest)</span><br><span class="line"><span class="keyword">library</span>(stringr)</span><br><span class="line">rate_links1 &lt;- str_c(bas_info1[,<span class="number">3</span>],<span class="string">&#x27;collections&#x27;</span>) <span class="comment"># 生成url列表</span></span><br><span class="line">rating_cnt &lt;- lapply(rate_links1,</span><br><span class="line">                     <span class="keyword">function</span>(x)&#123;Sys.sleep(<span class="number">1</span>);</span><br><span class="line">                       <span class="keyword">tryCatch</span>(read_html(x)%&gt;% </span><br><span class="line">                                  html_nodes(css=<span class="string">&quot;span#collections_bar span&quot;</span>) %&gt;% </span><br><span class="line">                                  html_text() %&gt;% str_extract(<span class="string">&quot;[0-9]+&quot;</span>)%&gt;% </span><br><span class="line">                                  as.numeric(),</span><br><span class="line">                                error=<span class="keyword">function</span>(e)e)&#125;)</span><br><span class="line"><span class="comment"># -----------------------------</span></span><br><span class="line">danpin_info &lt;- <span class="keyword">function</span>(x) &#123;</span><br><span class="line">  class1 &lt;- x %&gt;% html_node(<span class="string">&#x27;h3&#x27;</span>) %&gt;% html_text() %&gt;% as.character()</span><br><span class="line">  danp_name &lt;- x %&gt;% html_nodes(<span class="string">&#x27;div div h3&#x27;</span>) %&gt;% </span><br><span class="line">    html_text() %&gt;% as.character()</span><br><span class="line">  danp_sales &lt;- x %&gt;% html_nodes(css = <span class="string">&#x27;span.color-mute.ng-binding&#x27;</span>) %&gt;% </span><br><span class="line">    .[seq(<span class="number">1</span>:length(.))%%<span class="number">2</span>==<span class="number">0</span>] %&gt;% html_text() %&gt;% </span><br><span class="line">    regmatches(.,regexpr(<span class="string">&#x27;[0-9]+&#x27;</span>,.)) %&gt;%</span><br><span class="line">    as.numeric()</span><br><span class="line">  <span class="comment"># length(class1)=1 but length(danp_name)= n(&gt;1)</span></span><br><span class="line">  data.frame(class1,danp_name,danp_price,danp_sales)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">goods &lt;- read_html(page1) %&gt;% </span><br><span class="line">    html_nodes(css =<span class="string">&#x27;div.shopmenu-list.clearfix.ng-scope&#x27;</span>) </span><br><span class="line">  danpin1 &lt;- do.call(rbind,lapply(goods,danpin_info))</span><br></pre></td></tr></table></figure>
+<h5 id="3-2-2-Sample-2"><a href="#3-2-2-Sample-2" class="headerlink" title="3.2.2 Sample 2"></a>3.2.2 Sample 2</h5><p><a target="_blank" rel="noopener" href="http://www.jianshu.com/p/543ce849eef6">rvest包抓取招聘信息实例</a></p>
+<h2 id="B-Rselenium"><a href="#B-Rselenium" class="headerlink" title="B. Rselenium"></a>B. Rselenium</h2><p>Rselenium较rvest复杂,涉及rvest暂无法实现的动态抓取时可以配合rvest使用  </p>
+<p><a target="_blank" rel="noopener" href="http://rpubs.com/johndharrison/RSelenium-Basics">Rselenium manuals</a>  </p>
+<h3 id="1-Install-1"><a href="#1-Install-1" class="headerlink" title="1. Install"></a>1. Install</h3><h4 id="1-1-JDK-install"><a href="#1-1-JDK-install" class="headerlink" title="1.1 JDK install"></a>1.1 JDK install</h4><p><a target="_blank" rel="noopener" href="http://www.win10ghost.com/10741.html">jdk download page</a>   </p>
+<h4 id="1-2-Selenium-windows-os"><a href="#1-2-Selenium-windows-os" class="headerlink" title="1.2 Selenium (windows os)"></a>1.2 Selenium (windows os)</h4><p><a target="_blank" rel="noopener" href="http://selenium-release.storage.googleapis.com/index.html">selenium download page</a><br>linux or mac os, be free to find solution by internet  </p>
+<h4 id="1-3-Browser-support"><a href="#1-3-Browser-support" class="headerlink" title="1.3 Browser support"></a>1.3 Browser support</h4><p><a target="_blank" rel="noopener" href="https://github.com/mozilla/geckodriver/releases">firefox + geckoDriver</a><br><a target="_blank" rel="noopener" href="https://chromedriver.storage.googleapis.com/index.html?path=2.29/">chrome + chromeDriver</a></p>
+<p>Unzipped Driver should be loc in firefox_installed filepath (same path as firefox.exe) </p>
+<p>better to set firefox installed path into path(envirenment variable)</p>
+<h3 id="2-Frame-and-Params-1"><a href="#2-Frame-and-Params-1" class="headerlink" title="2. Frame and Params"></a>2. Frame and Params</h3><h4 id="2-1-Start-selenium-server"><a href="#2-1-Start-selenium-server" class="headerlink" title="2.1 Start selenium server"></a>2.1 Start selenium server</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">win + x -- powershell(admin)</span><br><span class="line">java -jar xxx/selenium-server-standalone-xxx.jar</span><br></pre></td></tr></table></figure>
+<h4 id="2-2-Start-internet"><a href="#2-2-Start-internet" class="headerlink" title="2.2 Start internet"></a>2.2 Start internet</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(RSelenium)</span><br><span class="line">remDr &lt;- remoteDriver(remoteServerAddr=<span class="string">&#x27;localhost&#x27;</span>,port=<span class="number">4444L</span>,</span><br><span class="line">                      browserName=<span class="string">&#x27;chrome&#x27;</span>)</span><br><span class="line">remDr$open(silent = <span class="literal">TRUE</span>)</span><br><span class="line">Url=<span class="string">&#x27;https://movie.douban.com/tag/#/&#x27;</span></span><br><span class="line">remDr$navigate(url)</span><br><span class="line"><span class="comment"># remDr$refresh() # refresh page</span></span><br><span class="line"><span class="comment"># remDr$goBack()</span></span><br><span class="line"><span class="comment"># remDr$getCurrentUrl()</span></span><br><span class="line"><span class="comment"># remDr$goForward()</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-3-Crawl"><a href="#2-3-Crawl" class="headerlink" title="2.3 Crawl"></a>2.3 Crawl</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">element1 &lt;- remDr$findElements(using = <span class="string">&#x27;css&#x27;</span>,<span class="string">&#x27;&#x27;</span>） <span class="comment"># html_node(css=&#x27;&#x27;)</span></span><br><span class="line">element1 &lt;- remDr$findElements(using = <span class="string">&#x27;xpath&#x27;</span>,<span class="string">&#x27;&#x27;</span>） <span class="comment"># html_node(xpath=&#x27;&#x27;)</span></span><br><span class="line">element1$getElementText() <span class="comment"># html_text()</span></span><br><span class="line">element1$getElementAttribute(<span class="string">&#x27;href&#x27;</span>) <span class="comment"># html_text()</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="2-4-Events"><a href="#2-4-Events" class="headerlink" title="2.4 Events"></a>2.4 Events</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">element1 &lt;- remDr$findElement(using = <span class="string">&quot;xpath&quot;</span>, <span class="string">&quot;/html/body/div[3]/div[2]/div[2]&quot;</span>）</span><br><span class="line">remDr$click(<span class="number">2</span>) <span class="comment"># 2 indicates click the right mouse button</span></span><br><span class="line">element1$clickElement() <span class="comment"># just click</span></span><br><span class="line">element1$clearElement() <span class="comment"># clear input-box before input</span></span><br><span class="line">element1$sendKeysToElement(list(<span class="string">&#x27;R cran&#x27;</span>)) <span class="comment"># just input</span></span><br><span class="line">element1$sendKeysToElement(list(<span class="string">&#x27;R cran&#x27;</span>,key =<span class="string">&#x27;enter&#x27;</span>)) <span class="comment"># input and click</span></span><br><span class="line">element1$setElementAttribute(<span class="string">&quot;class&quot;</span>,<span class="string">&#x27;checked&#x27;</span>) <span class="comment"># select checkbox1</span></span><br><span class="line">element1$sendKeysToElement(list(key =<span class="string">&#x27;space&#x27;</span>)) <span class="comment"># select checkbox2</span></span><br><span class="line"><span class="comment"># --- zhankai/shouqi per store</span></span><br><span class="line">zhankai1 &lt;- remDr$findElements(using = <span class="string">&#x27;css&#x27;</span>,</span><br><span class="line">                   <span class="string">&#x27;ul &gt; li &gt; div.info &gt; div &gt; div.more&#x27;</span>)</span><br><span class="line">lapply(zhankai1,<span class="keyword">function</span>(x) x$clickElement())</span><br><span class="line"><span class="comment"># --- windows switch</span></span><br><span class="line">currWin &lt;- remDr$getCurrentWindowHandle()</span><br><span class="line">allWins &lt;- unlist(remDr$getWindowHandles())</span><br><span class="line">otherWindow &lt;- allWins[!allWins %<span class="keyword">in</span>% currWin[[<span class="number">1</span>]]]</span><br><span class="line">remDr$switchToWindow(otherWindow)</span><br></pre></td></tr></table></figure>
+<h4 id="2-5-window-switch"><a href="#2-5-window-switch" class="headerlink" title="2.5 window switch"></a>2.5 window switch</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">currWin &lt;- remDr$getCurrentWindowHandle()</span><br><span class="line">allWins &lt;- unlist(remDr$getWindowHandles())</span><br><span class="line">otherWindow &lt;- allWins[!allWins %<span class="keyword">in</span>% currWin[[<span class="number">1</span>]]]</span><br><span class="line">remDr$switchToWindow(otherWindow)</span><br></pre></td></tr></table></figure>
+<h4 id="2-6-frame"><a href="#2-6-frame" class="headerlink" title="2.6 frame"></a>2.6 frame</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## Switch to left frame</span></span><br><span class="line">frameElems &lt;- remDr$findElements(using = <span class="string">&quot;tag name&quot;</span>, <span class="string">&quot;iframe&quot;</span>)</span><br><span class="line">sapply(frameElems, <span class="keyword">function</span>(x)&#123;x$getElementAttribute(<span class="string">&quot;src&quot;</span>)&#125;)</span><br><span class="line">remDr$switchToFrame(frameElems[[<span class="number">1</span>]])</span><br><span class="line"></span><br><span class="line">page1 &lt;- remDr$getPageSource()[[<span class="number">1</span>]]</span><br><span class="line">name1 &lt;- read_html(page1) %&gt;% </span><br><span class="line">  html_nodes(xpath = <span class="string">&#x27;//select[@name=&quot;fundcode&quot;]/option&#x27;</span>) %&gt;% </span><br><span class="line">  html_text()</span><br></pre></td></tr></table></figure>
+<h4 id="2-7-Shutdown-internet"><a href="#2-7-Shutdown-internet" class="headerlink" title="2.7 Shutdown internet"></a>2.7 Shutdown internet</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">remDr$close() <span class="comment"># shutdown internet</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Some-Solution-in-Use"><a href="#3-Some-Solution-in-Use" class="headerlink" title="3. Some Solution in Use"></a>3. Some Solution in Use</h3><h4 id="3-1-Page-up-and-down"><a href="#3-1-Page-up-and-down" class="headerlink" title="3.1 Page up and down"></a>3.1 Page up and down</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">user0 &lt;- c()</span><br><span class="line">rev0 &lt;- c()</span><br><span class="line">html0 &lt;- c()</span><br><span class="line"><span class="keyword">while</span> (page.previous != page.current) &#123;</span><br><span class="line">  <span class="keyword">...</span> <span class="keyword">...</span></span><br><span class="line">  page.previous &lt;- remDr$findElement(<span class="string">&#x27;css&#x27;</span>,<span class="string">&#x27;em.current&#x27;</span>)$getElementText()[[<span class="number">1</span>]] %&gt;% as.numeric()</span><br><span class="line">  next1 &lt;- remDr$findElement(<span class="string">&#x27;css&#x27;</span>,<span class="string">&#x27;a.next_page&#x27;</span>)</span><br><span class="line">  next1$clickElement()</span><br><span class="line">  Sys.sleep(<span class="number">3</span>)</span><br><span class="line">  page.current &lt;- remDr$findElement(<span class="string">&#x27;css&#x27;</span>,<span class="string">&#x27;em.current&#x27;</span>)$getElementText()[[<span class="number">1</span>]] %&gt;% as.numeric()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">## ------- or find next</span></span><br><span class="line">next1 &lt;- remDr$findElement(using = <span class="string">&#x27;css&#x27;</span>,<span class="string">&#x27;ul.pagination.clear li:last-child&#x27;</span>) </span><br><span class="line">  next1$clickElement()</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-Find-the-end-and-up-arrow-down-arrow"><a href="#3-2-Find-the-end-and-up-arrow-down-arrow" class="headerlink" title="3.2 Find the end and up_arrow/down_arrow"></a>3.2 Find the end and up_arrow/down_arrow</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(RSelenium)</span><br><span class="line"><span class="keyword">library</span>(rvest)</span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">5</span>) &#123;</span><br><span class="line">  pagedown &lt;- remDr$findElement(<span class="string">&#x27;css&#x27;</span>,<span class="string">&#x27;body&#x27;</span>)</span><br><span class="line">  pagedown$sendKeysToElement(list(key=<span class="string">&#x27;end&#x27;</span>))</span><br><span class="line">  Sys.sleep(<span class="number">3</span>)</span><br><span class="line">  <span class="keyword">...</span> <span class="keyword">...</span></span><br><span class="line">  next1 &lt;- remDr$findElement(<span class="string">&#x27;css&#x27;</span>,<span class="string">&#x27;a.fui-next&#x27;</span>)</span><br><span class="line">  next1$clickElement()</span><br><span class="line">  Sys.sleep(<span class="number">3</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">remDr$sendKeysToActiveElement(list(key = <span class="string">&#x27;down_arrow&#x27;</span>, key = <span class="string">&#x27;down_arrow&#x27;</span>, key = <span class="string">&#x27;enter&#x27;</span>))</span><br><span class="line">remDr$sendKeysToActiveElement(list(key = <span class="string">&#x27;up_arrow&#x27;</span>, key = <span class="string">&#x27;up_arrow&#x27;</span>, key = <span class="string">&#x27;enter&#x27;</span>))</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-Find-more"><a href="#3-3-Find-more" class="headerlink" title="3.3 Find more"></a>3.3 Find more</h4><p><img src="https://i.loli.net/2017/08/25/59a005a42e6ad.png" alt="more1"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">i=<span class="number">0</span></span><br><span class="line"><span class="keyword">while</span> (i &lt;= <span class="number">10000</span>) &#123;</span><br><span class="line">  <span class="keyword">tryCatch</span>(remDr$findElement(<span class="string">&#x27;css&#x27;</span>,<span class="string">&#x27;div.article a.more&#x27;</span>)$clickElement(),</span><br><span class="line">           error=<span class="keyword">stop</span>(simpleError(<span class="string">&quot;All.Pages.Shown&quot;</span>)))</span><br><span class="line">  Sys.sleep(<span class="number">2</span>)</span><br><span class="line">  i = i+<span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-title-1-vs-info-n"><a href="#3-4-title-1-vs-info-n" class="headerlink" title="3.4 title-1 vs info-n"></a>3.4 title-1 vs info-n</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## ------ store info function (title-1)</span></span><br><span class="line">store_info &lt;- <span class="keyword">function</span>(x) &#123;</span><br><span class="line">  store_url &lt;- x %&gt;% html_node(<span class="string">&#x27;div.info a&#x27;</span>) %&gt;%</span><br><span class="line">    html_attr(<span class="string">&#x27;href&#x27;</span>) %&gt;% as.character() %&gt;%</span><br><span class="line">    &#123;<span class="keyword">if</span>(substr(.,<span class="number">1</span>,<span class="number">2</span>)==<span class="string">&#x27;//&#x27;</span>) paste(<span class="string">&#x27;https:&#x27;</span>,.,sep=<span class="string">&#x27;&#x27;</span>) <span class="keyword">else</span> .&#125;</span><br><span class="line"><span class="keyword">...</span> <span class="keyword">...</span></span><br><span class="line">  danpins &lt;- x %&gt;% html_nodes(<span class="string">&#x27;div.info div.other a&#x27;</span>)</span><br><span class="line">  danpin &lt;- do.call(rbind,(lapply(danpins,danp_detail)))</span><br><span class="line">  </span><br><span class="line">  data.frame(cbind(store_urldanpin))</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">## ------ danpin details function (info-n)</span></span><br><span class="line">danp_detail &lt;- <span class="keyword">function</span>(x) &#123;</span><br><span class="line">  danp_name &lt;- x %&gt;% html_nodes(<span class="string">&#x27;div h4&#x27;</span>) %&gt;% </span><br><span class="line">    html_text() %&gt;% as.character() %&gt;% &#123;<span class="keyword">if</span>(length(.)==<span class="number">0</span>) <span class="string">&#x27;wu&#x27;</span> <span class="keyword">else</span> .&#125;</span><br><span class="line"><span class="keyword">...</span> <span class="keyword">...</span></span><br><span class="line">  data.frame(cbind(danp_name...))</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">## ------ crawl and merge</span></span><br><span class="line">res0 &lt;- data.frame()</span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:pages1) &#123;</span><br><span class="line">  <span class="comment"># show all info</span></span><br><span class="line">  zhan1 &lt;- remDr$findElements(using = <span class="string">&#x27;css&#x27;</span>,</span><br><span class="line">                           <span class="string">&#x27;ul &gt; li &gt; div.info &gt; div &gt; div.more&#x27;</span>)</span><br><span class="line">  lapply(zhan1,<span class="keyword">function</span>(x) x$clickElement())</span><br><span class="line"></span><br><span class="line">  page1 &lt;- remDr$getPageSource()[[<span class="number">1</span>]]</span><br><span class="line">  dian1 &lt;- read_html(page1) %&gt;% </span><br><span class="line">    html_nodes(css=<span class="string">&#x27;ul.list-ul &gt; li&#x27;</span>)</span><br><span class="line">  res1 &lt;- data.frame(do.call(rbind,lapply(dian1,store_info)))</span><br><span class="line">  </span><br><span class="line">  res0 &lt;- rbind(res0,res1)</span><br><span class="line">  print(paste(<span class="string">&#x27;Page &#x27;</span>,i,<span class="string">&#x27; is over&#x27;</span>,sep=<span class="string">&#x27;&#x27;</span>))</span><br><span class="line">  Sys.sleep(<span class="number">5</span>)</span><br><span class="line">&#125;</span><br><span class="line">dim(res0)</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-5-trycatch"><a href="#3-5-trycatch" class="headerlink" title="3.5 trycatch"></a>3.5 trycatch</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">skip_to_next &lt;- <span class="literal">FALSE</span></span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">10</span>) &#123;</span><br><span class="line">  <span class="keyword">tryCatch</span>(print(b), <span class="comment"># &#123;functions in trycatch&#125; </span></span><br><span class="line">           <span class="comment"># catch error</span></span><br><span class="line">           error = <span class="keyword">function</span>(e) &#123; print(<span class="string">&quot;hi&quot;</span>); </span><br><span class="line">             skip_to_next &lt;&lt;- <span class="literal">TRUE</span>&#125;)</span><br><span class="line">  <span class="comment"># if error then next</span></span><br><span class="line">  <span class="keyword">if</span>(skip_to_next) &#123; skip_to_next &lt;- <span class="literal">FALSE</span>;<span class="keyword">next</span> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-6-download-pics"><a href="#3-6-download-pics" class="headerlink" title="3.6 download pics"></a>3.6 download pics</h4><p>way1 : </p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">dir.create(<span class="string">&#x27;./imgs&#x27;</span>)</span><br><span class="line">imgs1 &lt;- unique(res0$img1)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:length(imgs1)) &#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">tryCatch</span>(&#123;</span><br><span class="line">    download.file(as.character(imgs1)[i],</span><br><span class="line">                  paste0(<span class="string">&#x27;./imgs/&#x27;</span>,</span><br><span class="line">                         tail(unlist(strsplit(as.character(imgs1)[i],<span class="string">&#x27;/&#x27;</span>)),<span class="number">1</span>)),</span><br><span class="line">                  mode = <span class="string">&#x27;wb&#x27;</span>)</span><br><span class="line">    print(paste(<span class="string">&#x27;Page&#x27;</span>,i,<span class="string">&#x27;of&#x27;</span>,length(imgs1),<span class="string">&#x27;done !!&#x27;</span>))</span><br><span class="line">    <span class="comment">#Sys.sleep(5)</span></span><br><span class="line">  &#125;,</span><br><span class="line">           error = <span class="keyword">function</span>(e) &#123; print(<span class="string">&quot;hi&quot;</span>); skip_to_next &lt;&lt;- <span class="literal">TRUE</span>&#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(skip_to_next) &#123; <span class="keyword">next</span> &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>way2 :</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(rvest)</span><br><span class="line"><span class="keyword">library</span>(httr)</span><br><span class="line"><span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:nrow(df0)) &#123;</span><br><span class="line">  sess &lt;- html_session(df0$url2[i])</span><br><span class="line">  imgsrc &lt;- sess %&gt;%</span><br><span class="line">    read_html() %&gt;%</span><br><span class="line">    html_node(xpath = <span class="string">&#x27;//*[@id=&quot;pageBody&quot;]/div/a/img&#x27;</span>) %&gt;%</span><br><span class="line">    html_attr(<span class="string">&#x27;src&#x27;</span>)</span><br><span class="line">  <span class="keyword">if</span> (is.na(imgsrc)) &#123;</span><br><span class="line">    print(<span class="string">&#x27;hi&#x27;</span>);<span class="keyword">next</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      img &lt;- jump_to(sess, paste0(<span class="string">&#x27;https://content.sciendo.com&#x27;</span>, imgsrc))</span><br><span class="line">      <span class="comment"># side-effect!</span></span><br><span class="line">      writeBin(img$response$content, </span><br><span class="line">               paste0(tail(unlist(strsplit(df0$url2[i],<span class="string">&#x27;/&#x27;</span>)),<span class="number">1</span>),<span class="string">&#x27;.jpg&#x27;</span>))</span><br><span class="line">      print(paste(i,<span class="string">&#x27;of&#x27;</span>,nrow(df0),<span class="string">&#x27;done !!&#x27;</span>))</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-7-how-to-save-time-from-page-loading"><a href="#3-7-how-to-save-time-from-page-loading" class="headerlink" title="3.7 how to save time from page loading"></a>3.7 how to save time from page loading</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">remDr$open()</span><br><span class="line">remDr$setTimeout(type = <span class="string">&quot;implicit&quot;</span>, milliseconds = <span class="number">3000</span>) </span><br></pre></td></tr></table></figure>
+<p>and f12 – network – find the most time wasting url – right-click – block request url/block request domain</p>
+<h2 id="C-Mixture-of-Rselenium-rvest"><a href="#C-Mixture-of-Rselenium-rvest" class="headerlink" title="C. Mixture of Rselenium/rvest"></a>C. Mixture of Rselenium/rvest</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(RSelenium)</span><br><span class="line"><span class="keyword">library</span>(rvest)</span><br><span class="line">remDr &lt;- remoteDriver(remoteServerAddr=<span class="string">&#x27;localhost&#x27;</span>,port=<span class="number">4444L</span>,</span><br><span class="line">                      browserName=<span class="string">&#x27;chrome&#x27;</span>)</span><br><span class="line">remDr$open(silent = <span class="literal">TRUE</span>)</span><br><span class="line">Url=<span class="string">&#x27;https://movie.douban.com/tag/#/&#x27;</span></span><br><span class="line">remDr$navigate(url)</span><br></pre></td></tr></table></figure>
+<h3 id="1-by-rselenium"><a href="#1-by-rselenium" class="headerlink" title="1.  by rselenium"></a>1.  by rselenium</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">remDr$findElement(<span class="string">&#x27;css&#x27;</span>,<span class="string">&#x27;xxxx&#x27;</span>)[[<span class="number">1</span>]]$getElementText()[[<span class="number">1</span>]]</span><br></pre></td></tr></table></figure>
+<h3 id="2-by-rvest"><a href="#2-by-rvest" class="headerlink" title="2. by rvest"></a>2. by rvest</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">websrc &lt;- remDr$getPageSource()[[<span class="number">1</span>]]</span><br><span class="line">read_html(websrc) %&gt;% html_nodes(css=<span class="string">&#x27;xxx&#x27;</span>) %&gt;% html_text()</span><br></pre></td></tr></table></figure>
+<p>rvest is more simple and flexible than rselenium，so most of time we choose rvest solution</p>
+<h2 id="D-Info-cleanning-after-crawl-with-stringr"><a href="#D-Info-cleanning-after-crawl-with-stringr" class="headerlink" title="D. Info cleanning after crawl with stringr"></a>D. Info cleanning after crawl with stringr</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(stringr)</span><br><span class="line">lapply(bas_info1[,<span class="number">3</span>],</span><br><span class="line">        <span class="keyword">function</span>(x)&#123;Sys.sleep(<span class="number">2</span>);</span><br><span class="line">          <span class="keyword">tryCatch</span>(read_html(x)%&gt;%html_nodes(css=<span class="string">&quot;div.rating_self.clearfix&quot;</span>)%&gt;%</span><br><span class="line">                     html_text() %&gt;% str_trim() %&gt;% <span class="comment"># trim掉前后空格</span></span><br><span class="line">                     str_replace_all(<span class="string">&#x27;    &#x27;</span>,<span class="string">&#x27;&#x27;</span>)%&gt;% <span class="comment"># 替换夹杂在文本中的空格</span></span><br><span class="line">                     str_split(<span class="string">&quot;\n&quot;</span>)%&gt;% <span class="comment"># 按照&#x27;\n&#x27;拆分文本</span></span><br><span class="line">                     unlist()%&gt;%.[c(<span class="number">2</span>,<span class="number">7</span>)]%&gt;% </span><br><span class="line">                     str_extract(<span class="string">&#x27;[0-9.]+&#x27;</span>), <span class="comment"># 提取文本中的数字和&#x27;.&#x27;</span></span><br><span class="line">                   error=<span class="keyword">function</span>(e)e)&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="E-Processing-Bar"><a href="#E-Processing-Bar" class="headerlink" title="E. Processing Bar"></a>E. Processing Bar</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">n &lt;- length(target)</span><br><span class="line">pb &lt;- winProgressBar(title = <span class="string">&quot;Progress Bar&quot;</span>, min = <span class="number">0</span>,</span><br><span class="line">                     max = n, width = <span class="number">300</span>)</span><br><span class="line"><span class="keyword">for</span> (j <span class="keyword">in</span> <span class="number">1</span>:n)&#123;</span><br><span class="line">  info1 &lt;- read_html(prov_url1[j]) %&gt;% </span><br><span class="line">    html_table(header = <span class="number">1</span>) %&gt;% do.call(rbind,.)</span><br><span class="line">  info0 &lt;- rbind(info0,info1)</span><br><span class="line">  setWinProgressBar(pb, j, title=<span class="string">&#x27;Crawl Process Bar&#x27;</span>,label=paste( round(j/n*<span class="number">100</span>, <span class="number">0</span>),</span><br><span class="line">                                        <span class="string">&quot;% done&quot;</span>))</span><br><span class="line">&#125;</span><br><span class="line">close(pb)</span><br></pre></td></tr></table></figure>
+
+<h2 id="oversea"><a href="#oversea" class="headerlink" title="oversea"></a>oversea</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://s.xmcp.ml/gofw/">境外网站提速神器</a></li>
+<li><a target="_blank" rel="noopener" href="https://chrome.google.com/webstore/detail/%E8%80%81%E5%8F%B8%E6%9C%BA%E5%8A%A0%E9%80%9F%E5%99%A8/mlpdeaphbiejinbfejaodhophgimdnfj?hl=zh-CN">老司机加速器</a></li>
+</ul>
+<p>mostly, crx are stored in c:/user/xxx/appdata/google/</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/24772389">火车嘟嘟嘟zhua数</a></li>
+<li><a target="_blank" rel="noopener" href="http://zhcn.109876543210.com/">usful_img2wd-OCR</a></li>
+<li><a target="_blank" rel="noopener" href="https://cran.r-project.org/web/packages/stringr/stringr.pdf">stringr 传送门</a></li>
+<li><a target="_blank" rel="noopener" href="https://cran.r-project.org/web/packages/RSelenium/vignettes/RSelenium-headless.html">RSelenium : Headless browsing</a></li>
+<li><a target="_blank" rel="noopener" href="https://cosx.org/2017/08/web-scrap-tools/">数据通灵术之爬虫技巧</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.xicidaili.com/">西刺免费代理</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.mayidaili.com/free">蚂蚁代理</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.revotu.com/use-authenticated-proxy-in-selenium-chromedriver.html">arg1</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.csdn.net/c406495762/article/details/60137956">使用User Agent和代理IP隐藏身份</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.r-bloggers.com/r-monitoring-the-function-progress-with-a-progress-bar/">Monitoring the function progress with a progress bar</a></li>
+<li><a target="_blank" rel="noopener" href="https://ropensci.org/tutorials/rselenium_tutorial/">rselenium_tutorial</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/%E7%88%AC%E8%99%AB/" rel="tag"># 爬虫</a>
+              <a href="/tags/crawl/" rel="tag"># crawl</a>
+              <a href="/tags/rvest/" rel="tag"># rvest</a>
+              <a href="/tags/rselenium/" rel="tag"># rselenium</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/08/18/pca1/" rel="prev" title="PCA(主成分分析)的SVD诠释">
+      <i class="fa fa-chevron-left"></i> PCA(主成分分析)的SVD诠释
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/08/26/dplyr1/" rel="next" title="流式处理 dplyr 在R中的使用">
+      流式处理 dplyr 在R中的使用 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#A-Rvest"><span class="nav-number">1.</span> <span class="nav-text">A. Rvest</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Install"><span class="nav-number">1.1.</span> <span class="nav-text">1. Install</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Frame-and-Params"><span class="nav-number">1.2.</span> <span class="nav-text">2. Frame and Params</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-Read-info-from-website"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 Read info from website</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-Node-resolutions"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 Node resolutions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-CSS-VS-Xpath"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 CSS VS Xpath</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-3-1-CSS"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">2.3.1 CSS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-3-2-Xpath"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">2.3.2 Xpath</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-Info-wget"><span class="nav-number">1.2.4.</span> <span class="nav-text">2.4 Info wget</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-4-1-html-text"><span class="nav-number">1.2.4.1.</span> <span class="nav-text">2.4.1 html_text()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-4-2-html-attr"><span class="nav-number">1.2.4.2.</span> <span class="nav-text">2.4.2 html_attr()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Crawl-cases"><span class="nav-number">1.3.</span> <span class="nav-text">3. Crawl cases</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-Functions"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 Functions</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-1-1-html-nodes"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">3.1.1 html_nodes</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-1-2-html-attr"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">3.1.2 html_attr</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-1-3-html-table"><span class="nav-number">1.3.1.3.</span> <span class="nav-text">3.1.3 html_table</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-Samples"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 Samples</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-1-Sample-1"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">3.2.1 Sample 1</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-2-Sample-2"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">3.2.2 Sample 2</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-Rselenium"><span class="nav-number">2.</span> <span class="nav-text">B. Rselenium</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Install-1"><span class="nav-number">2.1.</span> <span class="nav-text">1. Install</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-JDK-install"><span class="nav-number">2.1.1.</span> <span class="nav-text">1.1 JDK install</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-Selenium-windows-os"><span class="nav-number">2.1.2.</span> <span class="nav-text">1.2 Selenium (windows os)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-Browser-support"><span class="nav-number">2.1.3.</span> <span class="nav-text">1.3 Browser support</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Frame-and-Params-1"><span class="nav-number">2.2.</span> <span class="nav-text">2. Frame and Params</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-Start-selenium-server"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.1 Start selenium server</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-Start-internet"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2 Start internet</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-Crawl"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.3 Crawl</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-Events"><span class="nav-number">2.2.4.</span> <span class="nav-text">2.4 Events</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-window-switch"><span class="nav-number">2.2.5.</span> <span class="nav-text">2.5 window switch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-6-frame"><span class="nav-number">2.2.6.</span> <span class="nav-text">2.6 frame</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-7-Shutdown-internet"><span class="nav-number">2.2.7.</span> <span class="nav-text">2.7 Shutdown internet</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Some-Solution-in-Use"><span class="nav-number">2.3.</span> <span class="nav-text">3. Some Solution in Use</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-Page-up-and-down"><span class="nav-number">2.3.1.</span> <span class="nav-text">3.1 Page up and down</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-Find-the-end-and-up-arrow-down-arrow"><span class="nav-number">2.3.2.</span> <span class="nav-text">3.2 Find the end and up_arrow&#x2F;down_arrow</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-Find-more"><span class="nav-number">2.3.3.</span> <span class="nav-text">3.3 Find more</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-title-1-vs-info-n"><span class="nav-number">2.3.4.</span> <span class="nav-text">3.4 title-1 vs info-n</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-trycatch"><span class="nav-number">2.3.5.</span> <span class="nav-text">3.5 trycatch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-6-download-pics"><span class="nav-number">2.3.6.</span> <span class="nav-text">3.6 download pics</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-7-how-to-save-time-from-page-loading"><span class="nav-number">2.3.7.</span> <span class="nav-text">3.7 how to save time from page loading</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-Mixture-of-Rselenium-rvest"><span class="nav-number">3.</span> <span class="nav-text">C. Mixture of Rselenium&#x2F;rvest</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-by-rselenium"><span class="nav-number">3.1.</span> <span class="nav-text">1.  by rselenium</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-by-rvest"><span class="nav-number">3.2.</span> <span class="nav-text">2. by rvest</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#D-Info-cleanning-after-crawl-with-stringr"><span class="nav-number">4.</span> <span class="nav-text">D. Info cleanning after crawl with stringr</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#E-Processing-Bar"><span class="nav-number">5.</span> <span class="nav-text">E. Processing Bar</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#oversea"><span class="nav-number">6.</span> <span class="nav-text">oversea</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">7.</span> <span class="nav-text">References:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

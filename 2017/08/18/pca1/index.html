@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快 概念主成分分析（principal component analysis,PCA）是一种降维技术，他可以把多个原始变量化为少数几个新生主成分来反映原始变量大部分信息奇异值分解(Singular Value Decomposition,PCA)是线性代">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PCA(主成分分析)的SVD诠释">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2017/08/18/pca1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快 概念主成分分析（principal component analysis,PCA）是一种降维技术，他可以把多个原始变量化为少数几个新生主成分来反映原始变量大部分信息奇异值分解(Singular Value Decomposition,PCA)是线性代">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2017/08/18/5996b2bb6ce26.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/18/5996b2bb9528b.png">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/08/18/5996b2bb6c6a4.png">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/08/19/5997eed4d1092.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/18/5996b2bb94cd2.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/25/599f8ce410f7e.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/25/599f8d602e1c4.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/18/5996b2bb94e34.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/18/5996b3ce7e99b.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/18/5996b2bb808b8.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/18/5996b2bb80bb1.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/18/5996b2bb81243.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/18/5996b2bb94cd2.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/18/5996b2bb7f44d.png">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/08/19/5997eed4d1092.png">
+<meta property="article:published_time" content="2017-08-18T13:19:26.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:34.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="SVD">
+<meta property="article:tag" content="pca">
+<meta property="article:tag" content="eigen">
+<meta property="article:tag" content="影响力">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2017/08/18/5996b2bb6ce26.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2017/08/18/pca1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>PCA(主成分分析)的SVD诠释 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/08/18/pca1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PCA(主成分分析)的SVD诠释
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-18 21:19:26" itemprop="dateCreated datePublished" datetime="2017-08-18T21:19:26+08:00">2017-08-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:34" itemprop="dateModified" datetime="2020-08-23T21:16:34+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Prediction/" itemprop="url" rel="index"><span itemprop="name">Prediction</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿服务，请出门左转 <a href="izuoye.taobao.com">Convenient Entrance</a>, 合作愉快</p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>主成分分析（principal component analysis,PCA）是一种降维技术，他可以把多个原始变量化为少数几个新生主成分来反映原始变量大部分信息<br>奇异值分解(Singular Value Decomposition,PCA)是线性代数中一种重要的矩阵(可以泛化到任意形式的矩阵)分解,在信号处理、统计学等领域有重要应用.它将任意形式的矩阵 M 分解成以下3 者的乘积：<br>$$M = U \times d \times V^\mathrm{T}$$<br>$U$ 为 $M^\mathrm{T} \times M$的特征向量<br>$d$ 为 $M^\mathrm{T} \times M$ 和 $M \times M^\mathrm{T}$的特征值的非负平方根<br>$V^\mathrm{T}$ 为 $M \times M^\mathrm{T}$的特征向量</p>
+<p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习</p>
+<h2 id="pca的R实现"><a href="#pca的R实现" class="headerlink" title="pca的R实现"></a>pca的R实现</h2><h3 id="1-数据生成"><a href="#1-数据生成" class="headerlink" title="1. 数据生成"></a>1. 数据生成</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">d &lt;- matrix(c(<span class="number">148</span>,<span class="number">41</span>,<span class="number">72</span>,<span class="number">78</span>,<span class="number">139</span>,<span class="number">34</span>,<span class="number">71</span>,<span class="number">76</span>,<span class="number">160</span>,<span class="number">49</span>,<span class="number">77</span>,<span class="number">86</span>,<span class="number">149</span>,<span class="number">36</span>,<span class="number">67</span>,<span class="number">79</span>,</span><br><span class="line">              <span class="number">159</span>,<span class="number">45</span>,<span class="number">80</span>,<span class="number">86</span>,<span class="number">142</span>,<span class="number">31</span>,<span class="number">66</span>,<span class="number">76</span>,<span class="number">153</span>,<span class="number">43</span>,<span class="number">76</span>,<span class="number">83</span>,<span class="number">150</span>,<span class="number">43</span>,<span class="number">77</span>,<span class="number">79</span>,</span><br><span class="line">              <span class="number">151</span>,<span class="number">42</span>,<span class="number">77</span>,<span class="number">80</span>,<span class="number">139</span>,<span class="number">31</span>,<span class="number">68</span>,<span class="number">74</span>,<span class="number">140</span>,<span class="number">29</span>,<span class="number">64</span>,<span class="number">74</span>,<span class="number">161</span>,<span class="number">47</span>,<span class="number">78</span>,<span class="number">84</span>,</span><br><span class="line">              <span class="number">158</span>,<span class="number">49</span>,<span class="number">78</span>,<span class="number">83</span>,<span class="number">140</span>,<span class="number">33</span>,<span class="number">67</span>,<span class="number">77</span>,<span class="number">137</span>,<span class="number">31</span>,<span class="number">66</span>,<span class="number">73</span>,<span class="number">152</span>,<span class="number">35</span>,<span class="number">73</span>,<span class="number">79</span>,</span><br><span class="line">              <span class="number">149</span>,<span class="number">47</span>,<span class="number">82</span>,<span class="number">79</span>,<span class="number">145</span>,<span class="number">35</span>,<span class="number">70</span>,<span class="number">77</span>,<span class="number">160</span>,<span class="number">47</span>,<span class="number">74</span>,<span class="number">87</span>,<span class="number">156</span>,<span class="number">44</span>,<span class="number">78</span>,<span class="number">85</span>,</span><br><span class="line">              <span class="number">151</span>,<span class="number">42</span>,<span class="number">73</span>,<span class="number">82</span>,<span class="number">147</span>,<span class="number">38</span>,<span class="number">73</span>,<span class="number">78</span>,<span class="number">157</span>,<span class="number">39</span>,<span class="number">68</span>,<span class="number">80</span>,<span class="number">147</span>,<span class="number">30</span>,<span class="number">65</span>,<span class="number">75</span>,</span><br><span class="line">              <span class="number">157</span>,<span class="number">48</span>,<span class="number">80</span>,<span class="number">88</span>,<span class="number">151</span>,<span class="number">36</span>,<span class="number">74</span>,<span class="number">80</span>,<span class="number">144</span>,<span class="number">36</span>,<span class="number">68</span>,<span class="number">76</span>,<span class="number">141</span>,<span class="number">30</span>,<span class="number">67</span>,<span class="number">76</span>,</span><br><span class="line">              <span class="number">139</span>,<span class="number">32</span>,<span class="number">68</span>,<span class="number">73</span>,<span class="number">148</span>,<span class="number">38</span>,<span class="number">70</span>,<span class="number">78</span>),ncol=<span class="number">4</span>,byrow=<span class="literal">TRUE</span>)</span><br><span class="line">colnames(d) &lt;- c(<span class="string">&#x27;x1身高&#x27;</span>,<span class="string">&#x27;x2体重&#x27;</span>,<span class="string">&#x27;x3胸围&#x27;</span>,<span class="string">&#x27;x4坐高&#x27;</span>)</span><br><span class="line">head(d)</span><br><span class="line">sd1 &lt;- scale(d)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/08/18/5996b2bb6ce26.png" alt="mx1"></p>
+<h3 id="2-确定关键主成分数量"><a href="#2-确定关键主成分数量" class="headerlink" title="2. 确定关键主成分数量"></a>2. 确定关键主成分数量</h3><h4 id="a-画碎石土"><a href="#a-画碎石土" class="headerlink" title="a. 画碎石土"></a>a. 画碎石土</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pca1 &lt;- princomp(sd1,cor=<span class="literal">TRUE</span>)</span><br><span class="line">screeplot(pca1,type=<span class="string">&#x27;line&#x27;</span>,main=<span class="string">&#x27;ScreePlot&#x27;</span>,lwd=<span class="number">2</span>)</span><br><span class="line">abline(h=<span class="number">1</span>,lty=<span class="number">2</span>,col=<span class="string">&#x27;orange&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p><img src="https://i.loli.net/2017/08/18/5996b2bb9528b.png" alt="scree1"></p>
+<h4 id="b-计算各主成分的累计贡献率"><a href="#b-计算各主成分的累计贡献率" class="headerlink" title="b.计算各主成分的累计贡献率"></a>b.计算各主成分的累计贡献率</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">e1 &lt;- eigen(cor(d))</span><br><span class="line"><span class="comment"># e1$values #特征值</span></span><br><span class="line">csp1 &lt;- cumsum(e1$values)/sum(e1$values)</span><br><span class="line">plot(csp1,type=<span class="string">&#x27;b&#x27;</span>,ylim = c(<span class="number">0.8</span>,<span class="number">1</span>),main=<span class="string">&#x27;Cumulative contribution rate&#x27;</span>)</span><br><span class="line">abline(h=<span class="number">0.85</span>,lty=<span class="number">2</span>,col=<span class="string">&#x27;orange&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://ooo.0o0.ooo/2017/08/18/5996b2bb6c6a4.png" alt="ccr1"><br>综合考虑, 主成分个数确定为 2 个</p>
+<h2 id="SVD的R实现"><a href="#SVD的R实现" class="headerlink" title="SVD的R实现"></a>SVD的R实现</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sv1 &lt;- svd(sd1)</span><br></pre></td></tr></table></figure>
+<h3 id="a-计算特征值选取最佳维数"><a href="#a-计算特征值选取最佳维数" class="headerlink" title="a.计算特征值选取最佳维数"></a>a.计算特征值选取最佳维数</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">lambda1 -&gt; sv1$d^<span class="number">2</span>/(nrow(d)-<span class="number">1</span>)</span><br><span class="line">per2 &lt;- cumsum(lambda1/sum(lambda1))</span><br><span class="line">h2 &lt;- (<span class="number">0.85</span>-min(per2))/(max(per2)-min(per2))*(max(sv1$d)-min(sv1$d))+min(sv1$d)</span><br><span class="line"><span class="keyword">library</span>(plotrix)</span><br><span class="line">twoord.plot(lx=seq(<span class="number">1</span>,length(lambda1)),ly=lambda1,rx=seq(<span class="number">1</span>,length(per2)),ry=per2,</span><br><span class="line">            xlim=c(<span class="number">0</span>,length(lambda1)+<span class="number">1</span>),</span><br><span class="line">            lcol=<span class="string">&#x27;#6495ED&#x27;</span>,rcol=<span class="string">&#x27;#FF4040&#x27;</span>,</span><br><span class="line">            main=<span class="string">&#x27;Number of Components&#x27;</span>,</span><br><span class="line">            xlab=<span class="string">&quot;&quot;</span>,ylab=<span class="string">&quot;Lambda&quot;</span>,rylab=<span class="string">&quot;cumsum(per)&quot;</span>,</span><br><span class="line">            type=c(<span class="string">&quot;b&quot;</span>,<span class="string">&quot;b&quot;</span>),xticklab=seq(<span class="number">1</span>:length(per2)),halfwidth=<span class="number">0.5</span>)</span><br><span class="line">abline(h=<span class="number">1</span>,lty=<span class="number">2</span>,col=<span class="string">&#x27;#6495ED&#x27;</span>)</span><br><span class="line">abline(h=h2,lty=<span class="number">2</span>,col=<span class="string">&#x27;#FF4040&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://ooo.0o0.ooo/2017/08/19/5997eed4d1092.png" alt="ccr2"></p>
+<h3 id="b-获取svd结果-梳理及验证内部关系"><a href="#b-获取svd结果-梳理及验证内部关系" class="headerlink" title="b.获取svd结果,梳理及验证内部关系"></a>b.获取svd结果,梳理及验证内部关系</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sv1$U  <span class="comment"># 样本 x 主成分 矩阵  </span></span><br><span class="line">sv1$V  <span class="comment"># 特征 x 主成分 矩阵  </span></span><br><span class="line">sv1$d  <span class="comment"># 奇异值,转化为特征值可以用来诠释主成分的贡献率</span></span><br><span class="line"><span class="comment"># 最终提取的主成分矩阵为 </span></span><br><span class="line">sv1$U[,<span class="number">1</span>:<span class="number">2</span>] %*% diag(sv1\$d[<span class="number">1</span>:<span class="number">2</span>])</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/08/18/5996b2bb94cd2.png" alt="sc-svd"><br>主成分与各特征值间的换算关系 </p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sv1$U[,<span class="number">1</span>:i] %*% diag(sv1$d[<span class="number">1</span>:i]) = scale(d) %*% sv1$v[,<span class="number">1</span>:i]</span><br></pre></td></tr></table></figure>
+<p>换算关系验证：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">lm(sv1$u[,<span class="number">1</span>:<span class="number">2</span>]%*%diag(sv1$d[<span class="number">1</span>:<span class="number">2</span>])~scale(d))</span><br><span class="line">sv1$v[,<span class="number">1</span>:<span class="number">2</span>]</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/08/25/599f8ce410f7e.png" alt="test1"><br><img src="https://i.loli.net/2017/08/25/599f8d602e1c4.png" alt="sv-v2"></p>
+<p>即：$sv1$里的$v$ 是 原始变量值 与 各主成分值 之间的关系系数</p>
+<h2 id="PCA与Eigen-SVD关系梳理"><a href="#PCA与Eigen-SVD关系梳理" class="headerlink" title="PCA与Eigen/SVD关系梳理"></a>PCA与Eigen/SVD关系梳理</h2><p>想详细了解$PCA$与$SVD$的关系可参考另一片博文<br><a target="_blank" rel="noopener" href="https://amjiuzi.github.io/2017/08/17/pca2svd/">PCA与SVD关系的理论学习</a></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pca1 &lt;- princomp(d,cor=<span class="literal">TRUE</span>)</span><br><span class="line"><span class="comment"># princomp函数中只要设置了cor=TRUE,就会自动进行 scale(d) </span></span><br><span class="line">e1 &lt;- eigen(cor(d))</span><br><span class="line">sv1 &lt;- svd(scale(d))</span><br></pre></td></tr></table></figure>
+<h3 id="1-特征值"><a href="#1-特征值" class="headerlink" title="1. 特征值"></a>1. 特征值</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sv1$d</span><br><span class="line">e1$values</span><br><span class="line">sv1$d^<span class="number">2</span>/(nrow(d)-<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/08/18/5996b2bb94e34.png" alt="value1"><br>即: </p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">svd(x)$d^<span class="number">2</span>/(nrow(x)-<span class="number">1</span>) = eigen(x)$value <span class="comment"># 特征值</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-特征向量"><a href="#2-特征向量" class="headerlink" title="2. 特征向量"></a>2. 特征向量</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">svd1$v</span><br><span class="line">pca1$loadings</span><br><span class="line">e1$vectors</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/08/18/5996b3ce7e99b.png" alt="xiangliang1"><br>即: </p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">svd(x)$v = pca(x)$loadings = eigen(x)$vector <span class="comment"># 特征向量</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-pca中参数间的关系"><a href="#3-pca中参数间的关系" class="headerlink" title="3. pca中参数间的关系"></a>3. pca中参数间的关系</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pca1$scores = as.matrix(scale(y)) %*% pca1$loadings[,<span class="number">1</span>:i]  </span><br><span class="line">pca1$scores = as.matrix(scale(y)) %*% sv1$v[,<span class="number">1</span>:i]</span><br><span class="line">pca1$scores = as.matrix(scale(y)) %*% e1$vectors[,<span class="number">1</span>:i]</span><br><span class="line"><span class="comment"># 即: </span></span><br><span class="line">Scores = scale(x) %*% pca(x)$loadings</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-pca降维的svd实现"><a href="#4-pca降维的svd实现" class="headerlink" title="4. pca降维的svd实现"></a>4. pca降维的svd实现</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pca1$loadings = sv1$v</span><br><span class="line">pca1$scores = sv1$u %*% diag(sv1$d) = scale(d) %*% sv1$v</span><br></pre></td></tr></table></figure>
+<p>即<br>$$X = U \times S \times V^\mathrm{T}$$<br>$$Scores = U \times S$$</p>
+<h3 id="5-实例验证"><a href="#5-实例验证" class="headerlink" title="5. 实例验证"></a>5. 实例验证</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">head(scale(d)%*%svd1$v[,<span class="number">1</span>:<span class="number">2</span>])</span><br><span class="line">head(scale(d)%*%pca1$loadings[,<span class="number">1</span>:<span class="number">2</span>])</span><br><span class="line">head(scale(d)%*%e1$vectors[,<span class="number">1</span>:<span class="number">2</span>])</span><br><span class="line">head(svd1$u[,<span class="number">1</span>:<span class="number">2</span>]%*%diag(svd1$d[<span class="number">1</span>:<span class="number">2</span>]))</span><br><span class="line">head(pca1$scores[,<span class="number">1</span>:<span class="number">2</span>])</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/08/18/5996b2bb808b8.png" alt="sc1"><br><img src="https://i.loli.net/2017/08/18/5996b2bb80bb1.png" alt="sc2"><br><img src="https://i.loli.net/2017/08/18/5996b2bb81243.png" alt="sc3"><br><img src="https://i.loli.net/2017/08/18/5996b2bb94cd2.png" alt="sc4"><br><img src="https://i.loli.net/2017/08/18/5996b2bb7f44d.png" alt="sc0"></p>
+<h2 id="PCA的SVD完全实现及特征影响力计算"><a href="#PCA的SVD完全实现及特征影响力计算" class="headerlink" title="PCA的SVD完全实现及特征影响力计算"></a>PCA的SVD完全实现及特征影响力计算</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">sv1 &lt;- svd(sd1)</span><br><span class="line">lambda1 &lt;- sv1$d^<span class="number">2</span>/(nrow(sd1)-<span class="number">1</span>)</span><br><span class="line">per2 &lt;- cumsum(lambda1/sum(lambda1))</span><br><span class="line">h2 &lt;- (<span class="number">0.85</span>-min(per2))/(max(per2)-min(per2))*(max(sv1$d)-min(sv1$d))+min(sv1$d)</span><br><span class="line"><span class="keyword">library</span>(plotrix)</span><br><span class="line">twoord.plot(lx=seq(<span class="number">1</span>,length(lambda1)),ly=lambda1,rx=seq(<span class="number">1</span>,length(per2)),ry=per2,</span><br><span class="line">            xlim=c(<span class="number">0</span>,length(lambda1)+<span class="number">1</span>),</span><br><span class="line">            lcol=<span class="string">&#x27;#6495ED&#x27;</span>,rcol=<span class="string">&#x27;#FF4040&#x27;</span>,</span><br><span class="line">            main=<span class="string">&#x27;Number of Components&#x27;</span>,</span><br><span class="line">            xlab=<span class="string">&quot;&quot;</span>,ylab=<span class="string">&quot;Lambda&quot;</span>,rylab=<span class="string">&quot;cumsum(per)&quot;</span>,</span><br><span class="line">            type=c(<span class="string">&quot;b&quot;</span>,<span class="string">&quot;b&quot;</span>),xticklab=seq(<span class="number">1</span>:length(per2)),halfwidth=<span class="number">0.5</span>)</span><br><span class="line">abline(h=<span class="number">1</span>,lty=<span class="number">2</span>,col=<span class="string">&#x27;#6495ED&#x27;</span>)</span><br><span class="line">abline(h=h2,lty=<span class="number">2</span>,col=<span class="string">&#x27;#FF4040&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://ooo.0o0.ooo/2017/08/19/5997eed4d1092.png" alt="scree2.png"><br><em>number of comp is 2</em></p>
+<h3 id="1-计算最终的-2-个主成分得分"><a href="#1-计算最终的-2-个主成分得分" class="headerlink" title="1. 计算最终的 2 个主成分得分"></a>1. 计算最终的 2 个主成分得分</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">comps2 &lt;- sv1$u[,<span class="number">1</span>:<span class="number">2</span>] %*% diag(sv1$d[<span class="number">1</span>:<span class="number">2</span>])</span><br><span class="line">dim(comps2)</span><br><span class="line"><span class="comment"># [1] 30  2</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-根据-2-个主成分估计-1-个整体主成分"><a href="#2-根据-2-个主成分估计-1-个整体主成分" class="headerlink" title="2. 根据 2 个主成分估计 1 个整体主成分"></a>2. 根据 2 个主成分估计 1 个整体主成分</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">genr_sc &lt;- comps2%*% matrix(lambda1[<span class="number">1</span>:<span class="number">2</span>]/sum(lambda1[<span class="number">1</span>:<span class="number">2</span>]),ncol=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-特征影响力计算"><a href="#3-特征影响力计算" class="headerlink" title="3. 特征影响力计算"></a>3. 特征影响力计算</h3><p>特征影响力简单理解就是计算每个特征对整体的贡献大小，这个贡献大小可以通过<br>各特征对整体主成分的权重系数的百分比值来体现</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">per3 &lt;- lambda1[<span class="number">1</span>:<span class="number">2</span>]/sum(lambda1[<span class="number">1</span>:<span class="number">2</span>])</span><br><span class="line">alpha1 &lt;- sv1$v[,<span class="number">1</span>:<span class="number">2</span>] %*% per3</span><br><span class="line">influ1 &lt;- alpha1/sum(alpha1)</span><br><span class="line">influ1</span><br><span class="line">          [,<span class="number">1</span>]</span><br><span class="line">[<span class="number">1</span>,] <span class="number">0.2242855</span></span><br><span class="line">[<span class="number">2</span>,] <span class="number">0.2663976</span></span><br><span class="line">[<span class="number">3</span>,] <span class="number">0.2723193</span></span><br><span class="line">[<span class="number">4</span>,] <span class="number">0.2369976</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/SVD/" rel="tag"># SVD</a>
+              <a href="/tags/pca/" rel="tag"># pca</a>
+              <a href="/tags/eigen/" rel="tag"># eigen</a>
+              <a href="/tags/%E5%BD%B1%E5%93%8D%E5%8A%9B/" rel="tag"># 影响力</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/08/17/pca2svd/" rel="prev" title="主成分分析与SVD关系的理论学习 \[译\]">
+      <i class="fa fa-chevron-left"></i> 主成分分析与SVD关系的理论学习 \[译\]
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/08/21/Rselenium/" rel="next" title="R语言轻松完成 网络爬虫(rvest和Rselenium)">
+      R语言轻松完成 网络爬虫(rvest和Rselenium) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pca%E7%9A%84R%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">pca的R实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90"><span class="nav-number">2.1.</span> <span class="nav-text">1. 数据生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%A1%AE%E5%AE%9A%E5%85%B3%E9%94%AE%E4%B8%BB%E6%88%90%E5%88%86%E6%95%B0%E9%87%8F"><span class="nav-number">2.2.</span> <span class="nav-text">2. 确定关键主成分数量</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#a-%E7%94%BB%E7%A2%8E%E7%9F%B3%E5%9C%9F"><span class="nav-number">2.2.1.</span> <span class="nav-text">a. 画碎石土</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#b-%E8%AE%A1%E7%AE%97%E5%90%84%E4%B8%BB%E6%88%90%E5%88%86%E7%9A%84%E7%B4%AF%E8%AE%A1%E8%B4%A1%E7%8C%AE%E7%8E%87"><span class="nav-number">2.2.2.</span> <span class="nav-text">b.计算各主成分的累计贡献率</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SVD%E7%9A%84R%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">SVD的R实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-%E8%AE%A1%E7%AE%97%E7%89%B9%E5%BE%81%E5%80%BC%E9%80%89%E5%8F%96%E6%9C%80%E4%BD%B3%E7%BB%B4%E6%95%B0"><span class="nav-number">3.1.</span> <span class="nav-text">a.计算特征值选取最佳维数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-%E8%8E%B7%E5%8F%96svd%E7%BB%93%E6%9E%9C-%E6%A2%B3%E7%90%86%E5%8F%8A%E9%AA%8C%E8%AF%81%E5%86%85%E9%83%A8%E5%85%B3%E7%B3%BB"><span class="nav-number">3.2.</span> <span class="nav-text">b.获取svd结果,梳理及验证内部关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PCA%E4%B8%8EEigen-SVD%E5%85%B3%E7%B3%BB%E6%A2%B3%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">PCA与Eigen&#x2F;SVD关系梳理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%89%B9%E5%BE%81%E5%80%BC"><span class="nav-number">4.1.</span> <span class="nav-text">1. 特征值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F"><span class="nav-number">4.2.</span> <span class="nav-text">2. 特征向量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-pca%E4%B8%AD%E5%8F%82%E6%95%B0%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">4.3.</span> <span class="nav-text">3. pca中参数间的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-pca%E9%99%8D%E7%BB%B4%E7%9A%84svd%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.4.</span> <span class="nav-text">4. pca降维的svd实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%9E%E4%BE%8B%E9%AA%8C%E8%AF%81"><span class="nav-number">4.5.</span> <span class="nav-text">5. 实例验证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PCA%E7%9A%84SVD%E5%AE%8C%E5%85%A8%E5%AE%9E%E7%8E%B0%E5%8F%8A%E7%89%B9%E5%BE%81%E5%BD%B1%E5%93%8D%E5%8A%9B%E8%AE%A1%E7%AE%97"><span class="nav-number">5.</span> <span class="nav-text">PCA的SVD完全实现及特征影响力计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%AE%A1%E7%AE%97%E6%9C%80%E7%BB%88%E7%9A%84-2-%E4%B8%AA%E4%B8%BB%E6%88%90%E5%88%86%E5%BE%97%E5%88%86"><span class="nav-number">5.1.</span> <span class="nav-text">1. 计算最终的 2 个主成分得分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%A0%B9%E6%8D%AE-2-%E4%B8%AA%E4%B8%BB%E6%88%90%E5%88%86%E4%BC%B0%E8%AE%A1-1-%E4%B8%AA%E6%95%B4%E4%BD%93%E4%B8%BB%E6%88%90%E5%88%86"><span class="nav-number">5.2.</span> <span class="nav-text">2. 根据 2 个主成分估计 1 个整体主成分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%89%B9%E5%BE%81%E5%BD%B1%E5%93%8D%E5%8A%9B%E8%AE%A1%E7%AE%97"><span class="nav-number">5.3.</span> <span class="nav-text">3. 特征影响力计算</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

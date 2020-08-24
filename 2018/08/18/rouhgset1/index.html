@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快   粗糙集模型可以用来 数值变量分段，分类特征提取，模式识别，规则提取等 粗糙集理论粗糙集是波兰理工大学Z.pawlak教授提出用来研究不完整数据，不精确知识的表达、学习，归纳等的一套理论，从数学的角度看，粗糙集是研究集合的；从编程的角度看，粗糙集的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="粗糙集理论之roughset">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2018/08/18/rouhgset1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快   粗糙集模型可以用来 数值变量分段，分类特征提取，模式识别，规则提取等 粗糙集理论粗糙集是波兰理工大学Z.pawlak教授提出用来研究不完整数据，不精确知识的表达、学习，归纳等的一套理论，从数学的角度看，粗糙集是研究集合的；从编程的角度看，粗糙集的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2018/11/09/5be533add38ce.png">
+<meta property="article:published_time" content="2018-08-18T12:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:44.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="feather selection">
+<meta property="article:tag" content="roughset">
+<meta property="article:tag" content="粗糙集">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2018/11/09/5be533add38ce.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2018/08/18/rouhgset1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>粗糙集理论之roughset | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2018/08/18/rouhgset1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          粗糙集理论之roughset
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-18 20:02:34" itemprop="dateCreated datePublished" datetime="2018-08-18T20:02:34+08:00">2018-08-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:44" itemprop="dateModified" datetime="2020-08-23T21:16:44+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/FeatherSelection/" itemprop="url" rel="index"><span itemprop="name">FeatherSelection</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿服务，请出门左转 <a href="izuoye.taobao.com">Convenient Entrance</a>, 合作愉快  </p>
+<p>粗糙集模型可以用来 数值变量分段，分类特征提取，模式识别，规则提取等</p>
+<p>粗糙集理论<br>粗糙集是波兰理工大学Z.pawlak教授提出用来研究不完整数据，不精确知识的表达、学习，归纳等的一套理论，从数学的角度看，粗糙集是研究集合的；从编程的角度看，粗糙集的研究对象是矩阵,只不过是一些特殊的矩阵；从人工智能的角度来看，粗糙集研究的是决策表<br>当数据属于定性数据或不确定性数据，无法使用一般的统计方法时，粗糙集理论可以在信息不完整和信息不一致下，用来规约数据集合，发掘隐藏的数据阳性和数据相关性，以产生有用的分类规则。<br>粗糙集是建立在分类机制的基础上，他将分类理解成为在特定空间上的等价关系，而等价关系构成料对该空间的划分，主要思想是利用已知的知识库，将不精确或不确定的知识用已知的知识库中的知识来近似刻画。<br>该理论与其他处理不确定和不精确问题理论的最显著的区别是它无需提供问题所需处理的数据集合之外的任何先验信息，所以对问题的不确定性的描述或处理可以说比较客观<br>粗糙集理论现在主要应用在 临床医疗诊断; 电力系统和其他工业过程故障诊断; 预测与控制; 模式识别与分类; 机器学习和数据挖掘 图像处理等方面</p>
+<a id="more"></a>
+
+<h2 id="Theory"><a href="#Theory" class="headerlink" title="Theory"></a>Theory</h2><p>$S=(U,A,V,ρ)$，其中 $U=(x1,x2,…,x8)$，$V1=V2=V3=(1，2，3)$，$V4=(1，2)$，信息函数ρ见如下</p>
+<table>
+<thead>
+<tr>
+<th>U</th>
+<th>c1</th>
+<th>c2</th>
+<th>c3</th>
+<th>c4</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>x1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>x2</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>x3</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>x4</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>x5</td>
+<td>2</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>x6</td>
+<td>2</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>x7</td>
+<td>3</td>
+<td>3</td>
+<td>3</td>
+<td>2</td>
+</tr>
+<tr>
+<td>x8</td>
+<td>3</td>
+<td>3</td>
+<td>3</td>
+<td>2</td>
+</tr>
+</tbody></table>
+<p>从上图可以知道：</p>
+<p>$U/c1=((x1,x2,x3,x4),(x5,x6),(x7,x8))$</p>
+<p>$U/c2=((x1,x3),(x2,x4,x5,x6),(x7,x8))$</p>
+<p>$U/c3=((x1,x2,x5,x6),(x2,x4),(x7,x8))$</p>
+<p>$U/c4=((x1,x2,x3,x4,x5,x6),(x7,x8))$</p>
+<p>$U/c=((x1,x3),(x2,x4),(x5,x6),(x7,x8))$</p>
+<p>压缩后的信息表</p>
+<p> | U/c    |c1 | c2 | c3|c4|<br> |–|–|–|–|<br> |{x1,x3}|     1|    1     |1     |1 |<br> |{x2,x4}|     1|    2     |2     |1 |<br> |{x5,x6}|     2|    2     |1     |1 |<br> |{x7,x8}|     3|    3     |3     |2 | </p>
+<p>决策表抽取规则的一般方法:</p>
+<ol>
+<li>在决策表中将信息相同的对象及其信息删除只留其中一个得到压缩后的信息表，即删除多余事例；</li>
+<li>删除多余属性</li>
+<li>对每一对象及其信息中将多余的属性值删除</li>
+<li>求出最小约简</li>
+<li>根据最小约简，求出逻辑规则</li>
+</ol>
+<p>粗糙集基本概念：</p>
+<ol>
+<li>信息系统/决策系统：Information/Decision System</li>
+<li>不可区分关系：Indiscernibility</li>
+<li>集合近似：Set Approximation</li>
+<li>约简与核：Reducts and Core</li>
+<li>粗糙隶属度：Rough Membership</li>
+<li>属性依赖性：Dependency of Attributes</li>
+</ol>
+<p><img src="https://i.loli.net/2018/11/09/5be533add38ce.png" alt="LowUpperApprox.png"></p>
+<p>粗糙集理论的特点：</p>
+<ol>
+<li>粗糙集理论假定知识是一种对对象进行分类的能力</li>
+<li>粗糙集理论的主要优势之一是不需要任何预备的或额外的有关数据信息。</li>
+<li>可以应用于数据约简，特征提取，特征抽取，决策规则，模式识别等</li>
+</ol>
+<h2 id="DM-Case"><a href="#DM-Case" class="headerlink" title="DM Case"></a>DM Case</h2><p>本文分析目的：<br>找出 4个自变量 age  ,Monthly Income， online behaviour, Willingness to pay for Products 和 因变量 decision attribute: Buying-behavior -onlie site 的 转化规则</p>
+<h3 id="Dataset"><a href="#Dataset" class="headerlink" title="Dataset"></a>Dataset</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">setwd(<span class="string">&#x27;F:/roughset&#x27;</span>) <span class="comment"># set default working direction</span></span><br><span class="line">dat1 &lt;- read.csv(<span class="string">&#x27;./data1.csv&#x27;</span>,header = <span class="literal">TRUE</span>, <span class="comment">#</span></span><br><span class="line">                 stringsAsFactors = <span class="literal">FALSE</span>)</span><br><span class="line">colnames(dat1)[<span class="number">1</span>] &lt;- <span class="string">&#x27;Age&#x27;</span></span><br><span class="line">dat1$Age &lt;- as.factor(dat1$Age)</span><br><span class="line">dat1$MonthlyIncome &lt;- as.factor(dat1$MonthlyIncome)</span><br><span class="line">dat1$Willingness2Pay &lt;- as.factor(dat1$Willingness2Pay)</span><br><span class="line">dat1$Influence_OnlineSites &lt;- as.factor(dat1$Influence_OnlineSites)</span><br><span class="line"></span><br><span class="line">dim(dat1)</span><br><span class="line">[<span class="number">1</span>] <span class="number">26994</span>     <span class="number">6</span></span><br><span class="line"></span><br><span class="line">summary(dat1)</span><br><span class="line"> Age      MonthlyIncome     DayTime       HoursPerDay   </span><br><span class="line"> <span class="number">2</span>:<span class="number">1998</span>   <span class="number">5</span>      :<span class="number">5103</span>   Min.   :<span class="number">1.000</span>   Min.   :<span class="number">1.000</span>  </span><br><span class="line"> <span class="number">3</span>:<span class="number">8017</span>   <span class="number">4</span>      :<span class="number">4940</span>   1st Qu.:<span class="number">3.000</span>   1st Qu.:<span class="number">2.000</span>  </span><br><span class="line"> <span class="number">4</span>:<span class="number">9311</span>   <span class="number">6</span>      :<span class="number">4886</span>   Median :<span class="number">4.000</span>   Median :<span class="number">3.000</span>  </span><br><span class="line"> <span class="number">5</span>:<span class="number">6237</span>   <span class="number">7</span>      :<span class="number">3805</span>   Mean   :<span class="number">3.823</span>   Mean   :<span class="number">2.767</span>  </span><br><span class="line"> <span class="number">6</span>:<span class="number">1431</span>   <span class="number">3</span>      :<span class="number">3131</span>   3rd Qu.:<span class="number">5.000</span>   3rd Qu.:<span class="number">3.000</span>  </span><br><span class="line">          <span class="number">8</span>      :<span class="number">2996</span>   Max.   :<span class="number">7.000</span>   Max.   :<span class="number">5.000</span>  </span><br><span class="line">          (Other):<span class="number">2133</span>                                  </span><br><span class="line"> Willingness2Pay Influence_OnlineSites</span><br><span class="line"> <span class="number">1</span>: <span class="number">4185</span>         <span class="number">1</span>:<span class="number">17061</span>              </span><br><span class="line"> <span class="number">2</span>:<span class="number">11526</span>         <span class="number">2</span>: <span class="number">9933</span>              </span><br><span class="line"> <span class="number">3</span>: <span class="number">9285</span>                              </span><br><span class="line"> <span class="number">4</span>: <span class="number">1998</span> </span><br></pre></td></tr></table></figure>
+
+<h3 id="Trans-continous-variable-into-catogory-variable"><a href="#Trans-continous-variable-into-catogory-variable" class="headerlink" title="Trans continous variable into catogory variable"></a>Trans continous variable into catogory variable</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## Select Numeric Vars as decisiontable</span></span><br><span class="line">data.f &lt;- dat1</span><br><span class="line">df1 &lt;- SF.asDecisionTable(data.f[,c(<span class="number">3</span>,<span class="number">4</span>,<span class="number">6</span>)],</span><br><span class="line">                          decision.attr = <span class="number">3</span>, </span><br><span class="line">                          indx.nominal = <span class="number">3</span>)</span><br><span class="line">head(df1)</span><br><span class="line"></span><br><span class="line">  DayTime HoursPerDay Influence_OnlineSites</span><br><span class="line"><span class="number">1</span>       <span class="number">2</span>           <span class="number">3</span>                     <span class="number">2</span></span><br><span class="line"><span class="number">2</span>       <span class="number">1</span>           <span class="number">4</span>                     <span class="number">1</span></span><br><span class="line"><span class="number">3</span>       <span class="number">1</span>           <span class="number">3</span>                     <span class="number">2</span></span><br><span class="line"><span class="number">4</span>       <span class="number">2</span>           <span class="number">3</span>                     <span class="number">1</span></span><br><span class="line"><span class="number">5</span>       <span class="number">3</span>           <span class="number">3</span>                     <span class="number">2</span></span><br><span class="line"><span class="number">6</span>       <span class="number">4</span>           <span class="number">4</span>                     <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## DISCRETIZATION</span></span><br><span class="line">cut.values &lt;- D.global.discernibility.heuristic.RST(df1)</span><br><span class="line">df1.d &lt;- SF.applyDecTable(df1, cut.values)</span><br><span class="line">head(df1.d)</span><br><span class="line"></span><br><span class="line">     DayTime HoursPerDay Influence_OnlineSites</span><br><span class="line"><span class="number">1</span> [-<span class="literal">Inf</span>,<span class="number">2.5</span>]    [-<span class="literal">Inf</span>,<span class="number">3</span>]                     <span class="number">2</span></span><br><span class="line"><span class="number">2</span> [-<span class="literal">Inf</span>,<span class="number">2.5</span>]       (<span class="number">3</span>,<span class="number">4</span>]                     <span class="number">1</span></span><br><span class="line"><span class="number">3</span> [-<span class="literal">Inf</span>,<span class="number">2.5</span>]    [-<span class="literal">Inf</span>,<span class="number">3</span>]                     <span class="number">2</span></span><br><span class="line"><span class="number">4</span> [-<span class="literal">Inf</span>,<span class="number">2.5</span>]    [-<span class="literal">Inf</span>,<span class="number">3</span>]                     <span class="number">1</span></span><br><span class="line"><span class="number">5</span>  (<span class="number">2.5</span>,<span class="number">3.5</span>]    [-<span class="literal">Inf</span>,<span class="number">3</span>]                     <span class="number">2</span></span><br><span class="line"><span class="number">6</span>  (<span class="number">3.5</span>,<span class="number">4.5</span>]       (<span class="number">3</span>,<span class="number">4</span>]                     <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## Merge DISCRETIZATION as data.f</span></span><br><span class="line">data.f2 &lt;- data.frame(cbind(data.f[,c(<span class="number">1</span>,<span class="number">2</span>,<span class="number">5</span>)],df1.d))</span><br><span class="line"><span class="comment"># head(data.f2)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## Split and Trans into DecisionTable</span></span><br><span class="line">indx1 &lt;- sample(c(<span class="number">0</span>,<span class="number">1</span>),size = nrow(dat1),</span><br><span class="line">                prob = c(<span class="number">0.2</span>,<span class="number">0.8</span>),replace = <span class="literal">TRUE</span>)</span><br><span class="line">data.tr &lt;- SF.asDecisionTable(data.f2[indx1==<span class="number">1</span>,],</span><br><span class="line">                              decision.attr = <span class="number">6</span>, </span><br><span class="line">                              indx.nominal = c(<span class="number">1</span>:<span class="number">6</span>)) </span><br><span class="line">data.tst &lt;- SF.asDecisionTable(data.f2[indx1==<span class="number">0</span>,],</span><br><span class="line">                               decision.attr = <span class="number">6</span>, </span><br><span class="line">                               indx.nominal = c(<span class="number">1</span>:<span class="number">6</span>)) <span class="comment"># </span></span><br><span class="line">true.class &lt;- data.tst[ ,ncol(data.tst)]</span><br></pre></td></tr></table></figure>
+
+<h3 id="feather-selection"><a href="#feather-selection" class="headerlink" title="feather selection"></a>feather selection</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## FEATURE SELECTION</span></span><br><span class="line">red.rst &lt;- FS.feature.subset.computation(data.tr,</span><br><span class="line">                                         method=<span class="string">&quot;quickreduct.rst&quot;</span>)</span><br><span class="line">fs.tra &lt;- SF.applyDecTable(data.tr, red.rst)</span><br></pre></td></tr></table></figure>
+
+<h3 id="model"><a href="#model" class="headerlink" title="model"></a>model</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## RULE INDUCTION</span></span><br><span class="line">rules1 &lt;- RI.AQRules.RST(fs.tra, </span><br><span class="line">                        confidence = <span class="number">0.9</span>, </span><br><span class="line">                        timesCovered = <span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="rules"><a href="#rules" class="headerlink" title="rules"></a>rules</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">head(rules1)</span><br><span class="line"></span><br><span class="line">A set consisting of  <span class="number">6</span>  rules:</span><br><span class="line"><span class="number">1.</span> IF DayTime is (<span class="number">4.5</span>,<span class="number">5.5</span>] and MonthlyIncome is <span class="number">7</span> and Willingness2Pay is <span class="number">3</span> and HoursPerDay is [-<span class="literal">Inf</span>,<span class="number">3</span>] THEN  is <span class="number">2</span>;</span><br><span class="line">		(supportSize=<span class="number">129</span>; laplace=<span class="number">0.99236641221374</span>) </span><br><span class="line"><span class="number">2.</span> IF Willingness2Pay is <span class="number">1</span> and MonthlyIncome is <span class="number">6</span> and DayTime is [-<span class="literal">Inf</span>,<span class="number">2.5</span>] and Age is <span class="number">4</span> THEN  is <span class="number">2</span>;</span><br><span class="line">		(supportSize=<span class="number">47</span>; laplace=<span class="number">0.979591836734694</span>) </span><br><span class="line"><span class="number">3.</span> IF Willingness2Pay is <span class="number">2</span> and Age is <span class="number">5</span> and DayTime is (<span class="number">4.5</span>,<span class="number">5.5</span>] and MonthlyIncome is <span class="number">3</span> THEN  is <span class="number">2</span>;</span><br><span class="line">		(supportSize=<span class="number">42</span>; laplace=<span class="number">0.977272727272727</span>) </span><br><span class="line"><span class="number">4.</span> IF DayTime is (<span class="number">3.5</span>,<span class="number">4.5</span>] and Willingness2Pay is <span class="number">4</span> and MonthlyIncome is <span class="number">9</span> THEN  is <span class="number">2</span>;</span><br><span class="line">		(supportSize=<span class="number">21</span>; laplace=<span class="number">0.956521739130435</span>) </span><br><span class="line"><span class="number">5.</span> IF DayTime is (<span class="number">3.5</span>,<span class="number">4.5</span>] and Willingness2Pay is <span class="number">1</span> and MonthlyIncome is <span class="number">3</span> THEN  is <span class="number">2</span>;</span><br><span class="line">		(supportSize=<span class="number">23</span>; laplace=<span class="number">0.96</span>) </span><br><span class="line"><span class="number">6.</span> IF MonthlyIncome is <span class="number">6</span> and Age is <span class="number">5</span> and Willingness2Pay is <span class="number">1</span> and DayTime is [-<span class="literal">Inf</span>,<span class="number">2.5</span>] THEN  is <span class="number">2</span>;</span><br><span class="line">		(supportSize=<span class="number">21</span>; laplace=<span class="number">0.956521739130435</span>)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="predict"><a href="#predict" class="headerlink" title="predict"></a>predict</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">pred.vals1 &lt;- predict(rules1, data.tst)</span><br><span class="line"><span class="comment">## Accuracy</span></span><br><span class="line">(tb1 &lt;- table(true.class,pred.vals1$predictions))</span><br><span class="line"></span><br><span class="line">true.class    <span class="number">1</span>    <span class="number">2</span></span><br><span class="line">         <span class="number">1</span> <span class="number">3379</span>    <span class="number">0</span></span><br><span class="line">         <span class="number">2</span> <span class="number">1116</span>  <span class="number">907</span></span><br><span class="line"></span><br><span class="line">(acc1 &lt;- sum(diag(tb1))/sum(tb1))</span><br><span class="line"></span><br><span class="line">[<span class="number">1</span>] <span class="number">0.7934098</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/HevenYin/article/details/71077172">粗糙集分类</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/janusza/RoughSets">Roughset github</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/chl033/article/details/3240500">粗糙及理论</a></li>
+<li><a target="_blank" rel="noopener" href="https://wenku.baidu.com/view/1d194945581b6bd97e19ea45.html">粗糙集的理论介绍</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/feather-selection/" rel="tag"># feather selection</a>
+              <a href="/tags/roughset/" rel="tag"># roughset</a>
+              <a href="/tags/%E7%B2%97%E7%B3%99%E9%9B%86/" rel="tag"># 粗糙集</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/07/17/grangertest1/" rel="prev" title="格兰杰因果检验R语言实现">
+      <i class="fa fa-chevron-left"></i> 格兰杰因果检验R语言实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/09/19/ranger1/" rel="next" title="简单好用的ranger包">
+      简单好用的ranger包 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Theory"><span class="nav-number">1.</span> <span class="nav-text">Theory</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DM-Case"><span class="nav-number">2.</span> <span class="nav-text">DM Case</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Dataset"><span class="nav-number">2.1.</span> <span class="nav-text">Dataset</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Trans-continous-variable-into-catogory-variable"><span class="nav-number">2.2.</span> <span class="nav-text">Trans continous variable into catogory variable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#feather-selection"><span class="nav-number">2.3.</span> <span class="nav-text">feather selection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#model"><span class="nav-number">2.4.</span> <span class="nav-text">model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rules"><span class="nav-number">2.5.</span> <span class="nav-text">rules</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#predict"><span class="nav-number">2.6.</span> <span class="nav-text">predict</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">3.</span> <span class="nav-text">References:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

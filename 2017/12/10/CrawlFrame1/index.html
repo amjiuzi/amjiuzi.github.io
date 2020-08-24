@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="最近完成了一项简单的静态爬虫任务,麻雀虽小五脏俱全,借此梳理下R项目基本架构有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习 基本架构 R 脚本R程序可以是单一的完整运行代码文件,也可以是多个相互间协调或调用的函数&#x2F;程序代码集合,本文介绍的主要是第二种 Windows Powershell 调用通过 windows 的 powershell 终端调用 R程序, 实现 R程序">
+<meta property="og:type" content="article">
+<meta property="og:title" content="R语言爬虫项目程序结构解析">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2017/12/10/CrawlFrame1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="最近完成了一项简单的静态爬虫任务,麻雀虽小五脏俱全,借此梳理下R项目基本架构有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习 基本架构 R 脚本R程序可以是单一的完整运行代码文件,也可以是多个相互间协调或调用的函数&#x2F;程序代码集合,本文介绍的主要是第二种 Windows Powershell 调用通过 windows 的 powershell 终端调用 R程序, 实现 R程序">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2017/12/16/5a34c4ab49fdc.png">
+<meta property="og:image" content="https://i.loli.net/2017/12/16/5a34d0a8244d8.png">
+<meta property="og:image" content="https://i.loli.net/2017/12/18/5a372df849b6d.png">
+<meta property="og:image" content="https://i.loli.net/2017/12/16/5a34d91d23a79.png">
+<meta property="article:published_time" content="2017-12-10T12:07:17.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:14.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="爬虫">
+<meta property="article:tag" content="crawl">
+<meta property="article:tag" content="rvest">
+<meta property="article:tag" content="rselenium">
+<meta property="article:tag" content="项目">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2017/12/16/5a34c4ab49fdc.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2017/12/10/CrawlFrame1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>R语言爬虫项目程序结构解析 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/12/10/CrawlFrame1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          R语言爬虫项目程序结构解析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-10 20:07:17" itemprop="dateCreated datePublished" datetime="2017-12-10T20:07:17+08:00">2017-12-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:14" itemprop="dateModified" datetime="2020-08-23T21:16:14+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Crawl/" itemprop="url" rel="index"><span itemprop="name">Crawl</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>最近完成了一项简单的静态爬虫任务,麻雀虽小五脏俱全,借此梳理下R项目基本架构<br>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习</p>
+<h2 id="基本架构"><a href="#基本架构" class="headerlink" title="基本架构"></a>基本架构</h2><ol>
+<li>R 脚本<br>R程序可以是单一的完整运行代码文件,也可以是多个相互间协调或调用的函数/程序代码集合,本文介绍的主要是第二种</li>
+<li>Windows Powershell 调用<br>通过 windows 的 powershell 终端调用 R程序, 实现 R程序 的后台运行(Line1); 也可以将Line1对应的code放进 .bat文件,然后保存,需要运行时双击 .bat文件<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xx/xx/Rscript.exe xx/xx/run.R</span><br></pre></td></tr></table></figure></li>
+<li>Linux terminal 调用<br>Linux终端调用与windows类同,终端运行 line 1,2<br>或 run.R 首行添加 line3, 然后终端运行 line4,5<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 方案1 -- 通过 bash 激活Rscript 运行 R脚本</span></span><br><span class="line">chmod u+x ./run.R           <span class="comment"># line 1</span></span><br><span class="line">/usr/bin/Rscript  /xx/run.R <span class="comment"># line 2</span></span><br><span class="line"><span class="comment"># 方案2 -- 修改 run.R 直接运行</span></span><br><span class="line"><span class="comment">#!/usr/bin/Rscript          # line 3</span></span><br><span class="line">chmod u+x ./run.R           <span class="comment"># line 4</span></span><br><span class="line">./run.R                     <span class="comment"># line 5</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+
+</li>
+</ol>
+<h2 id="R-脚本"><a href="#R-脚本" class="headerlink" title="R 脚本"></a>R 脚本</h2><p>本案例是个静态爬虫项目,大致涵盖以下几个流程:  </p>
+<ol>
+<li>获取爬取目标  </li>
+<li>爬取  </li>
+<li>爬取结果分段存储  </li>
+<li>分段结果合并及碎文件删除  </li>
+<li>根据结果中信息进行二次爬取  </li>
+<li>二次爬取结果存储  </li>
+</ol>
+<p><img src="https://i.loli.net/2017/12/16/5a34c4ab49fdc.png" alt="files"></p>
+<h3 id="1-确定爬取目标"><a href="#1-确定爬取目标" class="headerlink" title="1. 确定爬取目标"></a>1. 确定爬取目标</h3><p>爬取目标可以是个单一网址也可以是个目标list<br>比如通过动态查询获取与某主题相关的网页地址list(get_addr.R)</p>
+<h3 id="2-爬取和分段存储"><a href="#2-爬取和分段存储" class="headerlink" title="2. 爬取和分段存储"></a>2. 爬取和分段存储</h3><p>爬虫最重要的部分就是爬虫代码的编写,个中辛酸自己体会,大有阿庆嫂大战刁德一的意思,码完code之后还得测试(大部分网页代码都不那么规整),时不时会如下所示<br><img src="https://i.loli.net/2017/12/16/5a34d0a8244d8.png" alt="err"><br>为了节省内存及防止程序半路崩溃而前功尽弃,可以设置分段保存(每爬取n条存储一个本地文件),以求最大限度保存胜利成果</p>
+<h3 id="3-合并并清空分段文件"><a href="#3-合并并清空分段文件" class="headerlink" title="3. 合并并清空分段文件"></a>3. 合并并清空分段文件</h3><p>爬虫程序运行完毕,需要将分段文件合并成最终的结果集,然后将无用的分段集清理,如下所示<br><img src="https://i.loli.net/2017/12/18/5a372df849b6d.png" alt="parts1"></p>
+<h3 id="4-组织协调的-run-R"><a href="#4-组织协调的-run-R" class="headerlink" title="4. 组织协调的 run.R"></a>4. 组织协调的 run.R</h3><p>最后看看 run.R 里的代码结构<br><img src="https://i.loli.net/2017/12/16/5a34d91d23a79.png" alt="run.R"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>一个完整的项目下来,R是需要很多自定义函数支持的,这些自定义函数可能结构复杂(可以定义2级函数支持1级函数的调用)代码行数较多或会被多次调用,这个时候我们就需要将他独立出来作为一个功能模块或对象来使用.<br>这样的项目梳理出来,就会结构清晰,便于理解和后续个性化修改 </p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference:"></a>Reference:</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/29547695">shell中调用R脚本</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/%E7%88%AC%E8%99%AB/" rel="tag"># 爬虫</a>
+              <a href="/tags/crawl/" rel="tag"># crawl</a>
+              <a href="/tags/rvest/" rel="tag"># rvest</a>
+              <a href="/tags/rselenium/" rel="tag"># rselenium</a>
+              <a href="/tags/%E9%A1%B9%E7%9B%AE/" rel="tag"># 项目</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/04/arules2/" rel="prev" title="R语言实现购物篮分析-Apriori和eclat算法">
+      <i class="fa fa-chevron-left"></i> R语言实现购物篮分析-Apriori和eclat算法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/12/15/woe1/" rel="next" title="金融信用卡评分模型的R实现">
+      金融信用卡评分模型的R实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">基本架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R-%E8%84%9A%E6%9C%AC"><span class="nav-number">2.</span> <span class="nav-text">R 脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%A1%AE%E5%AE%9A%E7%88%AC%E5%8F%96%E7%9B%AE%E6%A0%87"><span class="nav-number">2.1.</span> <span class="nav-text">1. 确定爬取目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%88%AC%E5%8F%96%E5%92%8C%E5%88%86%E6%AE%B5%E5%AD%98%E5%82%A8"><span class="nav-number">2.2.</span> <span class="nav-text">2. 爬取和分段存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%90%88%E5%B9%B6%E5%B9%B6%E6%B8%85%E7%A9%BA%E5%88%86%E6%AE%B5%E6%96%87%E4%BB%B6"><span class="nav-number">2.3.</span> <span class="nav-text">3. 合并并清空分段文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%BB%84%E7%BB%87%E5%8D%8F%E8%B0%83%E7%9A%84-run-R"><span class="nav-number">2.4.</span> <span class="nav-text">4. 组织协调的 run.R</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">4.</span> <span class="nav-text">Reference:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

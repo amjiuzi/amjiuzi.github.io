@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快 信用评分是指根据客户的信用历史资料，利用一定的信用评分模型，得到不同等级的信用分数。根据客户的信用分数， 授信者可以分析客户按时还款的可能性。据此， 授信者可以决定是否准予授信以及授信的额度和利率 原理 A&#x2F;B系数计算$$Score…..&#x3D; A -">
+<meta property="og:type" content="article">
+<meta property="og:title" content="金融信用卡评分模型的R实现">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2017/12/15/woe1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快 信用评分是指根据客户的信用历史资料，利用一定的信用评分模型，得到不同等级的信用分数。根据客户的信用分数， 授信者可以分析客户按时还款的可能性。据此， 授信者可以决定是否准予授信以及授信的额度和利率 原理 A&#x2F;B系数计算$$Score…..&#x3D; A -">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/11/23/5a16a2f3d622e.png">
+<meta property="og:image" content="https://i.loli.net/2017/11/23/5a16a2f3d5f88.png">
+<meta property="article:published_time" content="2017-12-15T12:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:50.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="评分卡">
+<meta property="article:tag" content="woe">
+<meta property="article:tag" content="逻辑回归">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ooo.0o0.ooo/2017/11/23/5a16a2f3d622e.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2017/12/15/woe1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>金融信用卡评分模型的R实现 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/12/15/woe1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          金融信用卡评分模型的R实现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-15 20:02:34" itemprop="dateCreated datePublished" datetime="2017-12-15T20:02:34+08:00">2017-12-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:50" itemprop="dateModified" datetime="2020-08-23T21:16:50+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Prediction/" itemprop="url" rel="index"><span itemprop="name">Prediction</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿帮助，请出门左转 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">Convenient Entrance</a>, 合作愉快</p>
+<p>信用评分是指根据客户的信用历史资料，利用一定的信用评分模型，得到不同等级的信用分数。根据客户的信用分数， 授信者可以分析客户按时还款的可能性。据此， 授信者可以决定是否准予授信以及授信的额度和利率</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><ol>
+<li>A/B系数计算<br>$$Score…..= A - B \times log(odds)$$<br>$$Score + pdo = A - B \times log(odds/2)$$</li>
+</ol>
+<p>$$<br>\begin{aligned}<br>B &amp;= \frac{pdo}{log(2)} \<br>A &amp;= Score + B \times log(odds)<br>\end{aligned}<br>$$</p>
+<ul>
+<li>$odds$ - 坏好比 , 目标变量值 $1$ 的占比 除以 $0$ 的占比</li>
+<li>$pdo$ - $odds$ 变化时 $Score$得分的上下浮动差<a id="more"></a>
+初始计算A/B值时, $odds$ 为整体数据的坏好比,即<br>$$odds = \frac {P_{B_{T}}}{1-P_{B_{T}}}$$<br>一般设定 $Score$为600 ; $Odds$减半时，$Score$ +20，假设初始 $odds = (p/1-p)=0.2/0.8=0.25$ 则<br>$$<br>\begin{aligned}<br>B &amp;= \frac{20}{log(2)}=28.8539\<br>A &amp;= 600 + 28.8539 * log(0.25) = 560<br>\end{aligned}<br>$$</li>
+</ul>
+<ol start="2">
+<li>逻辑回归系数转化<br>$$<br>\begin {aligned}<br>log(odds)&amp;=\beta_{0}+\beta_{1}x_{1}+\beta_{2}x_{2}+\beta_{3}x_{3}+\beta_{4}x_{4}…\<br>Score &amp;= A - B * log(odds) \<br>&amp;=  A - B * (\beta_{0}+\beta_{1}x_{1}+\beta_{2}x_{2}+\beta_{3}x_{3}…)\<br>&amp;= A - B * \beta_{0}-B * \beta_{1}x_{1}-B * \beta_{2}x_{2}-B * \beta_{3}x_{3}…\<br>&amp;= (A - (B * \beta_{0}))-(B * \beta_{1})*x_{1}-(B * \beta_{2})*x_{2}-(B * \beta_{3})*x_{3}…)\<br>x_{i}  &amp;= woe_{i}<br>\end {aligned}<br>$$</li>
+</ol>
+<h3 id="案例应用"><a href="#案例应用" class="headerlink" title="案例应用"></a>案例应用</h3><h4 id="1-数据读取"><a href="#1-数据读取" class="headerlink" title="1. 数据读取"></a>1. 数据读取</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(openxlsx)</span><br><span class="line"><span class="keyword">library</span>(data.table)</span><br><span class="line"><span class="comment"># 读取各网点的日运营明细</span></span><br><span class="line">data1&lt;-read.xlsx(<span class="string">&quot;../data1.xlsx&quot;</span>,sheet=<span class="number">1</span>)</span><br><span class="line">data2 &lt;- data.table(data1)[,lapply(.SD,sum),</span><br><span class="line">                          keyby=.(UID,month),</span><br><span class="line">                          .SDcols=names(data1)[<span class="number">4</span>:<span class="number">17</span>]]</span><br><span class="line"><span class="comment"># 列名称中不能带&#x27;.&#x27;,若有则需要修改,考虑到作图名称过长也改掉</span></span><br><span class="line">colnames(data2)[<span class="number">3</span>:<span class="number">7</span>]=c(<span class="string">&#x27;lin_zhi&#x27;</span>,<span class="string">&#x27;lin_zhuan&#x27;</span>,<span class="string">&#x27;kuasheng&#x27;</span>,<span class="string">&#x27;G_G&#x27;</span>,<span class="string">&#x27;G_M&#x27;</span>)</span><br><span class="line">colnames(data2)[ncol(data2)-c(<span class="number">2</span>,<span class="number">1</span>)] &lt;- c(<span class="string">&#x27;pingtai&#x27;</span>,<span class="string">&#x27;quantity&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="2-数据清洗"><a href="#2-数据清洗" class="headerlink" title="2. 数据清洗"></a>2. 数据清洗</h4><h5 id="2-1-NA-处理"><a href="#2-1-NA-处理" class="headerlink" title="2.1 $NA$ 处理"></a>2.1 $NA$ 处理</h5><h6 id="2-1-1-列-NA-的处理方式"><a href="#2-1-1-列-NA-的处理方式" class="headerlink" title="2.1.1 列 $NA$ 的处理方式"></a>2.1.1 列 $NA$ 的处理方式</h6><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">VIM::matrixplot(res1)</span><br><span class="line">na1 &lt;- as.data.frame(sapply(res1,<span class="keyword">function</span>(x)&#123;sum(is.na(x))/length(x)&#125;))</span><br><span class="line">colnames(na1)=<span class="string">&#x27;per1&#x27;</span>;na1$col1 &lt;- rownames(na1)</span><br><span class="line">na1[order(-na1$per1),]</span><br><span class="line">                    per1          col1</span><br><span class="line">lin_zhi       <span class="number">0.99480405</span>       lin_zhi</span><br><span class="line">M-G           <span class="number">0.90656099</span>           M-G</span><br><span class="line">M-M           <span class="number">0.83540291</span>           M-M</span><br><span class="line">lin_zhuan     <span class="number">0.09749009</span>     lin_zhuan</span><br><span class="line">G_G           <span class="number">0.07476882</span>           G_G</span><br><span class="line">G_M           <span class="number">0.04720387</span>           G_M</span><br><span class="line"><span class="keyword">...</span> <span class="keyword">...</span></span><br><span class="line"></span><br><span class="line">res10 &lt;- res1[,-c(<span class="number">1</span>,<span class="number">6</span>,<span class="number">7</span>)]</span><br></pre></td></tr></table></figure>
+<p><img src="https://ooo.0o0.ooo/2017/11/23/5a16a2f3d622e.png" alt="na1"></p>
+<h6 id="2-1-2-行-NA-的处理方式"><a href="#2-1-2-行-NA-的处理方式" class="headerlink" title="2.1.2 行$NA$的处理方式"></a>2.1.2 行$NA$的处理方式</h6><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">na_cnt1 &lt;- apply(res10,<span class="number">1</span>,<span class="keyword">function</span>(x)sum(is.na(x)))</span><br><span class="line">table(na_cnt1)</span><br><span class="line">na_cnt1</span><br><span class="line">   <span class="number">0</span>    <span class="number">1</span>    <span class="number">2</span>    <span class="number">3</span>    <span class="number">4</span>    <span class="number">5</span>    <span class="number">6</span>   <span class="number">11</span> </span><br><span class="line"><span class="number">9416</span> <span class="number">1372</span>  <span class="number">309</span>   <span class="number">31</span>   <span class="number">44</span>    <span class="number">4</span>    <span class="number">4</span>  <span class="number">175</span> </span><br><span class="line">res101 &lt;- res10[-which(na_cnt1&gt;=round(ncol(res10)/<span class="number">3</span>)),]</span><br><span class="line">VIM::matrixplot(res101)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/11/23/5a16a2f3d5f88.png" alt="na2"></p>
+<h6 id="2-1-3-剩余-NA-的处理方式"><a href="#2-1-3-剩余-NA-的处理方式" class="headerlink" title="2.1.3 剩余$NA$的处理方式"></a>2.1.3 剩余$NA$的处理方式</h6><ol>
+<li>自动填充 <figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">caret::knnImputation()</span><br></pre></td></tr></table></figure></li>
+<li>均值替代 <figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x[is.na(x)] = mean(x, na.rm=<span class="literal">TRUE</span>)</span><br></pre></td></tr></table></figure></li>
+<li>全部用 0 填充<br>本案例结合实际情况,采集 0 填充的方案<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">res102 &lt;- res101[,lapply(.SD,<span class="keyword">function</span>(x) ifelse(is.na(x),<span class="number">0</span>,x))]</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h5 id="2-2-异常值处理"><a href="#2-2-异常值处理" class="headerlink" title="2.2 异常值处理"></a>2.2 异常值处理</h5><p>由于本案例数据之前完成了标准化的步骤，所以异常值检测可以省略<br>脱离本案例, 异常值检测 可以用 </p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">quantile(x,c(<span class="number">0.25</span>,<span class="number">0.75</span>)) +/- <span class="number">1.5</span>(or <span class="number">3</span>) * diff(quantile(x,c(<span class="number">0.25</span>,<span class="number">0.75</span>)))</span><br></pre></td></tr></table></figure>
+<p>来完成</p>
+<h4 id="3-变量筛选"><a href="#3-变量筛选" class="headerlink" title="3. 变量筛选"></a>3. 变量筛选</h4><h5 id="3-1-共线性诊断处理和变量筛选"><a href="#3-1-共线性诊断处理和变量筛选" class="headerlink" title="3.1 共线性诊断处理和变量筛选"></a>3.1 共线性诊断处理和变量筛选</h5><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># --- 多重共线性诊断</span></span><br><span class="line">corr1 &lt;- cor(res101[,!<span class="string">&#x27;clus1&#x27;</span>])</span><br><span class="line">kappa(corr1,exact = <span class="literal">TRUE</span>)</span><br><span class="line"><span class="comment"># 条件数&lt;100,则认为多重共线性的程度很小,</span></span><br><span class="line"><span class="comment"># 若100&lt;=条件数&lt;=1000,则认为存在中等程度的多重共线性,</span></span><br><span class="line"><span class="comment"># 若条件数&gt;1000,则认为存在严重的多重共线性.</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># lasso变量筛选</span></span><br><span class="line"><span class="comment"># 如有疑问 请咨询QQ群 174225475, @保安哥 </span></span><br><span class="line"></span><br><span class="line">head(res11)</span><br></pre></td></tr></table></figure>
+<h5 id="3-1-特征筛选-无共线性情况下-lasso的备选方案"><a href="#3-1-特征筛选-无共线性情况下-lasso的备选方案" class="headerlink" title="3.1 特征筛选(无共线性情况下,lasso的备选方案)"></a>3.1 特征筛选(无共线性情况下,lasso的备选方案)</h5><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># </span></span><br><span class="line"><span class="comment"># library(lightgbm)</span></span><br><span class="line"><span class="comment"># indx1 &lt;- sample(c(0,1),nrow(res11),prob = c(0.3,0.7),replace = TRUE)</span></span><br><span class="line"><span class="comment"># train1 &lt;- res11[indx1==1,] </span></span><br><span class="line"><span class="comment"># test1 &lt;- res11[indx1==0,]</span></span><br><span class="line"><span class="comment"># bia1 &lt;- data.matrix(train1[,!&#x27;clus1&#x27;])</span></span><br><span class="line"><span class="comment"># bia2 &lt;- data.matrix(train1[,clus1])</span></span><br><span class="line"><span class="comment"># bia3 &lt;- data.matrix(test1[,!&#x27;clus1&#x27;])</span></span><br><span class="line"><span class="comment"># bia4 &lt;- data.matrix(test1[,clus1])</span></span><br><span class="line"><span class="comment"># dtrain &lt;- lgb.Dataset(data = bia1,label=bia2)</span></span><br><span class="line"><span class="comment"># dtest &lt;- lgb.Dataset.create.valid(dtrain,data = bia3,label=bia4)</span></span><br><span class="line"><span class="comment"># valid &lt;- list(test=dtest)</span></span><br><span class="line"><span class="comment"># </span></span><br><span class="line"><span class="comment"># param &lt;- list(num_leaves =70, # 70/80 default,2^(max_depth)</span></span><br><span class="line"><span class="comment">#               min_data_in_leaf=1, </span></span><br><span class="line"><span class="comment">#               learning_rate = 0.1, # smaller,slower,maybe more accurate</span></span><br><span class="line"><span class="comment">#               is_unbalance=TRUE, # unbalance TrainingSet</span></span><br><span class="line"><span class="comment">#               nthread = 3,</span></span><br><span class="line"><span class="comment">#               verbose = 1,</span></span><br><span class="line"><span class="comment">#               metric=c(&quot;AUC&quot;, &quot;binary_logloss&quot;), # evaluate rules</span></span><br><span class="line"><span class="comment">#               objective = &quot;binary&quot;)</span></span><br><span class="line"><span class="comment"># lgb1 &lt;- lgb.train(params=param, </span></span><br><span class="line"><span class="comment">#                   data=dtrain,</span></span><br><span class="line"><span class="comment">#                   nrounds = 200,</span></span><br><span class="line"><span class="comment">#                   early_stopping_rounds = 10,</span></span><br><span class="line"><span class="comment">#                   valids = valid,</span></span><br><span class="line"><span class="comment">#                   bagging_fraction = 0.7, # random sample ratio from trainSet</span></span><br><span class="line"><span class="comment">#                   bagging_freq = 10, # random sample freq from trainSet</span></span><br><span class="line"><span class="comment">#                   bagging_seed = 1) # set.seed</span></span><br><span class="line"><span class="comment"># </span></span><br><span class="line"><span class="comment"># imp1 &lt;- lgb.importance(lgb1)</span></span><br><span class="line"><span class="comment"># lgb.plot.importance(imp1)</span></span><br><span class="line"><span class="comment"># imp1</span></span><br><span class="line"><span class="comment"># vars1 &lt;- imp1$Feature[imp1$Gain&gt;=0.02]</span></span><br><span class="line"><span class="comment"># </span></span><br><span class="line"><span class="comment"># var_c1 &lt;- vars1[vars1 %in% names(res11[,!&#x27;clus1&#x27;])[sapply(res11,is.numeric)]]</span></span><br><span class="line"><span class="comment"># var_d1 &lt;- vars1[vars1 %in% names(res11[,!&#x27;clus1&#x27;])[sapply(res11,is.factor)]]</span></span><br></pre></td></tr></table></figure>
+<h4 id="4-WoE-计算"><a href="#4-WoE-计算" class="headerlink" title="4. $WoE$计算"></a>4. $WoE$计算</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">indx1 &lt;- sample(c(<span class="number">0</span>,<span class="number">1</span>),nrow(res11),prob = c(<span class="number">0.3</span>,<span class="number">0.7</span>),replace = <span class="literal">TRUE</span>)</span><br><span class="line">train1 &lt;- res11[indx1==<span class="number">1</span>,] </span><br><span class="line">test1 &lt;- res11[indx1==<span class="number">0</span>,]</span><br><span class="line">dat &lt;- data.frame(train1) <span class="comment"># train data</span></span><br><span class="line">y=<span class="string">&#x27;clus1&#x27;</span> <span class="comment"># target var</span></span><br><span class="line">var_d &lt;- c() <span class="comment"># category var</span></span><br><span class="line">var_c &lt;- c() <span class="comment"># numeric var</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(length(var_d1)==<span class="number">0</span>)&#123;</span><br><span class="line">  var_d = <span class="literal">NULL</span></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;var_d = var_d1&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(length(var_c1)==<span class="number">0</span>)&#123;</span><br><span class="line">  var_c = <span class="literal">NULL</span></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;var_c = var_c1&#125;</span><br><span class="line"></span><br><span class="line">fit_data &lt;- dat <span class="comment"># testdata</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">source</span>(<span class="string">&#x27;./woe_repalce.R&#x27;</span>) <span class="comment"># 调用 woe 计算函数</span></span><br><span class="line"><span class="comment"># woe_replace函数, 请咨询QQ群 174225475, @保安哥</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">library</span>(smbinning)</span><br><span class="line">woe_info1 &lt;- woe.replace(dat,var_c,var_d,y,fit_data)</span><br><span class="line">woe1 &lt;- woe_info1[[<span class="number">1</span>]] <span class="comment"># woe 分值</span></span><br><span class="line">(rules1 &lt;- woe_info1[[<span class="number">2</span>]]) <span class="comment"># 各变量内分组与woe分值对应关系</span></span><br><span class="line">     Cutpoint     WoE      varIndex</span><br><span class="line"><span class="number">1</span>   &lt;= <span class="number">0.1139</span> -<span class="number">5.9691</span> jiesuanshouru</span><br><span class="line"><span class="number">2</span>    &lt;= <span class="number">0.356</span> -<span class="number">2.3566</span> jiesuanshouru</span><br><span class="line"><span class="number">3</span>   &lt;= <span class="number">0.5561</span> -<span class="number">1.0874</span> jiesuanshouru</span><br><span class="line"><span class="number">4</span>   &lt;= <span class="number">0.8008</span>  <span class="number">0.2356</span> jiesuanshouru</span><br><span class="line"><span class="number">5</span>   &lt;= <span class="number">1.0811</span>  <span class="number">1.6840</span> jiesuanshouru</span><br><span class="line"><span class="number">6</span>   &lt;= <span class="number">1.3079</span>  <span class="number">2.7690</span> jiesuanshouru</span><br><span class="line"><span class="keyword">...</span>  <span class="keyword">...</span></span><br></pre></td></tr></table></figure>
+<h4 id="5-最终得分计算及评分规则整理"><a href="#5-最终得分计算及评分规则整理" class="headerlink" title="5. 最终得分计算及评分规则整理"></a>5. 最终得分计算及评分规则整理</h4><h5 id="5-1-计算系数-A-B"><a href="#5-1-计算系数-A-B" class="headerlink" title="5.1 计算系数 A/B"></a>5.1 计算系数 A/B</h5><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt; (pdo &lt;- <span class="number">30</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="number">30</span></span><br><span class="line">&gt; (B &lt;- pdo/log(<span class="number">2</span>))</span><br><span class="line">[<span class="number">1</span>] <span class="number">43.28085</span></span><br><span class="line">&gt; (odds &lt;- table(train1$clus1)[<span class="number">2</span>]/table(train1$clus1)[<span class="number">1</span>])</span><br><span class="line">        <span class="number">1</span> </span><br><span class="line"><span class="number">0.2579551</span> </span><br><span class="line">&gt; (SC &lt;- <span class="number">600</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="number">600</span></span><br><span class="line">&gt; (A &lt;- SC + B*log(odds))</span><br><span class="line">       <span class="number">1</span> </span><br><span class="line"><span class="number">541.3558</span> </span><br></pre></td></tr></table></figure>
+<h5 id="5-2-利用-WoE-值重新建立-logistic-模型计算-各项系数"><a href="#5-2-利用-WoE-值重新建立-logistic-模型计算-各项系数" class="headerlink" title="5.2 利用$WoE$值重新建立 logistic 模型计算 各项系数"></a>5.2 利用$WoE$值重新建立 logistic 模型计算 各项系数</h5><p>实际操作中, 因变量的分布是极度不平衡的, 因此在建模时就有了要不要人工设定 weights 参数对建模数据进行样本比例矫正, 以下是两种方案(设置/不设置weights)的比较</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&gt; woe2 &lt;- data.frame(cbind(woe1,clus1=train1$clus1))</span><br><span class="line">&gt; lgc3 &lt;- glm(clus1~.,data=woe2,</span><br><span class="line">            family = binomial(link = <span class="string">&#x27;logit&#x27;</span>))</span><br><span class="line">&gt; lgc_res3 &lt;- predict(lgc3,data.frame(woe1),type = <span class="string">&#x27;response&#x27;</span>)</span><br><span class="line">&gt; table(ifelse(lgc_res3 &gt;<span class="number">0.5</span>,<span class="number">1</span>,<span class="number">0</span>),train1$clus1)  </span><br><span class="line">       <span class="number">0</span>    <span class="number">1</span></span><br><span class="line">  <span class="number">0</span> <span class="number">6100</span>   <span class="number">90</span></span><br><span class="line">  <span class="number">1</span>   <span class="number">91</span> <span class="number">1507</span></span><br><span class="line">&gt; <span class="keyword">library</span>(ModelMetrics)</span><br><span class="line">&gt; auc(ifelse(lgc_res3 &gt;<span class="number">0.5</span>,<span class="number">1</span>,<span class="number">0</span>),train1$clus1)</span><br><span class="line">[<span class="number">1</span>] <span class="number">0.9642571</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ------------------</span></span><br><span class="line">&gt; lgc3 &lt;- glm(clus1~.,data=woe2,weights = ifelse(woe2$clus1&gt;<span class="number">0</span>,<span class="number">5</span>,<span class="number">1</span>),</span><br><span class="line">+             family = binomial(link = <span class="string">&#x27;logit&#x27;</span>))</span><br><span class="line">&gt; lgc_res3 &lt;- predict(lgc3,data.frame(woe1),type = <span class="string">&#x27;response&#x27;</span>)</span><br><span class="line">&gt; table(ifelse(lgc_res3 &gt;<span class="number">0.5</span>,<span class="number">1</span>,<span class="number">0</span>),train1$clus1)</span><br><span class="line">       <span class="number">0</span>    <span class="number">1</span></span><br><span class="line">  <span class="number">0</span> <span class="number">5991</span>   <span class="number">18</span></span><br><span class="line">  <span class="number">1</span>  <span class="number">200</span> <span class="number">1579</span></span><br><span class="line">&gt; <span class="keyword">library</span>(ModelMetrics)</span><br><span class="line">&gt; auc(ifelse(lgc_res3 &gt;<span class="number">0.5</span>,<span class="number">1</span>,<span class="number">0</span>),train1$clus1)</span><br><span class="line">[<span class="number">1</span>] <span class="number">0.9422909</span></span><br><span class="line"></span><br><span class="line">&gt; woe_info2 &lt;- woe.replace(dat,var_c,var_d,y,</span><br><span class="line">+                          fit_data = data.frame(test1))</span><br><span class="line">&gt; woe3 &lt;- woe_info2[[<span class="number">1</span>]]</span><br><span class="line">&gt; lgc_res4 &lt;- predict(lgc3,data.frame(woe3),type = <span class="string">&#x27;response&#x27;</span>)</span><br><span class="line">&gt; table(ifelse(lgc_res4 &gt;<span class="number">0.5</span>,<span class="number">1</span>,<span class="number">0</span>),test1$clus1)</span><br><span class="line">   </span><br><span class="line">      <span class="number">0</span>   <span class="number">1</span></span><br><span class="line">  <span class="number">0</span> <span class="number">534</span>  <span class="number">10</span></span><br><span class="line">  <span class="number">1</span>  <span class="number">29</span>  <span class="number">18</span></span><br></pre></td></tr></table></figure>
+<p>添加了 weights 参数, 模型对 违约客户 的预测准确率会更高, 但整体AUC 会受影响, 因此在建模时可根据 业务的实际需求进行 weights 参数的取舍 </p>
+<h5 id="5-3-WoE-向实际得分转化及其规则整理"><a href="#5-3-WoE-向实际得分转化及其规则整理" class="headerlink" title="5.3 $WoE$向实际得分转化及其规则整理"></a>5.3 $WoE$向实际得分转化及其规则整理</h5><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># --- train1 样本总得分计算</span></span><br><span class="line">coef1 &lt;- lgc3$coefficients</span><br><span class="line">(BaseSC &lt;- A-B*coef1[<span class="number">1</span>])</span><br><span class="line">Tsc1 &lt;- BaseSC + woe1 %*% coef1[-<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># ---得分转化规则梳理</span></span><br><span class="line">rules1$coef1 &lt;- coef1[rules1$varIndex]</span><br><span class="line">rules1$sc1 &lt;- with(rules1,WoE*coef1)</span><br><span class="line"><span class="comment"># --- 分值分布情况</span></span><br><span class="line"><span class="keyword">library</span>(dplyr)</span><br><span class="line">rules1 %&gt;% </span><br><span class="line">  group_by(varIndex) %&gt;%</span><br><span class="line">  summarise(max1=max(sc1),</span><br><span class="line">            min1=min(sc1),</span><br><span class="line">            mean1=mean(sc1))</span><br><span class="line"><span class="comment"># A tibble: 7 x 4</span></span><br><span class="line">       varIndex      max1      min1       mean1</span><br><span class="line">          &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;</span><br><span class="line"><span class="number">1</span>   feiyongheji <span class="number">2.4498204</span> -<span class="number">3.176858</span> -<span class="number">0.12697315</span></span><br><span class="line"><span class="number">2</span>       jianshu <span class="number">2.9163435</span> -<span class="number">3.223899</span>  <span class="number">0.18207080</span></span><br><span class="line"><span class="number">3</span> jiesuanshouru <span class="number">2.8838985</span> -<span class="number">3.500189</span>  <span class="number">0.29030440</span></span><br><span class="line"><span class="number">4</span>       pingtai <span class="number">3.4201266</span> -<span class="number">5.301336</span> -<span class="number">0.02456898</span></span><br><span class="line"><span class="number">5</span>      quantity <span class="number">0.9789534</span> -<span class="number">1.492049</span> -<span class="number">0.11555953</span></span><br><span class="line"><span class="number">6</span>          tiji <span class="number">2.8583949</span> -<span class="number">3.338300</span> -<span class="number">0.08009086</span></span><br><span class="line"><span class="number">7</span>        yunfei <span class="number">2.4681047</span> -<span class="number">3.475437</span> -<span class="number">0.14391316</span></span><br><span class="line"><span class="comment"># --- 规则展示</span></span><br><span class="line">&gt; rules1[,.(varIndex,Cutpoint,sc1)]</span><br><span class="line">         varIndex   Cutpoint         sc1</span><br><span class="line"> <span class="number">1</span>: jiesuanshouru  &lt;= <span class="number">0.1139</span> -<span class="number">3.50018886</span></span><br><span class="line"> <span class="number">2</span>: jiesuanshouru   &lt;= <span class="number">0.356</span> -<span class="number">1.38187416</span></span><br><span class="line"> <span class="number">3</span>: jiesuanshouru  &lt;= <span class="number">0.5561</span> -<span class="number">0.63763471</span></span><br><span class="line"> <span class="number">4</span>: jiesuanshouru  &lt;= <span class="number">0.8008</span>  <span class="number">0.13815223</span></span><br><span class="line"> <span class="number">5</span>: jiesuanshouru  &lt;= <span class="number">1.0811</span>  <span class="number">0.98747182</span></span><br><span class="line"> <span class="number">6</span>: jiesuanshouru  &lt;= <span class="number">1.3079</span>  <span class="number">1.62369921</span></span><br><span class="line"> <span class="number">7</span>: jiesuanshouru  &lt;= <span class="number">1.4988</span>  <span class="number">2.20891113</span></span><br><span class="line"> <span class="number">8</span>: jiesuanshouru   &gt; <span class="number">1.4988</span>  <span class="number">2.88389855</span></span><br><span class="line"> <span class="number">9</span>:   feiyongheji  &lt;= -<span class="number">0.449</span> -<span class="number">3.17685829</span></span><br><span class="line"><span class="number">10</span>:   feiyongheji  &lt;= <span class="number">0.2052</span> -<span class="number">1.85452835</span></span><br><span class="line"><span class="number">11</span>:   feiyongheji  &lt;= <span class="number">0.4717</span> -<span class="number">0.89196384</span></span><br><span class="line"><span class="number">12</span>:   feiyongheji  &lt;= <span class="number">0.7499</span> -<span class="number">0.19168770</span></span><br><span class="line"><span class="number">13</span>:   feiyongheji  &lt;= <span class="number">1.0887</span>  <span class="number">0.92124707</span></span><br><span class="line"><span class="number">14</span>:   feiyongheji  &lt;= <span class="number">1.4839</span>  <span class="number">1.85515871</span></span><br><span class="line"><span class="number">15</span>:   feiyongheji   &gt; <span class="number">1.4839</span>  <span class="number">2.44982037</span></span><br><span class="line"><span class="number">16</span>:        yunfei &lt;= -<span class="number">0.5582</span> -<span class="number">3.47543677</span></span><br><span class="line"><span class="number">17</span>:        yunfei  &lt;= <span class="number">0.2745</span> -<span class="number">1.86611915</span></span><br><span class="line"><span class="keyword">...</span>  <span class="keyword">...</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="一些建模过程中用到的标准"><a href="#一些建模过程中用到的标准" class="headerlink" title="一些建模过程中用到的标准"></a>一些建模过程中用到的标准</h3><h4 id="群体稳定性指标-Population-Stability-Index-PSI"><a href="#群体稳定性指标-Population-Stability-Index-PSI" class="headerlink" title="群体稳定性指标(Population Stability Index) PSI"></a>群体稳定性指标(Population Stability Index) PSI</h4><p>群体稳定性指标(population stability index)公式：<br>$$psi = sum(（实际占比-预期占比）* ln(实际占比/预期占比))$$<br>举个例子解释下，比如训练一个logistic回归模型，预测时候会有个类概率输出 p .测试数据集的预测输出设定为 p1，按照 p1 从小到大排序后将数据集10等分(每组样本数一致,即等宽分组),计算每等分组的最大最小预测的类概率值.<br>用模型对新的样本进行预测，预测结果叫 p2，根据刚才在测试数据集上10等分组的等分对应的p1上下界,套用在p2上将新样本划分为10分(此时已不一定是等分). 实际占比就是新样本通过p2落在p1划分出来的每等分界限内的占比，预期占比就是测试数据集上各等分样本的占比。意义就是如果模型更稳定，那么在新的数据上预测所得类概率应该更建模分布一致，这样落在建模数据集所得的类概率所划分的等分区间上的样本占比应该和建模时一样，否则说明模型变化，一般来自预测变量结构变化。通常用作模型效果监测。一般认为PSI小于0.1时候模型稳定性很高，0.1-0.25一般，大于0.25模型稳定性差，建议重做</p>
+<h4 id="变量共线性诊断"><a href="#变量共线性诊断" class="headerlink" title="变量共线性诊断"></a>变量共线性诊断</h4><h5 id="相关系数"><a href="#相关系数" class="headerlink" title="相关系数"></a>相关系数</h5><p>当评分模型变量间的相关性过高，会产生共线性 (collinearity) 的问题，导致使模型的预测能力下降，甚至出现与预测结果相反无法解释的现象</p>
+<table>
+<thead>
+<tr>
+<th>相关系数值绝对值</th>
+<th>相关程度描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>[1,1]</td>
+<td>完全相关</td>
+</tr>
+<tr>
+<td>[0.7,1)</td>
+<td>强相关</td>
+</tr>
+<tr>
+<td>[0.4,0.7)</td>
+<td>中度相关</td>
+</tr>
+<tr>
+<td>[0.1,0.4)</td>
+<td>低度相关或者弱相关</td>
+</tr>
+<tr>
+<td>[0,0.1)</td>
+<td>微弱相关或者不相关</td>
+</tr>
+</tbody></table>
+<p>对于开发评分模型而言，如果相关系数超过0.7，表示变量间的相关程度太高，必须进行筛选以免降低模型的预测能力</p>
+<h4 id="VI-Value-of-Information-筛选变量的判断标准"><a href="#VI-Value-of-Information-筛选变量的判断标准" class="headerlink" title="VI (Value of Information) 筛选变量的判断标准"></a>VI (Value of Information) 筛选变量的判断标准</h4><table>
+<thead>
+<tr>
+<th>VI</th>
+<th>Power</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>[0,0.02)</td>
+<td>无预测能力(unpredictive)</td>
+</tr>
+<tr>
+<td>[0.02,0.1)</td>
+<td>弱预测能力(weak)</td>
+</tr>
+<tr>
+<td>[0.1,0.3)</td>
+<td>中预测能力(medium)</td>
+</tr>
+<tr>
+<td>[0.3,Inf)</td>
+<td>强预测能力(strong)</td>
+</tr>
+</tbody></table>
+<h3 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h3><ul>
+<li>[CDA-R数据挖掘-汽车金融信用违约预测模型案例]</li>
+<li><a target="_blank" rel="noopener" href="https://www.tuicool.com/articles/ENruMj">评分卡模型剖析之一(woe/IV/ROC/信息熵)</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.cnblogs.com/LittleBook/p/6842920.html">信用卡评分模型(R语言)</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.zhangyitian.cn/blog/machine-learning-%E8%AF%84%E5%88%86%E5%8D%A1%E6%A8%A1%E5%9E%8Bwoeivroc/">machine learning 评分卡模型</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/27770760">评分卡模型构建介绍</a></li>
+<li><a target="_blank" rel="noopener" href="http://wutengfeng.com/2017/05/30/%E4%BF%A1%E7%94%A8%E8%AF%84%E5%88%86%E5%8D%A1%E6%A8%A1%E5%9E%8B_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/">信用评分卡模型_基于R语言</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.sohu.com/a/116018370_470097">信用评级模型实例分析(以消费金融为例)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/24490261">信用评分中PSI的计算逻辑</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/fIDKsyUMMbQO9KUQ7EpPyQ">用R语言做评分卡模型</a></li>
+<li><a target="_blank" rel="noopener" href="https://cosx.org/2016/05/credit-scoring-model-in-internet-credit-reporting/">互联网征信中的信用评分模型</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/%E8%AF%84%E5%88%86%E5%8D%A1/" rel="tag"># 评分卡</a>
+              <a href="/tags/woe/" rel="tag"># woe</a>
+              <a href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/" rel="tag"># 逻辑回归</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/10/CrawlFrame1/" rel="prev" title="R语言爬虫项目程序结构解析">
+      <i class="fa fa-chevron-left"></i> R语言爬虫项目程序结构解析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/12/19/dongman1/" rel="next" title="高点播动漫的特征画像">
+      高点播动漫的特征画像 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B%E5%BA%94%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">案例应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E6%95%B0%E6%8D%AE%E8%AF%BB%E5%8F%96"><span class="nav-number">2.1.</span> <span class="nav-text">1. 数据读取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97"><span class="nav-number">2.2.</span> <span class="nav-text">2. 数据清洗</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-NA-%E5%A4%84%E7%90%86"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.1 $NA$ 处理</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-1-%E5%88%97-NA-%E7%9A%84%E5%A4%84%E7%90%86%E6%96%B9%E5%BC%8F"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">2.1.1 列 $NA$ 的处理方式</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-2-%E8%A1%8C-NA-%E7%9A%84%E5%A4%84%E7%90%86%E6%96%B9%E5%BC%8F"><span class="nav-number">2.2.1.2.</span> <span class="nav-text">2.1.2 行$NA$的处理方式</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-3-%E5%89%A9%E4%BD%99-NA-%E7%9A%84%E5%A4%84%E7%90%86%E6%96%B9%E5%BC%8F"><span class="nav-number">2.2.1.3.</span> <span class="nav-text">2.1.3 剩余$NA$的处理方式</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-%E5%BC%82%E5%B8%B8%E5%80%BC%E5%A4%84%E7%90%86"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2 异常值处理</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%8F%98%E9%87%8F%E7%AD%9B%E9%80%89"><span class="nav-number">2.3.</span> <span class="nav-text">3. 变量筛选</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-1-%E5%85%B1%E7%BA%BF%E6%80%A7%E8%AF%8A%E6%96%AD%E5%A4%84%E7%90%86%E5%92%8C%E5%8F%98%E9%87%8F%E7%AD%9B%E9%80%89"><span class="nav-number">2.3.1.</span> <span class="nav-text">3.1 共线性诊断处理和变量筛选</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-1-%E7%89%B9%E5%BE%81%E7%AD%9B%E9%80%89-%E6%97%A0%E5%85%B1%E7%BA%BF%E6%80%A7%E6%83%85%E5%86%B5%E4%B8%8B-lasso%E7%9A%84%E5%A4%87%E9%80%89%E6%96%B9%E6%A1%88"><span class="nav-number">2.3.2.</span> <span class="nav-text">3.1 特征筛选(无共线性情况下,lasso的备选方案)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-WoE-%E8%AE%A1%E7%AE%97"><span class="nav-number">2.4.</span> <span class="nav-text">4. $WoE$计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E6%9C%80%E7%BB%88%E5%BE%97%E5%88%86%E8%AE%A1%E7%AE%97%E5%8F%8A%E8%AF%84%E5%88%86%E8%A7%84%E5%88%99%E6%95%B4%E7%90%86"><span class="nav-number">2.5.</span> <span class="nav-text">5. 最终得分计算及评分规则整理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#5-1-%E8%AE%A1%E7%AE%97%E7%B3%BB%E6%95%B0-A-B"><span class="nav-number">2.5.1.</span> <span class="nav-text">5.1 计算系数 A&#x2F;B</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-2-%E5%88%A9%E7%94%A8-WoE-%E5%80%BC%E9%87%8D%E6%96%B0%E5%BB%BA%E7%AB%8B-logistic-%E6%A8%A1%E5%9E%8B%E8%AE%A1%E7%AE%97-%E5%90%84%E9%A1%B9%E7%B3%BB%E6%95%B0"><span class="nav-number">2.5.2.</span> <span class="nav-text">5.2 利用$WoE$值重新建立 logistic 模型计算 各项系数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-3-WoE-%E5%90%91%E5%AE%9E%E9%99%85%E5%BE%97%E5%88%86%E8%BD%AC%E5%8C%96%E5%8F%8A%E5%85%B6%E8%A7%84%E5%88%99%E6%95%B4%E7%90%86"><span class="nav-number">2.5.3.</span> <span class="nav-text">5.3 $WoE$向实际得分转化及其规则整理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%BB%BA%E6%A8%A1%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E6%A0%87%E5%87%86"><span class="nav-number">3.</span> <span class="nav-text">一些建模过程中用到的标准</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BE%A4%E4%BD%93%E7%A8%B3%E5%AE%9A%E6%80%A7%E6%8C%87%E6%A0%87-Population-Stability-Index-PSI"><span class="nav-number">3.1.</span> <span class="nav-text">群体稳定性指标(Population Stability Index) PSI</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E5%85%B1%E7%BA%BF%E6%80%A7%E8%AF%8A%E6%96%AD"><span class="nav-number">3.2.</span> <span class="nav-text">变量共线性诊断</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E7%B3%BB%E6%95%B0"><span class="nav-number">3.2.1.</span> <span class="nav-text">相关系数</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VI-Value-of-Information-%E7%AD%9B%E9%80%89%E5%8F%98%E9%87%8F%E7%9A%84%E5%88%A4%E6%96%AD%E6%A0%87%E5%87%86"><span class="nav-number">3.3.</span> <span class="nav-text">VI (Value of Information) 筛选变量的判断标准</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#References"><span class="nav-number">4.</span> <span class="nav-text">References:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

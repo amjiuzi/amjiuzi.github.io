@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快 参加了几次数据竞赛成绩平平,但对分类模型有了更宽的认识常用模型罗列如下,仅供后续参考 注: 本文重在比较R中常用分类模型预测准确率,时效暂不在此范围内 A. 案例数据本文采用 UCI的 Adult 数据集, 下载链接Adult Data Set 目标">
+<meta property="og:type" content="article">
+<meta property="og:title" content="R中各分类模型准确率比较">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2018/03/03/class1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快 参加了几次数据竞赛成绩平平,但对分类模型有了更宽的认识常用模型罗列如下,仅供后续参考 注: 本文重在比较R中常用分类模型预测准确率,时效暂不在此范围内 A. 案例数据本文采用 UCI的 Adult 数据集, 下载链接Adult Data Set 目标">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2018/03/07/5a9f67c89632d.png">
+<meta property="article:published_time" content="2018-03-03T12:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:12.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="bayes">
+<meta property="article:tag" content="分类">
+<meta property="article:tag" content="logistic">
+<meta property="article:tag" content="C5.0">
+<meta property="article:tag" content="randomForest">
+<meta property="article:tag" content="lightgbm">
+<meta property="article:tag" content="xgboost">
+<meta property="article:tag" content="catboost">
+<meta property="article:tag" content="NeuralNet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2018/03/07/5a9f67c89632d.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2018/03/03/class1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>R中各分类模型准确率比较 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2018/03/03/class1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          R中各分类模型准确率比较
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-03-03 20:02:34" itemprop="dateCreated datePublished" datetime="2018-03-03T20:02:34+08:00">2018-03-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:12" itemprop="dateModified" datetime="2020-08-23T21:16:12+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Classify/" itemprop="url" rel="index"><span itemprop="name">Classify</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿帮助，请出门左转 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">Convenient Entrance</a>, 合作愉快</p>
+<p>参加了几次数据竞赛成绩平平,但对分类模型有了更宽的认识<br>常用模型罗列如下,仅供后续参考</p>
+<p>注: 本文重在比较R中常用分类模型预测准确率,时效暂不在此范围内</p>
+<h2 id="A-案例数据"><a href="#A-案例数据" class="headerlink" title="A. 案例数据"></a>A. 案例数据</h2><p>本文采用 UCI的 Adult 数据集, 下载链接<br><a target="_blank" rel="noopener" href="http://archive.ics.uci.edu/ml/datasets/Adult">Adult Data Set </a><br>目标 ： 建模预测adult年薪能否达到 50k</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">setwd(<span class="string">&#x27;xx/class&#x27;</span>)</span><br><span class="line"><span class="keyword">library</span>(data.table)</span><br><span class="line">train1 &lt;- fread(<span class="string">&#x27;./adult/adult_train.csv&#x27;</span>,</span><br><span class="line">                header = <span class="literal">TRUE</span>,encoding = <span class="string">&#x27;UTF-8&#x27;</span>)</span><br><span class="line">test1 &lt;- fread(<span class="string">&#x27;./adult/adult_test.csv&#x27;</span>,</span><br><span class="line">               header = <span class="literal">TRUE</span>,encoding = <span class="string">&#x27;UTF-8&#x27;</span>)</span><br><span class="line">str(train1)</span><br><span class="line"></span><br><span class="line">Classes ‘data.table’ and <span class="string">&#x27;data.frame&#x27;</span>:	<span class="number">32561</span> obs. of  <span class="number">15</span> variables:</span><br><span class="line"> $ age           : int  <span class="number">39</span> <span class="number">50</span> <span class="number">38</span> <span class="number">53</span> <span class="number">28</span> <span class="number">37</span> <span class="number">49</span> <span class="number">52</span> <span class="number">31</span> <span class="number">42</span> <span class="keyword">...</span></span><br><span class="line"> $ workclass     : chr  <span class="string">&quot;State-gov&quot;</span> <span class="string">&quot;Self-emp-not-inc&quot;</span> <span class="string">&quot;Private&quot;</span> <span class="string">&quot;Private&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ fnlwgt        : int  <span class="number">77516</span> <span class="number">83311</span> <span class="number">215646</span> <span class="number">234721</span> <span class="number">338409</span> <span class="number">284582</span> <span class="number">160187</span> <span class="number">209642</span> <span class="number">45781</span> <span class="number">159449</span> <span class="keyword">...</span></span><br><span class="line"> $ education     : chr  <span class="string">&quot;Bachelors&quot;</span> <span class="string">&quot;Bachelors&quot;</span> <span class="string">&quot;HS-grad&quot;</span> <span class="string">&quot;11th&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ education-num : int  <span class="number">13</span> <span class="number">13</span> <span class="number">9</span> <span class="number">7</span> <span class="number">13</span> <span class="number">14</span> <span class="number">5</span> <span class="number">9</span> <span class="number">14</span> <span class="number">13</span> <span class="keyword">...</span></span><br><span class="line"> $ marital-status: chr  <span class="string">&quot;Never-married&quot;</span> <span class="string">&quot;Married-civ-spouse&quot;</span> <span class="string">&quot;Divorced&quot;</span> <span class="string">&quot;Married-civ-spouse&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ occupation    : chr  <span class="string">&quot;Adm-clerical&quot;</span> <span class="string">&quot;Exec-managerial&quot;</span> <span class="string">&quot;Handlers-cleaners&quot;</span> <span class="string">&quot;Handlers-cleaners&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ relationship  : chr  <span class="string">&quot;Not-in-family&quot;</span> <span class="string">&quot;Husband&quot;</span> <span class="string">&quot;Not-in-family&quot;</span> <span class="string">&quot;Husband&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ race          : chr  <span class="string">&quot;White&quot;</span> <span class="string">&quot;White&quot;</span> <span class="string">&quot;White&quot;</span> <span class="string">&quot;Black&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ sex           : chr  <span class="string">&quot;Male&quot;</span> <span class="string">&quot;Male&quot;</span> <span class="string">&quot;Male&quot;</span> <span class="string">&quot;Male&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ capital-gain  : int  <span class="number">2174</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">14084</span> <span class="number">5178</span> <span class="keyword">...</span></span><br><span class="line"> $ capital-loss  : int  <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="keyword">...</span></span><br><span class="line"> $ hours-per-week: int  <span class="number">40</span> <span class="number">13</span> <span class="number">40</span> <span class="number">40</span> <span class="number">40</span> <span class="number">40</span> <span class="number">16</span> <span class="number">45</span> <span class="number">50</span> <span class="number">40</span> <span class="keyword">...</span></span><br><span class="line"> $ native-country: chr  <span class="string">&quot;United-States&quot;</span> <span class="string">&quot;United-States&quot;</span> <span class="string">&quot;United-States&quot;</span> <span class="string">&quot;United-States&quot;</span> <span class="keyword">...</span></span><br><span class="line"> $ class         : chr  <span class="string">&quot;&lt;=50K&quot;</span> <span class="string">&quot;&lt;=50K&quot;</span> <span class="string">&quot;&lt;=50K&quot;</span> <span class="string">&quot;&lt;=50K&quot;</span> <span class="keyword">...</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h2 id="B-数据清洗"><a href="#B-数据清洗" class="headerlink" title="B. 数据清洗"></a>B. 数据清洗</h2><p>数据探索和特征工程是挖掘工程中的重要环节，本文重在比较模型效果，所以只对元数据做简单处理</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">total1 &lt;- rbind(train1,test1)</span><br><span class="line">table(sapply(total1,class))</span><br><span class="line">int.var &lt;- colnames(total1)[which(sapply(total1,class) == <span class="string">&#x27;integer&#x27;</span>)]</span><br><span class="line">fac.var &lt;- colnames(total1)[which(sapply(total1,class) == <span class="string">&#x27;factor&#x27;</span>)]</span><br><span class="line"></span><br><span class="line">sapply(total1[,fac.var,with=<span class="literal">FALSE</span>],table)</span><br><span class="line"></span><br><span class="line">fac1 &lt;- total1[,lapply(.SD, <span class="keyword">function</span>(x) as.factor(</span><br><span class="line">  gsub(<span class="string">&#x27;\\?&#x27;</span>,<span class="string">&#x27;unknown&#x27;</span>,as.character(x)))),</span><br><span class="line">                .SDcols=fac.var]</span><br><span class="line"></span><br><span class="line">int1 &lt;- total1[,lapply(.SD,as.numeric),.SDcols=int.var]</span><br><span class="line"></span><br><span class="line">fac1$marital_status &lt;- factor(ifelse(substr(tolower(as.character(fac1$marital_status)),<span class="number">1</span>,<span class="number">7</span>)==<span class="string">&#x27;married&#x27;</span>,</span><br><span class="line">                              <span class="string">&#x27;married&#x27;</span>,<span class="string">&#x27;unmarried&#x27;</span>))</span><br><span class="line">fac1$overtime &lt;- as.factor(ifelse(int1$hours_per_week&gt;<span class="number">40</span>,<span class="number">1</span>,<span class="number">0</span>))</span><br><span class="line"></span><br><span class="line">indx1 &lt;- seq(<span class="number">1</span>,sum(nrow(train1),nrow(test1)))</span><br><span class="line">train301 &lt;- total2[indx1&lt;=nrow(train1),]</span><br><span class="line"><span class="comment"># --- data balance </span></span><br><span class="line">table(train301$class)</span><br><span class="line">train3 &lt;- rbind(train301[train301$class==<span class="number">0</span>,],</span><br><span class="line">                train301[train301$class==<span class="number">1</span>,],</span><br><span class="line">                train301[train301$class==<span class="number">1</span>,],</span><br><span class="line">                train301[train301$class==<span class="number">1</span>,])</span><br><span class="line">test3 &lt;- total2[indx1 &gt; nrow(train1),]</span><br></pre></td></tr></table></figure>
+<h2 id="C-分类建模"><a href="#C-分类建模" class="headerlink" title="C. 分类建模"></a>C. 分类建模</h2><h3 id="1-Model-—-logistic-regression"><a href="#1-Model-—-logistic-regression" class="headerlink" title="1. Model — logistic regression"></a>1. Model — logistic regression</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">system.time(log1 &lt;- glm(class~.,data=train3,</span><br><span class="line">                        family = binomial(link = <span class="string">&#x27;logit&#x27;</span>))) </span><br><span class="line">summary(log1)</span><br><span class="line"><span class="comment"># log2 &lt;- step(log1)</span></span><br><span class="line">pre.log &lt;- predict(log1,test3,type = <span class="string">&#x27;response&#x27;</span>)</span><br><span class="line">tbl.logis &lt;- table(pre.log2=ifelse(pre.log&gt;<span class="number">0.5</span>,<span class="number">1</span>,<span class="number">0</span>),</span><br><span class="line">                   test3$class)</span><br><span class="line">acc.logis &lt;- sum(diag(tbl.logis))/sum(tbl.logis)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Model-—-Naive-Bayes"><a href="#2-Model-—-Naive-Bayes" class="headerlink" title="2. Model — Naive Bayes"></a>2. Model — Naive Bayes</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(e1071)</span><br><span class="line">bayes1 &lt;- naiveBayes(class~.,data=train3,</span><br><span class="line">                     laplace = <span class="number">1</span>)</span><br><span class="line">pre.bayes1 &lt;- predict(bayes1,test3,type = <span class="string">&#x27;class&#x27;</span>)</span><br><span class="line">tbl.bayes &lt;- table(pre.bayes1,test3$class)</span><br><span class="line">acc.bayes &lt;- sum(diag(tbl.bayes))/sum(tbl.bayes)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Model-—-C5-0"><a href="#3-Model-—-C5-0" class="headerlink" title="3. Model — C5.0"></a>3. Model — C5.0</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(C50)</span><br><span class="line">err.cost=matrix(c(<span class="number">1</span>,<span class="number">1</span>,<span class="number">10</span>,<span class="number">1</span>),ncol=<span class="number">2</span>)</span><br><span class="line">dimnames(err.cost)=list(c(<span class="string">&#x27;&lt;=50K&#x27;</span>,<span class="string">&#x27;&gt;50K&#x27;</span>),c(<span class="string">&#x27;&lt;=50K&#x27;</span>,<span class="string">&#x27;&gt;50K&#x27;</span>))</span><br><span class="line">dimnames(err.cost)=list(c(<span class="number">0</span>,<span class="number">1</span>),c(<span class="number">0</span>,<span class="number">1</span>))</span><br><span class="line">err.cost</span><br><span class="line">system.time(c50m1 &lt;- C5.0(class~.,data=train3,</span><br><span class="line">                       costs=err.cost,</span><br><span class="line">                       trials=<span class="number">10</span>))</span><br><span class="line">pre.c50=predict(c50m1,newdata=test3,type=<span class="string">&#x27;class&#x27;</span>)</span><br><span class="line">tbl.c50 &lt;- table(pre.c50,test3$class)</span><br><span class="line">acc.c50 &lt;- sum(diag(tbl.c50))/sum(tbl.c50)</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-Model-—-Randomforest"><a href="#4-Model-—-Randomforest" class="headerlink" title="4. Model — Randomforest"></a>4. Model — Randomforest</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(randomForest)</span><br><span class="line">rf3 &lt;- randomForest(class~.,data=train3,</span><br><span class="line">                    mtry=<span class="number">1</span>,ntree=<span class="number">400</span>,importance=<span class="literal">TRUE</span>)</span><br><span class="line"><span class="comment"># plot(rf3)</span></span><br><span class="line">pre.rf &lt;- predict(rf3,newdata=test3,type=<span class="string">&#x27;class&#x27;</span>)</span><br><span class="line">tbl.rf &lt;- table(pre.rf,test3$class)</span><br><span class="line">acc.rf &lt;- sum(diag(tbl.rf))/sum(tbl.rf)</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-Model-—-xgboost"><a href="#5-Model-—-xgboost" class="headerlink" title="5. Model — xgboost"></a>5. Model — xgboost</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(xgboost)</span><br><span class="line"><span class="keyword">library</span>(Matrix)</span><br><span class="line">sparse_matrix &lt;- sparse.model.matrix(class~., data = train3)</span><br><span class="line">Y &lt;- as.numeric(train3$class)-<span class="number">1</span> </span><br><span class="line">sp.test &lt;- sparse.model.matrix(class~., data = test3)</span><br><span class="line"></span><br><span class="line">system.time(bst &lt;- xgboost(data = sparse_matrix, </span><br><span class="line">                           label = Y, </span><br><span class="line">                           max.depth = <span class="number">4</span>,</span><br><span class="line">                           eta = <span class="number">0.5</span>, </span><br><span class="line">                           lambda = <span class="number">0.7</span>, <span class="comment"># L1 </span></span><br><span class="line">                           min_child_weight = <span class="number">10</span>,</span><br><span class="line">                           eval_metric = <span class="string">&#x27;auc&#x27;</span>,</span><br><span class="line">                           nthread = <span class="number">3</span>, </span><br><span class="line">                           nround = <span class="number">100</span>,</span><br><span class="line">                           objective = <span class="string">&quot;binary:logistic&quot;</span>)) </span><br><span class="line"></span><br><span class="line">pre.xgb &lt;- predict(bst,newdata=sp.test)</span><br><span class="line">tbl.xgb &lt;- table(ifelse(pre.xgb &gt; <span class="number">0.5</span>,<span class="number">1</span>,<span class="number">0</span>),na.omit(test3)$class)</span><br><span class="line">acc.xgb &lt;- sum(diag(tbl.xgb))/sum(tbl.xgb)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="6-Model-—-catboost"><a href="#6-Model-—-catboost" class="headerlink" title="6. Model — catboost"></a>6. Model — catboost</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(catboost)</span><br><span class="line"><span class="keyword">library</span>(caret)</span><br><span class="line">x &lt;- train3[,-c(<span class="string">&#x27;class&#x27;</span>)]</span><br><span class="line">y &lt;- train3$class</span><br><span class="line">fit_control &lt;- trainControl(method = <span class="string">&quot;cv&quot;</span>,</span><br><span class="line">                            number = <span class="number">5</span>,</span><br><span class="line">                            classProbs = <span class="literal">TRUE</span>)</span><br><span class="line">grid &lt;- expand.grid(depth = <span class="number">8</span>, </span><br><span class="line">                    learning_rate = c(<span class="number">0.1</span>,<span class="number">0.5</span>), </span><br><span class="line">                    iterations = <span class="number">100</span>, </span><br><span class="line">                    l2_leaf_reg = <span class="number">3</span>, </span><br><span class="line">                    rsm = <span class="number">0.95</span>, </span><br><span class="line">                    border_count = c(<span class="number">32</span>,<span class="number">64</span>))</span><br><span class="line">system.time(cat2 &lt;- train(x, as.factor(make.names(y)),</span><br><span class="line">                          method = catboost.caret,</span><br><span class="line">                          preProc = <span class="literal">NULL</span>,</span><br><span class="line">                          metric = <span class="string">&#x27;Accuracy&#x27;</span>,</span><br><span class="line">                          tuneGrid = grid, </span><br><span class="line">                          trControl = fit_control)) </span><br><span class="line">print(cat2)</span><br><span class="line">pre.cat1 &lt;- predict(cat2,test3)</span><br><span class="line">tbl.cat &lt;- table(pre.cat1,test3$class)</span><br><span class="line">acc.cat &lt;- sum(diag(tbl.cat))/sum(tbl.cat)</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-Model-—-lightgbm"><a href="#7-Model-—-lightgbm" class="headerlink" title="7. Model — lightgbm"></a>7. Model — lightgbm</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">param &lt;- list(num_leaves =<span class="number">70</span>, default,<span class="number">2</span>^(max_depth)</span><br><span class="line">              min_data_in_leaf=<span class="number">3</span>, </span><br><span class="line">              max_bin = <span class="number">64</span>,</span><br><span class="line">              learning_rate = <span class="number">0.01</span>, </span><br><span class="line">              <span class="comment">#is_unbalance=TRUE,</span></span><br><span class="line">              nthread = <span class="number">3</span>,</span><br><span class="line">              verbose = <span class="number">1</span>,</span><br><span class="line">              metric= <span class="string">&quot;binary_logloss&quot;</span>, </span><br><span class="line">              objective = <span class="string">&quot;binary&quot;</span>)</span><br><span class="line">lgb2 &lt;- lgb.train(params=param, </span><br><span class="line">                  data=dtrain,</span><br><span class="line">                  nrounds = <span class="number">300</span>,</span><br><span class="line">                  early_stopping_rounds = <span class="number">10</span>,</span><br><span class="line">                  valids = valids,</span><br><span class="line">                  bagging_fraction = <span class="number">0.9</span>, <span class="comment"># random sample ratio from trainSet</span></span><br><span class="line">                  bagging_freq = <span class="number">10</span>, <span class="comment"># random sample freq from trainSet</span></span><br><span class="line">                  bagging_seed = <span class="number">1</span>) <span class="comment"># set.seed</span></span><br><span class="line"></span><br><span class="line">pre.lgb &lt;- predict(lgb2,data.matrix(test3))</span><br><span class="line">tbl.lgb &lt;- table(pre.lgb=ifelse(pre.lgb &gt; <span class="number">0.5</span>,<span class="number">1</span>,<span class="number">0</span>),test3$class)</span><br><span class="line">acc.lgb &lt;- sum(diag(tbl.lgb))/sum(tbl.lgb)</span><br><span class="line">acc.lgb &lt;- sum(diag(tbl.lgb))/sum(tbl.lgb)</span><br></pre></td></tr></table></figure>
+<h3 id="8-Model-—-neural-net"><a href="#8-Model-—-neural-net" class="headerlink" title="8. Model — neural net"></a>8. Model — neural net</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(nnet)</span><br><span class="line">nnet2 &lt;- nnet(class.ind(class) ~., data = train4,</span><br><span class="line">              size = <span class="number">3</span>, <span class="comment"># hidden layers</span></span><br><span class="line">              maxit = <span class="number">200</span>,</span><br><span class="line">              range = <span class="number">0.1</span>,</span><br><span class="line">              decay = <span class="number">5e-4</span>,</span><br><span class="line">              softmax = <span class="literal">FALSE</span>,</span><br><span class="line">              entropy = <span class="literal">TRUE</span>, </span><br><span class="line">              linout = <span class="literal">FALSE</span>)</span><br><span class="line"></span><br><span class="line">pre.net2 = predict(nnet2,test4,type = <span class="string">&quot;class&quot;</span>)</span><br><span class="line">tbl.net2 = table(pre.net2,test3$class)</span><br><span class="line">acc.net2 &lt;- sum(diag(tbl.net2))/sum(tbl.net2)</span><br></pre></td></tr></table></figure>
+<h2 id="D-模型效果比较"><a href="#D-模型效果比较" class="headerlink" title="D. 模型效果比较"></a>D. 模型效果比较</h2><p>效果比较 忽略时效因素,着重关注准确率</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th align="right">Nn</th>
+<th>Np</th>
+<th>Pn</th>
+<th>Pp</th>
+<th>accuracy</th>
+<th>acc_N</th>
+<th>acc_P</th>
+<th>score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>XGBoost</td>
+<td align="right">10378</td>
+<td>2057</td>
+<td>590</td>
+<td>3256</td>
+<td>0.8374</td>
+<td>0.8345</td>
+<td>0.8465</td>
+<td>0.8423</td>
+</tr>
+<tr>
+<td>catboost</td>
+<td align="right">10479</td>
+<td>1956</td>
+<td>704</td>
+<td>3142</td>
+<td>0.8366</td>
+<td>0.8427</td>
+<td>0.8169</td>
+<td>0.8259</td>
+</tr>
+<tr>
+<td>LogisticReg</td>
+<td align="right">10043</td>
+<td>2392</td>
+<td>666</td>
+<td>3180</td>
+<td>0.8121</td>
+<td>0.8076</td>
+<td>0.8268</td>
+<td>0.8201</td>
+</tr>
+<tr>
+<td>C5.0</td>
+<td align="right">11418</td>
+<td>1017</td>
+<td>1127</td>
+<td>2719</td>
+<td>0.8683</td>
+<td>0.9182</td>
+<td>0.7069</td>
+<td>0.7809</td>
+</tr>
+<tr>
+<td>RandomForest</td>
+<td align="right">11256</td>
+<td>1179</td>
+<td>1363</td>
+<td>2483</td>
+<td>0.8438</td>
+<td>0.9051</td>
+<td>0.6456</td>
+<td>0.7364</td>
+</tr>
+<tr>
+<td>NaiveBayes</td>
+<td align="right">11244</td>
+<td>1191</td>
+<td>1654</td>
+<td>2192</td>
+<td>0.8252</td>
+<td>0.9042</td>
+<td>0.5699</td>
+<td>0.6869</td>
+</tr>
+<tr>
+<td>lightgbm</td>
+<td align="right">11909</td>
+<td>526</td>
+<td>2484</td>
+<td>1362</td>
+<td>0.8151</td>
+<td>0.9577</td>
+<td>0.3541</td>
+<td>0.5653</td>
+</tr>
+<tr>
+<td>NeuralNet</td>
+<td align="right">12435</td>
+<td>3846 1</td>
+<td>2435</td>
+<td>3846</td>
+<td>0.7637</td>
+<td>0.7637</td>
+<td>0.2362</td>
+<td>0.4208</td>
+</tr>
+</tbody></table>
+<p>做图展示如下: </p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(ggplot2)</span><br><span class="line">ggplot(data = cnt1,aes(x = acc_P,y = acc_N))+</span><br><span class="line">  geom_point(aes(size = exp(((score-min(score))/(max(score)-min(score)))*<span class="number">20</span>),col = Model),alpha = <span class="number">0.5</span>)+</span><br><span class="line">  labs(title = <span class="string">&#x27;Classification Algorithm Comparation&#x27;</span>,</span><br><span class="line">       x = <span class="string">&#x27;Accuracy of Positive&#x27;</span>,</span><br><span class="line">       y = <span class="string">&#x27;Accuracy of nagetive&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2018/03/07/5a9f67c89632d.png" alt="comp.png"></p>
+<p>从图中可以看到，lightGBM在预测 &lt;50K 人群上有明显优势 达到了95%以上, 但在 预测 &gt;=50K 的人群的准确率却只有 35% 左右.<br>分析目标更关注对 &gt;=50K 人群的预测.<br>相较而言位于第 1 象限的 XGBoost/catboost/LogisticReg 两类人群的预测准确率都能满足需求，其中 XGBoost 预测效果更突出 有效.</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/b607c478a661">决策树及R语言实现</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.sina.com.cn/s/blog_7147f6870102wonv.html">贝叶斯网络实例</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/22470375">贝叶斯理论在医学数据分析中的应用</a></li>
+<li><a target="_blank" rel="noopener" href="http://f.dataguru.cn/thread-301701-1-1.html">Bayes Network structure learning</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.kaggle.com/flyingwombat/logistic-regression-with-uci-adult-income">Logistic Regression with UCI Adult Income</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.kaggle.com/jiashenliu/who-can-earn-more-than-50k-per-year">Whose income will exceed 50K?</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.csdn.net/AiirrrrYee/article/details/78247755">CatBoost: 自动处理CAT数据的GBDT</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.kaggle.com/jmbull/boost-starter-0-0648x-lb">Zillow’s Home Value Prediction (Zestimate) with catboost</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.csdn.net/aiirrrryee/article/details/78224232">CatBoost参数解释</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/bhimmetoglu/kaggle_101/tree/master/HousePrices/stacking">model stacking</a></li>
+<li><a target="_blank" rel="noopener" href="https://rpubs.com/skydome20/R-Note14-SVM-SVR">SVM的參數調整</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/26639584">机器学习中的人工神经网络</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/bayes/" rel="tag"># bayes</a>
+              <a href="/tags/%E5%88%86%E7%B1%BB/" rel="tag"># 分类</a>
+              <a href="/tags/logistic/" rel="tag"># logistic</a>
+              <a href="/tags/C5-0/" rel="tag"># C5.0</a>
+              <a href="/tags/randomForest/" rel="tag"># randomForest</a>
+              <a href="/tags/lightgbm/" rel="tag"># lightgbm</a>
+              <a href="/tags/xgboost/" rel="tag"># xgboost</a>
+              <a href="/tags/catboost/" rel="tag"># catboost</a>
+              <a href="/tags/NeuralNet/" rel="tag"># NeuralNet</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/01/06/poisson2/" rel="prev" title="R语言驾着回归做预测">
+      <i class="fa fa-chevron-left"></i> R语言驾着回归做预测
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/07/17/grangertest1/" rel="next" title="格兰杰因果检验R语言实现">
+      格兰杰因果检验R语言实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#A-%E6%A1%88%E4%BE%8B%E6%95%B0%E6%8D%AE"><span class="nav-number">1.</span> <span class="nav-text">A. 案例数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97"><span class="nav-number">2.</span> <span class="nav-text">B. 数据清洗</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E5%88%86%E7%B1%BB%E5%BB%BA%E6%A8%A1"><span class="nav-number">3.</span> <span class="nav-text">C. 分类建模</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Model-%E2%80%94-logistic-regression"><span class="nav-number">3.1.</span> <span class="nav-text">1. Model — logistic regression</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Model-%E2%80%94-Naive-Bayes"><span class="nav-number">3.2.</span> <span class="nav-text">2. Model — Naive Bayes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Model-%E2%80%94-C5-0"><span class="nav-number">3.3.</span> <span class="nav-text">3. Model — C5.0</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Model-%E2%80%94-Randomforest"><span class="nav-number">3.4.</span> <span class="nav-text">4. Model — Randomforest</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Model-%E2%80%94-xgboost"><span class="nav-number">3.5.</span> <span class="nav-text">5. Model — xgboost</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-Model-%E2%80%94-catboost"><span class="nav-number">3.6.</span> <span class="nav-text">6. Model — catboost</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-Model-%E2%80%94-lightgbm"><span class="nav-number">3.7.</span> <span class="nav-text">7. Model — lightgbm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-Model-%E2%80%94-neural-net"><span class="nav-number">3.8.</span> <span class="nav-text">8. Model — neural net</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#D-%E6%A8%A1%E5%9E%8B%E6%95%88%E6%9E%9C%E6%AF%94%E8%BE%83"><span class="nav-number">4.</span> <span class="nav-text">D. 模型效果比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">5.</span> <span class="nav-text">References:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

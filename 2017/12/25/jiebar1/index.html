@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快 1. jiebaR 常规功能安装1234567# --- 通过CRAN安装:install.packages(&quot;jiebaR&quot;)library(jiebaR)# --- 通过Github安装最新版devtools::install">
+<meta property="og:type" content="article">
+<meta property="og:title" content="R语言文本挖掘-jiebaR">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2017/12/25/jiebar1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快 1. jiebaR 常规功能安装1234567# --- 通过CRAN安装:install.packages(&quot;jiebaR&quot;)library(jiebaR)# --- 通过Github安装最新版devtools::install">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2018/01/03/5a4c80e951b42.png">
+<meta property="og:image" content="https://i.loli.net/2018/01/03/5a4c80e91f716.png">
+<meta property="article:published_time" content="2017-12-25T12:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:26.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="文本挖掘">
+<meta property="article:tag" content="jiebaR">
+<meta property="article:tag" content="文本聚类">
+<meta property="article:tag" content="词云">
+<meta property="article:tag" content="分词">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2018/01/03/5a4c80e951b42.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2017/12/25/jiebar1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>R语言文本挖掘-jiebaR | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/12/25/jiebar1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          R语言文本挖掘-jiebaR
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-25 20:02:34" itemprop="dateCreated datePublished" datetime="2017-12-25T20:02:34+08:00">2017-12-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:26" itemprop="dateModified" datetime="2020-08-23T21:16:26+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Text/" itemprop="url" rel="index"><span itemprop="name">Text</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿帮助，请出门左转 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">Convenient Entrance</a>, 合作愉快</p>
+<h2 id="1-jiebaR-常规功能"><a href="#1-jiebaR-常规功能" class="headerlink" title="1. jiebaR 常规功能"></a>1. jiebaR 常规功能</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># --- 通过CRAN安装:</span></span><br><span class="line">install.packages(<span class="string">&quot;jiebaR&quot;</span>)</span><br><span class="line"><span class="keyword">library</span>(jiebaR)</span><br><span class="line"><span class="comment"># --- 通过Github安装最新版</span></span><br><span class="line">devtools::install_github(<span class="string">&quot;qinwf/jiebaRD&quot;</span>)</span><br><span class="line">devtools::install_github(<span class="string">&quot;qinwf/jiebaR&quot;</span>)</span><br><span class="line"><span class="keyword">library</span>(jiebaR)</span><br></pre></td></tr></table></figure>
+
+<h3 id="简单分词"><a href="#简单分词" class="headerlink" title="简单分词"></a>简单分词</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="keyword">library</span>(jiebaR)</span><br><span class="line"><span class="comment"># --- 简单分词</span></span><br><span class="line">&gt; fenci &lt;- worker()</span><br><span class="line">&gt; segment(c(<span class="string">&#x27;从前的锁也好看 ，钥匙精美有样子 。 你锁了，人家就懂了&#x27;</span>),fenci)</span><br><span class="line"> [<span class="number">1</span>] <span class="string">&quot;从前&quot;</span> <span class="string">&quot;的&quot;</span>   <span class="string">&quot;锁&quot;</span>   <span class="string">&quot;也&quot;</span>   <span class="string">&quot;好看&quot;</span> <span class="string">&quot;钥匙&quot;</span> <span class="string">&quot;精美&quot;</span> <span class="string">&quot;有&quot;</span>   <span class="string">&quot;样子&quot;</span> <span class="string">&quot;你&quot;</span>  </span><br><span class="line">[<span class="number">11</span>] <span class="string">&quot;锁&quot;</span>   <span class="string">&quot;了&quot;</span>   <span class="string">&quot;人家&quot;</span> <span class="string">&quot;就&quot;</span>   <span class="string">&quot;懂&quot;</span>   <span class="string">&quot;了&quot;</span> </span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 逐行分词 bylines</span></span><br><span class="line">&gt; fenci &lt;- worker(bylines = <span class="literal">TRUE</span>)</span><br><span class="line">&gt; segment(c(<span class="string">&#x27;从前的锁也好看 ，钥匙精美有样子&#x27;</span>,</span><br><span class="line">+           <span class="string">&#x27;你锁了，人家就懂了&#x27;</span>),fenci)</span><br><span class="line">[[<span class="number">1</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;从前&quot;</span> <span class="string">&quot;的&quot;</span>   <span class="string">&quot;锁&quot;</span>   <span class="string">&quot;也&quot;</span>   <span class="string">&quot;好看&quot;</span> <span class="string">&quot;钥匙&quot;</span> <span class="string">&quot;精美&quot;</span> <span class="string">&quot;有&quot;</span>   <span class="string">&quot;样子&quot;</span></span><br><span class="line"></span><br><span class="line">[[<span class="number">2</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;你&quot;</span>   <span class="string">&quot;锁&quot;</span>   <span class="string">&quot;了&quot;</span>   <span class="string">&quot;人家&quot;</span> <span class="string">&quot;就&quot;</span>   <span class="string">&quot;懂&quot;</span>   <span class="string">&quot;了&quot;</span>  </span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># --- 添加新词到已经新建的分词器中 new_user_word()</span></span><br><span class="line"><span class="comment"># 只是临时加载到内存中,并未写入 user_word 文件中</span></span><br><span class="line">&gt; fenci &lt;- worker(bylines = <span class="literal">TRUE</span>)</span><br><span class="line">&gt; new_user_word(fenci,c(<span class="string">&#x27;锁了&#x27;</span>,<span class="string">&#x27;懂了&#x27;</span>,<span class="string">&#x27;有样子&#x27;</span>))</span><br><span class="line">[<span class="number">1</span>] <span class="literal">TRUE</span></span><br><span class="line">&gt; segment(c(<span class="string">&#x27;从前的锁也好看 ，钥匙精美有样子&#x27;</span>,</span><br><span class="line">+           <span class="string">&#x27;你锁了，人家就懂了&#x27;</span>),fenci)</span><br><span class="line">[[<span class="number">1</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;从前&quot;</span>   <span class="string">&quot;的&quot;</span>     <span class="string">&quot;锁&quot;</span>     <span class="string">&quot;也&quot;</span>     <span class="string">&quot;好看&quot;</span>   <span class="string">&quot;钥匙&quot;</span>   <span class="string">&quot;精美&quot;</span>  </span><br><span class="line">[<span class="number">8</span>] <span class="string">&quot;有样子&quot;</span></span><br><span class="line"></span><br><span class="line">[[<span class="number">2</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;你&quot;</span>   <span class="string">&quot;锁了&quot;</span> <span class="string">&quot;人家&quot;</span> <span class="string">&quot;就&quot;</span>   <span class="string">&quot;懂了&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 添加停止词 worker(stop_word = “…”)</span></span><br><span class="line"><span class="comment"># !!!! 对于分词，请不要修改默认加载的停止词文本，即 jiebaR::STOPPATH，请使用自定义的停止词路径</span></span><br><span class="line"></span><br><span class="line">&gt; readLines(<span class="string">&#x27;G:/rwork/cnseg/stop_test.txt&#x27;</span>,,encoding = <span class="string">&#x27;UTF-8&#x27;</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;﻿也&quot;</span> <span class="string">&quot;也&quot;</span> <span class="string">&quot;的&quot;</span> <span class="string">&quot;了&quot;</span></span><br><span class="line"><span class="comment"># 换行符的原因常使第一个stop-word不被后续识别,故将第一个word与第二个word设为相同word</span></span><br><span class="line">&gt; fenci &lt;- worker(stop_word = <span class="string">&#x27;G:/rwork/cnseg/stop_test.txt&#x27;</span>,</span><br><span class="line">+                 bylines = <span class="literal">TRUE</span>)</span><br><span class="line">&gt; new_user_word(fenci,c(<span class="string">&#x27;锁了&#x27;</span>,<span class="string">&#x27;懂了&#x27;</span>,<span class="string">&#x27;有样子&#x27;</span>))</span><br><span class="line">[<span class="number">1</span>] <span class="literal">TRUE</span></span><br><span class="line">&gt; segment(c(<span class="string">&#x27;从前的锁也好看 ，钥匙精美有样子&#x27;</span>,</span><br><span class="line">+           <span class="string">&#x27;你锁了，人家就懂了&#x27;</span>),fenci)</span><br><span class="line">[[<span class="number">1</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;从前&quot;</span>   <span class="string">&quot;锁&quot;</span>     <span class="string">&quot;好看&quot;</span>   <span class="string">&quot;钥匙&quot;</span>   <span class="string">&quot;精美&quot;</span>   <span class="string">&quot;有样子&quot;</span></span><br><span class="line"></span><br><span class="line">[[<span class="number">2</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;你&quot;</span>   <span class="string">&quot;锁了&quot;</span> <span class="string">&quot;人家&quot;</span> <span class="string">&quot;就&quot;</span>   <span class="string">&quot;懂了&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 对文件进行分词</span></span><br><span class="line">&gt; texts &lt;-  readLines(<span class="string">&quot;G:/rwork/cnseg/congqianman.txt&quot;</span>, </span><br><span class="line">+                   encoding=<span class="string">&quot;UTF-8&quot;</span>,skipNul = <span class="literal">TRUE</span>)</span><br><span class="line">&gt; (text1 &lt;- texts[!nchar(texts)==<span class="number">0</span>])</span><br><span class="line"> [<span class="number">1</span>] <span class="string">&quot;﻿记得早先少年时&quot;</span>       <span class="string">&quot;大家诚诚恳恳&quot;</span>         <span class="string">&quot;说一句是一句&quot;</span>        </span><br><span class="line"> [<span class="number">4</span>] <span class="string">&quot;清早上火车站&quot;</span>         <span class="string">&quot;长街黑暗无行人&quot;</span>       <span class="string">&quot;卖豆浆的小店冒着热气&quot;</span></span><br><span class="line"> [<span class="number">7</span>] <span class="string">&quot;从前的日色变得慢&quot;</span>     <span class="string">&quot;车，马，邮件都慢&quot;</span>     <span class="string">&quot;一生只够爱一个人&quot;</span>    </span><br><span class="line">[<span class="number">10</span>] <span class="string">&quot;从前的锁也好看&quot;</span>       <span class="string">&quot;钥匙精美有样子&quot;</span>       <span class="string">&quot;你锁了，人家就懂了&quot;</span>  </span><br><span class="line">&gt; fenci &lt;- worker(bylines = <span class="literal">TRUE</span>)</span><br><span class="line">&gt; new_user_word(fenci,c(<span class="string">&#x27;锁了&#x27;</span>,<span class="string">&#x27;懂了&#x27;</span>,<span class="string">&#x27;有样子&#x27;</span>,<span class="string">&#x27;一个人&#x27;</span>))</span><br><span class="line">[<span class="number">1</span>] <span class="literal">TRUE</span></span><br><span class="line">&gt; (seg_res &lt;- segment(text1,fenci))</span><br><span class="line">[[<span class="number">1</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;记得&quot;</span> <span class="string">&quot;早先&quot;</span> <span class="string">&quot;少年&quot;</span> <span class="string">&quot;时&quot;</span>  </span><br><span class="line"></span><br><span class="line">[[<span class="number">2</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;大家&quot;</span>     <span class="string">&quot;诚诚恳恳&quot;</span></span><br><span class="line"></span><br><span class="line">[[<span class="number">3</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;说&quot;</span>   <span class="string">&quot;一句&quot;</span> <span class="string">&quot;是&quot;</span>   <span class="string">&quot;一句&quot;</span></span><br><span class="line"></span><br><span class="line">[[<span class="number">4</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;清早&quot;</span>   <span class="string">&quot;上&quot;</span>     <span class="string">&quot;火车站&quot;</span></span><br><span class="line"></span><br><span class="line">[[<span class="number">5</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;长街&quot;</span> <span class="string">&quot;黑暗&quot;</span> <span class="string">&quot;无&quot;</span>   <span class="string">&quot;行人&quot;</span></span><br><span class="line"></span><br><span class="line">[[<span class="number">6</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;卖&quot;</span>   <span class="string">&quot;豆浆&quot;</span> <span class="string">&quot;的&quot;</span>   <span class="string">&quot;小店&quot;</span> <span class="string">&quot;冒&quot;</span>   <span class="string">&quot;着&quot;</span>   <span class="string">&quot;热气&quot;</span></span><br><span class="line"></span><br><span class="line">[[<span class="number">7</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;从前&quot;</span> <span class="string">&quot;的&quot;</span>   <span class="string">&quot;日色&quot;</span> <span class="string">&quot;变得&quot;</span> <span class="string">&quot;慢&quot;</span>  </span><br><span class="line"></span><br><span class="line">[[<span class="number">8</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;车&quot;</span>   <span class="string">&quot;马&quot;</span>   <span class="string">&quot;邮件&quot;</span> <span class="string">&quot;都&quot;</span>   <span class="string">&quot;慢&quot;</span>  </span><br><span class="line"></span><br><span class="line">[[<span class="number">9</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;一生&quot;</span>   <span class="string">&quot;只够&quot;</span>   <span class="string">&quot;爱&quot;</span>     <span class="string">&quot;一个人&quot;</span></span><br><span class="line"></span><br><span class="line">[[<span class="number">10</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;从前&quot;</span> <span class="string">&quot;的&quot;</span>   <span class="string">&quot;锁&quot;</span>   <span class="string">&quot;也&quot;</span>   <span class="string">&quot;好看&quot;</span></span><br><span class="line"></span><br><span class="line">[[<span class="number">11</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;钥匙&quot;</span>   <span class="string">&quot;精美&quot;</span>   <span class="string">&quot;有样子&quot;</span></span><br><span class="line"></span><br><span class="line">[[<span class="number">12</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;你&quot;</span>   <span class="string">&quot;锁了&quot;</span> <span class="string">&quot;人家&quot;</span> <span class="string">&quot;就&quot;</span>   <span class="string">&quot;懂了&quot;</span></span><br><span class="line"><span class="comment"># --- 使用 writeLines 写入文件</span></span><br><span class="line">res2 =sapply(seg_res, <span class="keyword">function</span>(x)&#123; paste(x, collapse = <span class="string">&quot; &quot;</span>)&#125;)</span><br><span class="line">writeLines(res2, <span class="string">&quot;./seg_res2.txt&quot;</span>)</span><br><span class="line"><span class="comment"># ！！！！！乱码预警</span></span><br><span class="line"><span class="comment"># Windows 下 writeLines 保存的文本可能会为乱码，</span></span><br><span class="line"><span class="comment"># 对应的解决方案为 writeBin + charToRaw</span></span><br><span class="line">writeBin(charToRaw(<span class="string">&quot;对应文本还有一个换行符\n&quot;</span>), <span class="string">&quot;./某个文件.txt&quot;</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="work-参数详解"><a href="#work-参数详解" class="headerlink" title="work() 参数详解"></a>work() 参数详解</h3><h4 id="1-type"><a href="#1-type" class="headerlink" title="1. type"></a>1. type</h4><p>mp（最大概率模型）- 基于词典和词频<br>hmm（HMM模型）- 基于 HMM 模型，可以发现词典中没有的词<br>mix（混合模型）- 先用 mp 分，mp 分完调用 hmm 再来把剩余的可能成词的单字分出来。<br>query（索引模型）- mix 基础上，对大于一定长度的词再进行一次切分。<br>tag（标记模型）- 词性标记，基于词典的<br>keywords（关键词模型）- tf-idf 抽 关键词<br>simhash（Simhash 模型） - 在关键词的基础上计算 simhash</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">&gt; fenci &lt;- worker(type=<span class="string">&#x27;mp&#x27;</span>)</span><br><span class="line">&gt; segment(c(<span class="string">&#x27;吃葡萄不吐葡萄皮&#x27;</span>),fenci)</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;吃&quot;</span>   <span class="string">&quot;葡萄&quot;</span> <span class="string">&quot;不&quot;</span>   <span class="string">&quot;吐&quot;</span>   <span class="string">&quot;葡萄&quot;</span> <span class="string">&quot;皮&quot;</span>  </span><br><span class="line">&gt; fenci &lt;- worker(type=<span class="string">&#x27;hmm&#x27;</span>)</span><br><span class="line">&gt; segment(c(<span class="string">&#x27;吃葡萄不吐葡萄皮&#x27;</span>),fenci)</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;吃&quot;</span>       <span class="string">&quot;葡萄不吐&quot;</span> <span class="string">&quot;葡萄皮&quot;</span>  </span><br><span class="line">&gt; fenci &lt;- worker(type=<span class="string">&#x27;mix&#x27;</span>)</span><br><span class="line">&gt; segment(c(<span class="string">&#x27;吃葡萄不吐葡萄皮&#x27;</span>),fenci)</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;吃&quot;</span>   <span class="string">&quot;葡萄&quot;</span> <span class="string">&quot;不吐&quot;</span> <span class="string">&quot;葡萄&quot;</span> <span class="string">&quot;皮&quot;</span>  </span><br><span class="line">&gt; fenci &lt;- worker(type=<span class="string">&#x27;query&#x27;</span>)</span><br><span class="line">&gt; segment(c(<span class="string">&#x27;吃葡萄不吐葡萄皮&#x27;</span>),fenci)</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;吃&quot;</span>   <span class="string">&quot;葡萄&quot;</span> <span class="string">&quot;不吐&quot;</span> <span class="string">&quot;葡萄&quot;</span> <span class="string">&quot;皮&quot;</span>  </span><br><span class="line">&gt; fenci &lt;- worker(type=<span class="string">&#x27;tag&#x27;</span>)</span><br><span class="line">&gt; segment(c(<span class="string">&#x27;吃葡萄不吐葡萄皮&#x27;</span>),fenci)</span><br><span class="line">     v      n      x      n      n </span><br><span class="line">  <span class="string">&quot;吃&quot;</span> <span class="string">&quot;葡萄&quot;</span> <span class="string">&quot;不吐&quot;</span> <span class="string">&quot;葡萄&quot;</span>   <span class="string">&quot;皮&quot;</span> </span><br><span class="line">&gt; fenci &lt;- worker(type=<span class="string">&#x27;keywords&#x27;</span>,topn=<span class="number">5</span>)</span><br><span class="line">&gt; keywords(c(<span class="string">&#x27;吃葡萄不吐葡萄皮&#x27;</span>),fenci)</span><br><span class="line"><span class="number">15.4207</span> <span class="number">11.7392</span> <span class="number">11.7392</span> <span class="number">11.5981</span> </span><br><span class="line"> <span class="string">&quot;葡萄&quot;</span>    <span class="string">&quot;吃&quot;</span>    <span class="string">&quot;皮&quot;</span>  <span class="string">&quot;不吐&quot;</span> </span><br><span class="line">&gt; fenci &lt;- worker(type=<span class="string">&#x27;simhash&#x27;</span>)</span><br><span class="line">&gt; simhash(c(<span class="string">&#x27;吃葡萄不吐葡萄皮&#x27;</span>),fenci)</span><br><span class="line">$simhash</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;1932605367383934317&quot;</span></span><br><span class="line"></span><br><span class="line">$keyword</span><br><span class="line"><span class="number">15.4207</span> <span class="number">11.7392</span> <span class="number">11.7392</span> <span class="number">11.5981</span> </span><br><span class="line"> <span class="string">&quot;葡萄&quot;</span>    <span class="string">&quot;吃&quot;</span>    <span class="string">&quot;皮&quot;</span>  <span class="string">&quot;不吐&quot;</span> </span><br><span class="line"></span><br><span class="line">&gt; simhash_dist(simhash(<span class="string">&#x27;吃葡萄不吐葡萄皮&#x27;</span>,fenci)$simhash,</span><br><span class="line">+              simhash(<span class="string">&#x27;不吃葡萄倒吐葡萄皮&#x27;</span>,fenci)$simhash)</span><br><span class="line">[<span class="number">1</span>] <span class="number">17</span></span><br><span class="line"></span><br><span class="line">&gt; simhash_dist_mat(c(simhash(<span class="string">&#x27;吃葡萄不吐葡萄皮&#x27;</span>,fenci)$simhash,</span><br><span class="line">+                    simhash(<span class="string">&#x27;不吃葡萄倒吐葡萄皮&#x27;</span>,fenci)$simhash),</span><br><span class="line">+              c(simhash(<span class="string">&#x27;你爱吃葡萄还是葡萄皮&#x27;</span>,fenci)$simhash,</span><br><span class="line">+                simhash(<span class="string">&#x27;吃葡萄不吐葡萄皮&#x27;</span>,fenci)$simhash,</span><br><span class="line">+                simhash(<span class="string">&#x27;不吃葡萄倒吐葡萄皮&#x27;</span>,fenci)$simhash))</span><br><span class="line">     [,<span class="number">1</span>] [,<span class="number">2</span>] [,<span class="number">3</span>]</span><br><span class="line">[<span class="number">1</span>,]    <span class="number">6</span>    <span class="number">0</span>   <span class="number">17</span></span><br><span class="line">[<span class="number">2</span>,]   <span class="number">17</span>   <span class="number">17</span>    <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-dict-词典"><a href="#2-dict-词典" class="headerlink" title="2. dict 词典"></a>2. dict 词典</h4><h5 id="2-1-系统词典"><a href="#2-1-系统词典" class="headerlink" title="2.1 系统词典"></a>2.1 系统词典</h5><p>优先载入的词典，纯文本文件，默认路径为 jiebaR::DICTPATH 包括词、词频、词性标记三列，用空格分开三列. 一般默认不做改动,也可以输入自定义路径</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; readLines(jiebaR::DICTPATH, <span class="number">5</span>,encoding= <span class="string">&#x27;UTF-8&#x27;</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;1号店 3 n&quot;</span> <span class="string">&quot;1號店 3 n&quot;</span> <span class="string">&quot;4S店 3 n&quot;</span>  <span class="string">&quot;4s店 3 n&quot;</span>  <span class="string">&quot;AA制 3 n&quot;</span></span><br></pre></td></tr></table></figure>
+<h5 id="2-2-用户词典-user-dict"><a href="#2-2-用户词典-user-dict" class="headerlink" title="2.2 用户词典 user_dict"></a>2.2 用户词典 user_dict</h5><p>用户词典(user_dict)，包括词、词性标记两列。用户词典中的所有词的词频均为系统词典中的最大词频 (默认，可以通过 user_weight 参数修改)<br>user_weight.<br>用户词典中的词的词频，默认为 “max”，系统词典中的最大值。<br>还可以选 “min” 最小值或者 “median” 中位数</p>
+<h5 id="2-3-停用词-过滤词-词典-stop-dict"><a href="#2-3-停用词-过滤词-词典-stop-dict" class="headerlink" title="2.3 停用词(过滤词)词典 stop_dict"></a>2.3 停用词(过滤词)词典 stop_dict</h5><p>停用词(过滤词)词典 stop_dict, 主要用来过滤实际分析过程中无关紧要的词语, 例如’的’’啊’…等</p>
+<h5 id="2-4-idf-tf-词典"><a href="#2-4-idf-tf-词典" class="headerlink" title="2.4 idf-tf 词典"></a>2.4 idf-tf 词典</h5><p>根据历史数据计算出来的一个 c(word,idf_tf值)组成的表<br>一般情况下不会变动,除非有 源更新(qinxf兄弟的文件更新)<br>以下是跑到jieba包原作者家里搜到的计算 idf.txt 的python源码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> jieba</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line">re_han = re.compile(<span class="string">ur&quot;([\u4E00-\u9FA5]+)&quot;</span>)</span><br><span class="line"></span><br><span class="line">d=&#123;&#125;</span><br><span class="line">total = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> line <span class="keyword">in</span> open(<span class="string">&quot;yuliao_onlyseg.txt&quot;</span>,<span class="string">&#x27;rb&#x27;</span>):</span><br><span class="line">    sentence = line.decode(<span class="string">&#x27;utf-8&#x27;</span>).strip()</span><br><span class="line">    words = set(jieba.cut(sentence))</span><br><span class="line">    <span class="keyword">for</span> w <span class="keyword">in</span> words:</span><br><span class="line">        <span class="keyword">if</span> w <span class="keyword">in</span> jieba.FREQ:</span><br><span class="line">            d[w]=d.get(w,<span class="number">0.0</span>) + <span class="number">1.0</span></span><br><span class="line">    total+=<span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> total%<span class="number">10000</span>==<span class="number">0</span>:</span><br><span class="line">        <span class="keyword">print</span> &gt;&gt;sys.stderr,<span class="string">&#x27;sentence count&#x27;</span>, total</span><br><span class="line"></span><br><span class="line">new_d = [(k,math.log(v/total)*<span class="number">-1</span> ) <span class="keyword">for</span> k,v <span class="keyword">in</span> d.iteritems()]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> k,v <span class="keyword">in</span> new_d:</span><br><span class="line">    <span class="keyword">print</span> k.encode(<span class="string">&#x27;utf-8&#x27;</span>),v</span><br></pre></td></tr></table></figure>
+<h2 id="2-案例分享"><a href="#2-案例分享" class="headerlink" title="2. 案例分享"></a>2. 案例分享</h2><h3 id="词云展示"><a href="#词云展示" class="headerlink" title="词云展示"></a>词云展示</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## -- 资料爬取</span></span><br><span class="line">page1 &lt;- remDr$getPageSource()[[<span class="number">1</span>]]</span><br><span class="line">lun1 &lt;- read_html(page1) %&gt;% </span><br><span class="line">  html_nodes(css=<span class="string">&#x27;div.tm-rate-content div.tm-rate-fulltxt&#x27;</span>) %&gt;% </span><br><span class="line">  html_text() %&gt;% gsub(<span class="string">&#x27;\n&#x27;</span>,<span class="string">&#x27;&#x27;</span>,.) %&gt;% </span><br><span class="line">  gsub(<span class="string">&#x27;此用户没有填写评论!&#x27;</span>,<span class="string">&#x27;&#x27;</span>,.) %&gt;% </span><br><span class="line">  trimws(which = <span class="string">&#x27;both&#x27;</span>) %&gt;% .[nchar(.)&gt;<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">library</span>(jiebaR)</span><br><span class="line">wk1 &lt;- worker(type=<span class="string">&#x27;mix&#x27;</span>,bylines = <span class="literal">TRUE</span>,</span><br><span class="line">              <span class="keyword">stop</span> = <span class="string">&#x27;xx/stop_words_v2.utf8&#x27;</span>)</span><br><span class="line">new_user_word(wk1,c(<span class="string">&#x27;70多岁&#x27;</span>,<span class="string">&#x27;给力&#x27;</span>,<span class="string">&#x27;急患者所急&#x27;</span>,<span class="string">&#x27;卡扣款&#x27;</span>,</span><br><span class="line">                    <span class="string">&#x27;24小时&#x27;</span>,<span class="string">&#x27;俩字&#x27;</span>,<span class="string">&#x27;仨字&#x27;</span>,<span class="string">&#x27;拐一下&#x27;</span>),</span><br><span class="line">              rep(<span class="string">&#x27;n&#x27;</span>,<span class="number">8</span>))</span><br><span class="line">seg1 &lt;- segment(lun1,wk1)</span><br><span class="line"></span><br><span class="line">wk2 &lt;- worker(type=<span class="string">&#x27;keywords&#x27;</span>,topn=<span class="number">100</span>)</span><br><span class="line">key1 &lt;- vector_keywords(unlist(seg1),wk2)</span><br><span class="line">freq1 &lt;- data.frame(word=key1,freq=as.numeric(attr(key1,<span class="string">&#x27;names&#x27;</span>)))</span><br><span class="line"></span><br><span class="line"><span class="keyword">library</span>(wordcloud2)</span><br><span class="line">wordcloud2(freq1, size = <span class="number">2</span>, fontFamily = <span class="string">&quot;微软雅黑&quot;</span>, </span><br><span class="line">           color = <span class="string">&quot;random-light&quot;</span>, backgroundColor = <span class="string">&quot;grey&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2018/01/03/5a4c80e951b42.png" alt="wdcloud1.png"></p>
+<h3 id="文本聚类"><a href="#文本聚类" class="headerlink" title="文本聚类"></a>文本聚类</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## cluster by freq</span></span><br><span class="line"><span class="keyword">library</span>(data.table)</span><br><span class="line">freq2 &lt;- data.table(melt(seg1))</span><br><span class="line">freq2$value &lt;- as.character(freq2$value)</span><br><span class="line">freq2$L1 &lt;- as.numeric(freq2$L1)</span><br><span class="line"><span class="comment"># R中列名称不能起始于数字,所以需要判断处理</span></span><br><span class="line">freq2$value[grep(<span class="string">&#x27;[0-9]+&#x27;</span>,freq2$value)] &lt;- </span><br><span class="line">  paste(<span class="string">&#x27;a&#x27;</span>,freq2$value[grep(<span class="string">&#x27;[0-9]+&#x27;</span>,freq2$value)],sep=<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">dtm1 &lt;- dcast(L1~value,data=freq2,value.var = c(<span class="string">&#x27;L1&#x27;</span>),length)</span><br><span class="line">spar1 &lt;- apply(dtm1[,-<span class="number">1</span>],<span class="number">2</span>,<span class="keyword">function</span>(x)sum(x)/length(x))<span class="comment">#dtm1[,lapply(.SD,)]</span></span><br><span class="line">summary(spar1)</span><br><span class="line">dtm2 &lt;- as.matrix(dtm1)[,which(spar1&gt;=<span class="number">0.05</span>)+<span class="number">1</span>]</span><br><span class="line">distMatrix &lt;- dist(dtm2,method = <span class="string">&#x27;euclidean&#x27;</span>)</span><br><span class="line"></span><br><span class="line">groups &lt;- hclust(distMatrix,method=<span class="string">&quot;ward.D&quot;</span>)</span><br><span class="line">plot(groups, cex=<span class="number">0.9</span>)</span><br><span class="line">rect.hclust(groups, k=<span class="number">6</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ## cluster by tf-idf</span></span><br><span class="line"><span class="comment"># key2 &lt;- lapply(seg1,function(x) &#123;keys1 &lt;- vector_keywords(x,wk2)</span></span><br><span class="line"><span class="comment">#                                  data.frame(keys1=ifelse(regexpr(&#x27;[0-9]&#x27;,substr(keys1,1,1))==1,</span></span><br><span class="line"><span class="comment">#                                                          paste(&#x27;a&#x27;,keys1,sep=&#x27;&#x27;),keys1),</span></span><br><span class="line"><span class="comment">#                                             weights=as.numeric(attr(keys1, &quot;names&quot;)))&#125;)</span></span><br><span class="line"><span class="comment"># key201 &lt;- melt(key2)</span></span><br><span class="line"><span class="comment"># </span></span><br><span class="line"><span class="comment"># dtm2 &lt;- as.matrix(dcast(L1~keys1,data=key201,value.var=c(&#x27;value&#x27;),sum))</span></span><br><span class="line"><span class="comment"># distMatrix &lt;- dist(dtm2,method = &#x27;euclidean&#x27;)</span></span><br><span class="line"><span class="comment"># </span></span><br><span class="line"><span class="comment"># groups &lt;- hclust(distMatrix,method=&quot;ward.D&quot;)</span></span><br><span class="line"><span class="comment"># plot(groups, cex=0.9)</span></span><br><span class="line"><span class="comment"># rect.hclust(groups, k=6)</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2018/01/03/5a4c80e91f716.png" alt="clus1.png"></p>
+<h3 id="文本分类"><a href="#文本分类" class="headerlink" title="文本分类"></a>文本分类</h3><h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference:"></a>Reference:</h2><ul>
+<li><a target="_blank" rel="noopener" href="http://qinwenfeng.com/jiebaR/">jiebaR 中文分词文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/fxsjy/jieba/issues/87">结巴中文分词</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/wzgl__wh/article/details/72804687">r文本分析+词云</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/%E6%96%87%E6%9C%AC%E6%8C%96%E6%8E%98/" rel="tag"># 文本挖掘</a>
+              <a href="/tags/jiebaR/" rel="tag"># jiebaR</a>
+              <a href="/tags/%E6%96%87%E6%9C%AC%E8%81%9A%E7%B1%BB/" rel="tag"># 文本聚类</a>
+              <a href="/tags/%E8%AF%8D%E4%BA%91/" rel="tag"># 词云</a>
+              <a href="/tags/%E5%88%86%E8%AF%8D/" rel="tag"># 分词</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/19/dongman1/" rel="prev" title="高点播动漫的特征画像">
+      <i class="fa fa-chevron-left"></i> 高点播动漫的特征画像
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/12/30/bayes1/" rel="next" title="R中的朴素贝叶斯分类">
+      R中的朴素贝叶斯分类 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-jiebaR-%E5%B8%B8%E8%A7%84%E5%8A%9F%E8%83%BD"><span class="nav-number">1.</span> <span class="nav-text">1. jiebaR 常规功能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%88%86%E8%AF%8D"><span class="nav-number">1.2.</span> <span class="nav-text">简单分词</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#work-%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.3.</span> <span class="nav-text">work() 参数详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-type"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. type</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-dict-%E8%AF%8D%E5%85%B8"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. dict 词典</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-%E7%B3%BB%E7%BB%9F%E8%AF%8D%E5%85%B8"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">2.1 系统词典</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-%E7%94%A8%E6%88%B7%E8%AF%8D%E5%85%B8-user-dict"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">2.2 用户词典 user_dict</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-3-%E5%81%9C%E7%94%A8%E8%AF%8D-%E8%BF%87%E6%BB%A4%E8%AF%8D-%E8%AF%8D%E5%85%B8-stop-dict"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">2.3 停用词(过滤词)词典 stop_dict</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-4-idf-tf-%E8%AF%8D%E5%85%B8"><span class="nav-number">1.3.2.4.</span> <span class="nav-text">2.4 idf-tf 词典</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%A1%88%E4%BE%8B%E5%88%86%E4%BA%AB"><span class="nav-number">2.</span> <span class="nav-text">2. 案例分享</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%8D%E4%BA%91%E5%B1%95%E7%A4%BA"><span class="nav-number">2.1.</span> <span class="nav-text">词云展示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E8%81%9A%E7%B1%BB"><span class="nav-number">2.2.</span> <span class="nav-text">文本聚类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB"><span class="nav-number">2.3.</span> <span class="nav-text">文本分类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">3.</span> <span class="nav-text">Reference:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

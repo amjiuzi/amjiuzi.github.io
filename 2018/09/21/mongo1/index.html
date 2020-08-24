@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快      数据存储方式 细分 方案    文件存储  txt excel csv   数据库存储 关系型 MSSQL MYSQL ORACLE DB2   数据库存储 非关系型 MongoDB   什么是MongoDBMongoDB 是由$C++$语">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mongodb语法备注">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2018/09/21/mongo1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快      数据存储方式 细分 方案    文件存储  txt excel csv   数据库存储 关系型 MSSQL MYSQL ORACLE DB2   数据库存储 非关系型 MongoDB   什么是MongoDBMongoDB 是由$C++$语">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2018/11/20/5bf368ebb14f7.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/20/5bf372e8dcabc.png">
+<meta property="article:published_time" content="2018-09-21T12:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:30.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="mongodb">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2018/11/20/5bf368ebb14f7.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2018/09/21/mongo1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Mongodb语法备注 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2018/09/21/mongo1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mongodb语法备注
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-09-21 20:02:34" itemprop="dateCreated datePublished" datetime="2018-09-21T20:02:34+08:00">2018-09-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:30" itemprop="dateModified" datetime="2020-08-23T21:16:30+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Basic/" itemprop="url" rel="index"><span itemprop="name">Basic</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿帮助，请出门左转 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">Convenient Entrance</a>, 合作愉快  </p>
+<table>
+<thead>
+<tr>
+<th>数据存储方式</th>
+<th>细分</th>
+<th>方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文件存储</td>
+<td></td>
+<td>txt excel csv</td>
+</tr>
+<tr>
+<td>数据库存储</td>
+<td>关系型</td>
+<td>MSSQL MYSQL ORACLE DB2</td>
+</tr>
+<tr>
+<td>数据库存储</td>
+<td>非关系型</td>
+<td>MongoDB</td>
+</tr>
+</tbody></table>
+<h3 id="什么是MongoDB"><a href="#什么是MongoDB" class="headerlink" title="什么是MongoDB"></a>什么是MongoDB</h3><p>MongoDB 是由$C++$语言编写的，是一个基于分布式文件存储的开源数据库系统<br>在高负载的情况下，添加更多的节点，可以保证服务器性能。<br>MongoDB 旨在为WEB应用提供可扩展的高性能数据存储解决方案。<br>MongoDB 将数据存储为一个文档，数据结构由键值$key=&gt;value$对组成。MongoDB 文档类似于 JSON 对象。字段值可以包含其他文档，</p>
+<p>今日对照sql语句，对所学 mongodb 做一笔录，以备不时之需</p>
+<p><img src="https://i.loli.net/2018/11/20/5bf368ebb14f7.png" alt="Mongo11.png"></p>
+<a id="more"></a>
+
+
+<h3 id="基本查询架构"><a href="#基本查询架构" class="headerlink" title="基本查询架构"></a>基本查询架构</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.find(&#123;查询条件&#125;,&#123;输出的键值&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>查询条件 一般格式为  </p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.find(&#123;&#123;colors: &quot;red&quot; &#125;,&#123;j:&#123;$nin: [2,4,6]&#125;&#125;&#125;,&#123;&#125;) </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2018/11/20/5bf372e8dcabc.png" alt="select1.png"></p>
+<p>如果需要限定输出的列，通过 $x:0$或 $x:1$ 来实现</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.find(&#123;&#125;,&#123;col1:0,col2:1&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>上述语句 表示显示 col2 列</p>
+<h3 id="Mongodb-VS-Mysql"><a href="#Mongodb-VS-Mysql" class="headerlink" title="Mongodb VS Mysql"></a>Mongodb VS Mysql</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">db.users.find()</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">users</span> </span><br><span class="line"></span><br><span class="line">db.users.find(&#123;<span class="string">&quot;age&quot;</span> : <span class="number">27</span>&#125;)</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">users</span> <span class="keyword">where</span> age = <span class="number">27</span></span><br><span class="line"></span><br><span class="line">db.users.find(&#123;<span class="string">&quot;username&quot;</span> : <span class="string">&quot;joe&quot;</span>, <span class="string">&quot;age&quot;</span> : <span class="number">27</span>&#125;)</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">users</span> <span class="keyword">where</span> <span class="string">&quot;username&quot;</span> = <span class="string">&quot;joe&quot;</span> <span class="keyword">and</span> age = <span class="number">27</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">db.users.find(&#123;&#125;, &#123;<span class="string">&quot;username&quot;</span> : <span class="number">1</span>, <span class="string">&quot;email&quot;</span> : <span class="number">1</span>&#125;) </span><br><span class="line"><span class="keyword">select</span> username, email <span class="keyword">from</span> <span class="keyword">users</span></span><br><span class="line"></span><br><span class="line">db.users.find(&#123;&#125;, &#123;<span class="string">&quot;username&quot;</span> : <span class="number">1</span>, <span class="string">&quot;_id&quot;</span> : <span class="number">0</span>&#125;) </span><br><span class="line"><span class="keyword">no</span> <span class="keyword">case</span>  即时加上了列筛选，_id也会返回；必须显式的阻止_id返回 </span><br><span class="line"></span><br><span class="line">db.users.find(&#123;<span class="string">&quot;age&quot;</span> : &#123;<span class="string">&quot;$gte&quot;</span> : <span class="number">18</span>, <span class="string">&quot;$lte&quot;</span> : <span class="number">30</span>&#125;&#125;) </span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">users</span> <span class="keyword">where</span> age &gt;=<span class="number">18</span> <span class="keyword">and</span> age &lt;= <span class="number">30</span> </span><br><span class="line"></span><br><span class="line">db.users.find(&#123;<span class="string">&quot;username&quot;</span> : &#123;<span class="string">&quot;$ne&quot;</span> : <span class="string">&quot;joe&quot;</span>&#125;&#125;) </span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">users</span> <span class="keyword">where</span> username &lt;&gt; <span class="string">&quot;joe&quot;</span></span><br><span class="line"></span><br><span class="line">db.users.find(&#123;<span class="string">&quot;ticket_no&quot;</span> : &#123;<span class="string">&quot;$in&quot;</span> : [<span class="number">725</span>, <span class="number">542</span>, <span class="number">390</span>]&#125;&#125;) </span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">users</span> <span class="keyword">where</span> ticket_no <span class="keyword">in</span> (<span class="number">725</span>, <span class="number">542</span>, <span class="number">390</span>)</span><br><span class="line"></span><br><span class="line">db.users.find(&#123;<span class="string">&quot;ticket_no&quot;</span> : &#123;<span class="string">&quot;$nin&quot;</span> : [<span class="number">725</span>, <span class="number">542</span>, <span class="number">390</span>]&#125;&#125;) </span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">users</span> <span class="keyword">where</span> ticket_no <span class="keyword">not</span> <span class="keyword">in</span> (<span class="number">725</span>, <span class="number">542</span>, <span class="number">390</span>)</span><br><span class="line"></span><br><span class="line">db.users.find(&#123;<span class="string">&quot;$or&quot;</span> : [&#123;<span class="string">&quot;ticket_no&quot;</span> : <span class="number">725</span>&#125;, &#123;<span class="string">&quot;winner&quot;</span> : <span class="literal">true</span>&#125;]&#125;) </span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">form</span> <span class="keyword">users</span> <span class="keyword">where</span> ticket_no = <span class="number">725</span> <span class="keyword">or</span> winner = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">db.users.find(&#123;<span class="string">&quot;id_num&quot;</span> : &#123;<span class="string">&quot;$mod&quot;</span> : [<span class="number">5</span>, <span class="number">1</span>]&#125;&#125;) </span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">users</span> <span class="keyword">where</span> (id_num <span class="keyword">mod</span> <span class="number">5</span>) = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">db.users.find(&#123;<span class="string">&quot;$not&quot;</span>: &#123;<span class="string">&quot;age&quot;</span> : <span class="number">27</span>&#125;&#125;) </span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">users</span> <span class="keyword">where</span> <span class="keyword">not</span> (age = <span class="number">27</span>)</span><br><span class="line"></span><br><span class="line">db.users.find(&#123;<span class="string">&quot;username&quot;</span> : &#123;<span class="string">&quot;$in&quot;</span> : [<span class="literal">null</span>], <span class="string">&quot;$exists&quot;</span> : <span class="literal">true</span>&#125;&#125;) </span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">users</span> <span class="keyword">where</span> username <span class="keyword">is</span> <span class="literal">null</span></span><br><span class="line">如果直接通过find(&#123;<span class="string">&quot;username&quot;</span> : <span class="literal">null</span>&#125;)进行查询，那么连带<span class="string">&quot;没有username的纪录一并筛选出来</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">db.users.find(&#123;&quot;</span><span class="keyword">name</span><span class="string">&quot; : /joey?/i&#125;)</span></span><br><span class="line"><span class="string">正则查询，value是符合PCRE的表达式</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">db.food.find(&#123;fruit : &#123;$all : [&quot;</span>apple<span class="string">&quot;, &quot;</span>banana<span class="string">&quot;]&#125;&#125;) </span></span><br><span class="line"><span class="string">对数组的查询, 字段fruit中，既包含&quot;</span>apple<span class="string">&quot;,又包含&quot;</span>banana<span class="string">&quot;的纪录</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">db.food.find(&#123;&quot;</span>fruit<span class="number">.2</span><span class="string">&quot; : &quot;</span>peach<span class="string">&quot;&#125;) </span></span><br><span class="line"><span class="string">对数组的查询, 字段fruit中，第3个(从0开始)元素是peach的纪录</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">db.food.find(&#123;&quot;</span>fruit<span class="string">&quot; : &#123;&quot;</span>$<span class="keyword">size</span><span class="string">&quot; : 3&#125;&#125;) </span></span><br><span class="line"><span class="string">对数组的查询, 查询数组元素个数是3的记录，$size前面无法和其他的操作符复合使用</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">db.users.findOne(criteria, &#123;&quot;</span>comments<span class="string">&quot; : &#123;&quot;</span>$slice<span class="string">&quot; : 10&#125;&#125;) </span></span><br><span class="line"><span class="string">对数组的查询，只返回数组comments中的前十条，还可以&#123;&quot;</span>$slice<span class="string">&quot; : -10&#125;， &#123;&quot;</span>$slice<span class="string">&quot; : [23, 10]&#125;; 分别返回最后10条，和中间10条</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">db.people.find(&#123;&quot;</span>name.first<span class="string">&quot; : &quot;</span>Joe<span class="string">&quot;, &quot;</span>name.last<span class="string">&quot; : &quot;</span>Schmoe<span class="string">&quot;&#125;) </span></span><br><span class="line"><span class="string">嵌套查询</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">db.blog.find(&#123;&quot;</span>comments<span class="string">&quot; : &#123;&quot;</span>$elemMatch<span class="string">&quot; : &#123;&quot;</span>author<span class="string">&quot; : &quot;</span>joe<span class="string">&quot;, &quot;</span>score<span class="string">&quot; : &#123;&quot;</span>$gte<span class="string">&quot; : 5&#125;&#125;&#125;&#125;) </span></span><br><span class="line"><span class="string">嵌套查询，仅当嵌套的元素是数组时使用</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">db.foo.find(&#123;&quot;</span>$<span class="keyword">where</span><span class="string">&quot; : &quot;</span>this.x + this.y == <span class="number">10</span><span class="string">&quot;&#125;) </span></span><br><span class="line"><span class="string">复杂的查询，$where当然是非常方便的，但效率低下。对于复杂查询，考虑的顺序应当是 正则 -&gt; MapReduce -&gt; $where</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">db.foo.find(&#123;&quot;$where&quot; : &quot;function() &#123; return this.x + this.y == 10; &#125;&quot;&#125;) </span><br><span class="line">$where可以支持javascript函数作为查询条件</span><br><span class="line"></span><br><span class="line">db.foo.find().sort(&#123;&quot;x&quot; : 1&#125;).limit(1).skip(10); </span><br><span class="line">返回第(10, 11]条，按&quot;x&quot;进行排序; 三个limit的顺序是任意的，应该尽量避免skip中使用large-number</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Develop"><a href="#Develop" class="headerlink" title="Develop"></a>Develop</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line">—————————————— </span><br><span class="line">MySQL: </span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">user</span> </span><br><span class="line">Mongo: </span><br><span class="line">db.user.find() </span><br><span class="line">—————————————— </span><br><span class="line">MySQl: </span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">WHERE</span> <span class="keyword">name</span> = <span class="string">&#x27;foobar&#x27;</span> </span><br><span class="line">Mongo: </span><br><span class="line">db.user.find(&#123; <span class="string">&#x27;name&#x27;</span> : <span class="string">&#x27;foobar&#x27;</span> &#125;) </span><br><span class="line">—————————————— </span><br><span class="line">MySql: </span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">user</span> (<span class="string">&#x27;name&#x27;</span>,<span class="string">&#x27;age&#x27;</span>) <span class="keyword">VALUES</span> (<span class="string">&#x27;foobar&#x27;</span>,<span class="number">25</span>) </span><br><span class="line">Mongo: </span><br><span class="line">db.user.insert(&#123; <span class="string">&#x27;name&#x27;</span> : <span class="string">&#x27;foobar&#x27;</span> , <span class="string">&#x27;age&#x27;</span> : <span class="number">25</span>&#125;) </span><br><span class="line">—————————————— </span><br><span class="line">如果想增加email这一列 </span><br><span class="line">MySql: </span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="keyword">user</span> ... </span><br><span class="line">Mongo: </span><br><span class="line">db.user.insert(&#123; <span class="string">&#x27;name&#x27;</span> : <span class="string">&#x27;foobar&#x27;</span> , <span class="string">&#x27;age&#x27;</span> : <span class="number">25</span> , <span class="string">&#x27;email&#x27;</span> : <span class="string">&#x27;foo@bar.com&#x27;</span> &#125;) </span><br><span class="line">—————————————— </span><br><span class="line">MySql: </span><br><span class="line"><span class="keyword">DELETE</span> * <span class="keyword">FROM</span> <span class="keyword">user</span> </span><br><span class="line">Mongo: </span><br><span class="line">db.user.remove(&#123;&#125;) </span><br><span class="line">—————————————— </span><br><span class="line">MySql: </span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">WHERE</span> age &lt; <span class="number">30</span> </span><br><span class="line">Mongo: </span><br><span class="line">db.user.remove(&#123; <span class="string">&#x27;age&#x27;</span> : &#123;$lt : <span class="number">30</span>&#125;&#125;) </span><br><span class="line">$gt:&gt; ; $gte:&gt;= ; $lt:&lt; ; $lte:&lt;= ; $ne:!= </span><br><span class="line">—————————————— </span><br><span class="line">MySql: </span><br><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">user</span> <span class="keyword">SET</span> <span class="string">`age`</span> = <span class="number">36</span> <span class="keyword">WHERE</span> <span class="string">`name`</span> = <span class="string">&#x27;foobar&#x27;</span> </span><br><span class="line">Mongo: </span><br><span class="line">db.user.update(&#123; <span class="string">&#x27;name&#x27;</span> : <span class="string">&#x27;foobar&#x27;</span>&#125; , &#123;$<span class="keyword">set</span> : &#123; <span class="string">&#x27;age&#x27;</span> : <span class="number">36</span>&#125;&#125;) </span><br><span class="line">—————————————— </span><br><span class="line">MySQL: </span><br><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">user</span> <span class="keyword">SET</span> <span class="string">`age`</span> = <span class="string">&#x27;age&#x27;</span> + <span class="number">3</span> <span class="keyword">WHERE</span> <span class="string">`name`</span> = <span class="string">&#x27;foobar&#x27;</span> </span><br><span class="line">Mongo: </span><br><span class="line">db.user.update(&#123; <span class="string">&#x27;name&#x27;</span> : <span class="string">&#x27;foobar&#x27;</span>&#125; , &#123;$inc : &#123;<span class="string">&#x27;age&#x27;</span> : <span class="number">3</span>&#125;&#125;) </span><br><span class="line">—————————————— </span><br><span class="line">MySQl: </span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(*) <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">WHERE</span> <span class="string">`name`</span> = <span class="string">&#x27;foobar&#x27;</span> </span><br><span class="line">Mongo: </span><br><span class="line">db.user.find(&#123; <span class="string">&#x27;name&#x27;</span> : <span class="string">&#x27;foobar&#x27;</span>&#125;).count() </span><br><span class="line">—————————————— </span><br><span class="line">MySql: </span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">limit</span> <span class="number">10</span>,<span class="number">20</span> </span><br><span class="line">Mongo: </span><br><span class="line">db.user.find().skip(<span class="number">10</span>).limit(<span class="number">20</span>) </span><br><span class="line">—————————————— </span><br><span class="line">MySQl: </span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">WHERE</span> <span class="string">`age`</span> <span class="keyword">IN</span> (<span class="number">25</span>,<span class="number">35</span>,<span class="number">45</span>) </span><br><span class="line">Mongo: </span><br><span class="line">db.user.find(&#123; <span class="string">&#x27;age&#x27;</span> : &#123;$<span class="keyword">in</span> : [<span class="number">25</span>,<span class="number">35</span>,<span class="number">45</span>]&#125;&#125;) </span><br><span class="line">—————————————— </span><br><span class="line">MySql: </span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> age <span class="keyword">DESC</span> </span><br><span class="line">Mongo: </span><br><span class="line">db.user.find().sort(&#123; <span class="string">&#x27;age&#x27;</span> : <span class="number">-1</span>&#125;) </span><br><span class="line">—————————————— </span><br><span class="line">MySQL: </span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span>(<span class="keyword">name</span>) <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">WHERE</span> age &gt; <span class="number">20</span> </span><br><span class="line">Mongo: </span><br><span class="line">db.user.distinct( <span class="string">&#x27;name&#x27;</span>,&#123;<span class="string">&#x27;age&#x27;</span> : &#123;$lt : <span class="number">20</span>&#125;&#125;) </span><br><span class="line">—————————————— </span><br><span class="line">MySQL: </span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">name</span>, <span class="keyword">sum</span>(marks) <span class="keyword">FROM</span>  <span class="keyword">user</span> <span class="keyword">GROUP</span> <span class="keyword">BY</span> <span class="keyword">name</span> </span><br><span class="line">Mongo: </span><br><span class="line">db.user.group(&#123; </span><br><span class="line"><span class="keyword">key</span>:&#123;<span class="string">&#x27;name&#x27;</span>:<span class="literal">true</span>&#125;, </span><br><span class="line">cond:&#123;<span class="string">&#x27;name&#x27;</span>:<span class="string">&#x27;foo&#x27;</span>&#125;, </span><br><span class="line">reduce:function(obj,prev)&#123;prev.msum += obj.marks;&#125;, </span><br><span class="line">initial:&#123;msum : 0&#125; </span><br><span class="line">&#125;) </span><br><span class="line">—————————————— </span><br><span class="line">MySQL: </span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">name</span> <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">WHERE</span> age &lt; <span class="number">20</span> </span><br><span class="line">Mongo: </span><br><span class="line">db.user.find(<span class="string">&#x27;this.age &lt; 20&#x27;</span> , &#123;<span class="keyword">name</span> : <span class="number">1</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="Leftjoin"><a href="#Leftjoin" class="headerlink" title="Leftjoin"></a>Leftjoin</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">db.post.aggregate([</span><br><span class="line">  &#123; &quot;$match&quot;: &#123; &quot;rating&quot;: &quot;important&quot; &#125; &#125;, # db.ost.find(&#123;&#x27;rating&#x27;:&#x27;important&#x27;&#125;)</span><br><span class="line">  &#123; &quot;$sort&quot;: &#123; &quot;date&quot;: -1 &#125; &#125;, # db.post.find().sort(&#123; &quot;date&quot;: -1 &#125;)</span><br><span class="line">  &#123; &quot;$limit&quot;: 20 &#125;, # db.post.find.sort().limit(20) # 取top20</span><br><span class="line">  &#123; &quot;$lookup&quot;: &#123;  # left join</span><br><span class="line">    &quot;localField&quot;: &quot;user_id&quot;, <span class="comment"># post$user_id</span></span><br><span class="line">    &quot;from&quot;: &quot;user&quot;,  <span class="comment"># table2</span></span><br><span class="line">    &quot;foreignField&quot;: &quot;_id&quot;, <span class="comment"># table2$_id</span></span><br><span class="line">    &quot;as&quot;: &quot;userinfo&quot; <span class="comment"># new table</span></span><br><span class="line">  &#125; &#125;,</span><br><span class="line">  &#123; &quot;$unwind&quot;: &quot;$userinfo&quot; &#125;, # unlist()</span><br><span class="line">  &#123; &quot;$project&quot;: &#123;  # db.userinfo.find(&#123;&#125;,&#123;&#x27;text&#x27;:1,&#x27;date&#x27;:1...&#125;)</span><br><span class="line">    &quot;text&quot;: 1,</span><br><span class="line">    &quot;date&quot;: 1,</span><br><span class="line">    &quot;userinfo.name&quot;: 1,</span><br><span class="line">    &quot;userinfo.country&quot;: 1</span><br><span class="line">  &#125; &#125;</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+
+<h3 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zhoulifeng/p/9429597.html">MongoDB安装配置教程</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.nuoweb.com/database/6457.html">MongoDB与MySQL常用操作语句对照</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/konglongaa/article/details/78571205">mongodb查询的语法</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/duhuo/p/6068879.html">在MongoDB中使用JOIN操作</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/5853beb418ee">Hive SQL 日常工作使用总结</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/mongodb/" rel="tag"># mongodb</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/09/19/ranger1/" rel="prev" title="简单好用的ranger包">
+      <i class="fa fa-chevron-left"></i> 简单好用的ranger包
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/10/10/gephi1/" rel="next" title="社会网络关系分析 By gephi">
+      社会网络关系分析 By gephi <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFMongoDB"><span class="nav-number">1.</span> <span class="nav-text">什么是MongoDB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%9F%A5%E8%AF%A2%E6%9E%B6%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">基本查询架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mongodb-VS-Mysql"><span class="nav-number">3.</span> <span class="nav-text">Mongodb VS Mysql</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Develop"><span class="nav-number">4.</span> <span class="nav-text">Develop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Leftjoin"><span class="nav-number">5.</span> <span class="nav-text">Leftjoin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#References"><span class="nav-number">6.</span> <span class="nav-text">References:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

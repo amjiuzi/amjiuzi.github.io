@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快   Lasso回归复杂度调整的程度由参数lambda来控制，lambda越大模型复杂度的惩罚力度越大，从而获得一个较少变量的模型。Lasso回归和bridge回归都是Elastic Net广义线性模型的特例。除了参数lambda，还有参数alpha，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="R语言回归分析之岭回归和lasso回归">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2018/11/11/lassoReg1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快   Lasso回归复杂度调整的程度由参数lambda来控制，lambda越大模型复杂度的惩罚力度越大，从而获得一个较少变量的模型。Lasso回归和bridge回归都是Elastic Net广义线性模型的特例。除了参数lambda，还有参数alpha，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf2b1deeb51e.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/06/29/5b358c7e72b32.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf22caa949c7.png">
+<meta property="og:image" content="https://i.loli.net/2018/06/29/5b35d00f57ed2.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf27bd81fed3.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf267bcef9c1.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/28/5bfdf06d56f44.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf2ae1d5b3ac.png">
+<meta property="article:published_time" content="2018-11-11T12:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:28.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="regression">
+<meta property="article:tag" content="ridge">
+<meta property="article:tag" content="lasso">
+<meta property="article:tag" content="feather selection">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2018/11/19/5bf2b1deeb51e.jpg">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2018/11/11/lassoReg1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>R语言回归分析之岭回归和lasso回归 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2018/11/11/lassoReg1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          R语言回归分析之岭回归和lasso回归
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-11-11 20:02:34" itemprop="dateCreated datePublished" datetime="2018-11-11T20:02:34+08:00">2018-11-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:28" itemprop="dateModified" datetime="2020-08-23T21:16:28+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/FeatherSelection/" itemprop="url" rel="index"><span itemprop="name">FeatherSelection</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿帮助，请出门左转 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">Convenient Entrance</a>, 合作愉快  </p>
+<p>Lasso回归复杂度调整的程度由参数lambda来控制，lambda越大模型复杂度的惩罚力度越大，从而获得一个较少变量的模型。Lasso回归和bridge回归都是Elastic Net广义线性模型的特例。除了参数lambda，还有参数alpha，控制对高相关性数据时建模的形状。<br>Lasso回归，alpha=1(R语言glmnet的默认值); brigde回归，alpha=0; 一般的elastic net 0&lt;alpha&lt;1</p>
+<p><img src="https://i.loli.net/2018/11/19/5bf2b1deeb51e.jpg" alt="lasso1.jpg"></p>
+<a id="more"></a>
+
+
+<p>以下五类模型的变量选择可采用R语言的glmnet包来解决。这五类模型分别是：  </p>
+<ol>
+<li>二分类logistic回归模型  </li>
+<li>多分类logistic回归模型  </li>
+<li>Possion模型  </li>
+<li>Cox比例风险模型  </li>
+<li>SVM  </li>
+</ol>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">cv.fit&lt;-cv.glmnet(x,y,family=<span class="string">&quot;binomial&quot;</span>,type.measure=<span class="string">&quot;deviance&quot;</span>) </span><br><span class="line">x为输入特征，x应该是矩阵格式的，若非矩阵格式，采用model.matrix()转换成矩阵格式</span><br><span class="line"></span><br><span class="line">参数family规定了回归模型的类型:</span><br><span class="line">-family=<span class="string">&quot;gaussian&quot;</span>适用于一维连续因变量</span><br><span class="line">-family=mgaussian<span class="string">&quot;适用于多维连续因变量</span></span><br><span class="line"><span class="string">-family=&quot;</span>poisson<span class="string">&quot;适用于非负次数因变量(count)</span></span><br><span class="line"><span class="string">-family=&quot;</span>binomial<span class="string">&quot;适用于二元离散因变量(binary)</span></span><br><span class="line"><span class="string">-family=&quot;</span>multinomial<span class="string">&quot;适用于多元离散因变量(category)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">cv.fit$lambda.min  #最佳lambda值</span></span><br><span class="line"><span class="string">cv.fit$lambda.1se #指在lambda.min一个标准差范围内得到的最简单模型的那一个lambda值。因为lambda值达到一定大小之后，继续增加模型自变量个数及缩小lambda值，并不能显著提高模型性能，lambda.lse给出的就是一个具备优良性能但是自变量个数最少的模型</span></span><br><span class="line"><span class="string">coefficients&lt;-coef(fit,s=cv.fit$lambda.min)</span></span><br><span class="line"><span class="string">&gt; 最佳lambda值</span></span><br><span class="line"><span class="string">Active.Index&lt;-which(coefficients!=0)    </span></span><br><span class="line"><span class="string">&gt; 系数不为0的特征索引</span></span><br><span class="line"><span class="string">Active.coefficients&lt;-coefficients[Active.Index]   </span></span><br><span class="line"><span class="string">&gt; 系数不为0的特征系数值</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="开题："><a href="#开题：" class="headerlink" title="开题："></a>开题：</h2><p>某种水泥在凝固时释放出热量Y(卡/克)与水泥中的化学成分X1,X2,X3,X4有关,现测得13组数据(如下所示),希望从中选取主要的影响变量建立Y与X的回归方程</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">dat1 &lt;- data.frame(X1 = c(<span class="number">7</span>, <span class="number">1</span>, <span class="number">11</span>, <span class="number">11</span>, <span class="number">7</span>, <span class="number">11</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">21</span>, <span class="number">1</span>, <span class="number">11</span>, <span class="number">10</span>), </span><br><span class="line">                   X2 = c(<span class="number">26</span>,<span class="number">29</span>, <span class="number">56</span>, <span class="number">31</span>, <span class="number">52</span>, <span class="number">55</span>, <span class="number">71</span>, <span class="number">31</span>, <span class="number">54</span>, <span class="number">47</span>, <span class="number">40</span>, <span class="number">66</span>, <span class="number">68</span>), </span><br><span class="line">                   X3 = c(<span class="number">6</span>, <span class="number">15</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">6</span>,<span class="number">9</span>, <span class="number">17</span>, <span class="number">22</span>, <span class="number">18</span>, <span class="number">4</span>, <span class="number">23</span>, <span class="number">9</span>, <span class="number">8</span>), </span><br><span class="line">                   X4 = c(<span class="number">60</span>, <span class="number">52</span>, <span class="number">20</span>, <span class="number">47</span>, <span class="number">33</span>, <span class="number">22</span>, <span class="number">6</span>, <span class="number">44</span>, <span class="number">22</span>, <span class="number">26</span>,<span class="number">34</span>, <span class="number">12</span>, <span class="number">12</span>), </span><br><span class="line">                   Y = c(<span class="number">78.5</span>, <span class="number">74.3</span>, <span class="number">104.3</span>, <span class="number">87.6</span>, <span class="number">95.9</span>, <span class="number">109.2</span>, <span class="number">102.7</span>, <span class="number">72.5</span>, <span class="number">93.1</span>, <span class="number">115.9</span>, <span class="number">83.8</span>, <span class="number">113.3</span>, <span class="number">109.4</span>))</span><br><span class="line">dat1</span><br><span class="line"></span><br><span class="line"><span class="comment"># X1 X2 X3 X4     Y</span></span><br><span class="line"><span class="comment"># 1   7 26  6 60  78.5</span></span><br><span class="line"><span class="comment"># 2   1 29 15 52  74.3</span></span><br><span class="line"><span class="comment"># 3  11 56  8 20 104.3</span></span><br><span class="line"><span class="comment"># 4  11 31  8 47  87.6</span></span><br><span class="line"><span class="comment"># 5   7 52  6 33  95.9</span></span><br><span class="line"><span class="comment"># 6  11 55  9 22 109.2</span></span><br><span class="line"><span class="comment"># 7   3 71 17  6 102.7</span></span><br><span class="line"><span class="comment"># 8   1 31 22 44  72.5</span></span><br><span class="line"><span class="comment"># 9   2 54 18 22  93.1</span></span><br><span class="line"><span class="comment"># 10 21 47  4 26 115.9</span></span><br><span class="line"><span class="comment"># 11  1 40 23 34  83.8</span></span><br><span class="line"><span class="comment"># 12 11 66  9 12 113.3</span></span><br><span class="line"><span class="comment"># 13 10 68  8 12 109.4</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="思路及步骤："><a href="#思路及步骤：" class="headerlink" title="思路及步骤："></a>思路及步骤：</h2><h3 id="简单线性回归"><a href="#简单线性回归" class="headerlink" title="简单线性回归"></a>简单线性回归</h3><p>既然是回归分析,拿到数据后第一个想法就是先建个 简单线性回归看看效果, 走起</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">lm1 &lt;- lm(Y ~ ., data = dat1)</span><br><span class="line">summary(lm1)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2018/06/29/5b358c7e72b32.png" alt="lm1.png"></p>
+<p>首先看模型的整体显著性 p-value: 4.756e-07, 模型通过检验<br>再看 Adjusted R-Squared: 0.9736, 竟然能解释原始信息的 97.36 %，解释力非常好<br>最后来看我们关心的 主要影响变量, X1-X4 的 p.value 全部大于临界值 0.05，情何以堪</p>
+<p>出现这种情况, 一般会有两种思路:<br>1.所选变量不足以满足模型需要，需要添加类似(X^2)的变量,但是此模型的解释力达到了 97.36%，所以变量的增加对模型的改进已无多大意义<br>2.现存变量之间存在共线性问题，就此展开以下讨论</p>
+<h3 id="检验自变量之间有无共线性"><a href="#检验自变量之间有无共线性" class="headerlink" title="检验自变量之间有无共线性"></a>检验自变量之间有无共线性</h3><p>方差膨胀因子VIF是指回归系数的估计量由于自变量共线性使得方差增加的一个相对度量。一般建议，如VIF&gt;10，表明模型中有很强的共线性问题</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(car)</span><br><span class="line">vif(lm.sol)</span><br><span class="line"><span class="comment">#       X1        X2        X3        X4 </span></span><br><span class="line"><span class="comment"># 38.49621 254.42317  46.86839 282.51286 </span></span><br></pre></td></tr></table></figure>
+<p>通过观察发现4个自变量的 vif值都超过了 10，X2和X4竟达到了 200 多，可见模型中是存在严重的共线性问题的, 为了能直观的看到这一点，我们来作图分析</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plot(dat1[, <span class="number">1</span>:<span class="number">4</span>])</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2018/11/19/5bf22caa949c7.png" alt="p1.png"></p>
+<p>通过cor展示变量间相关程度</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">corrplot::corrplot(cor(dat1[,<span class="number">1</span>:<span class="number">4</span>]),diag = <span class="literal">FALSE</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2018/06/29/5b35d00f57ed2.png" alt="cor1.png"></p>
+<p>通过以上的分析，我们可以清楚的知道 X2与X4 X1与X3 都有很强的相关关系</p>
+<h2 id="解决方案有3"><a href="#解决方案有3" class="headerlink" title="解决方案有3:"></a>解决方案有3:</h2><h3 id="step-lm"><a href="#step-lm" class="headerlink" title="step(lm)"></a>step(lm)</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">lm1 &lt;- lm(Y ~ ., data = dat1)</span><br><span class="line">summary(lm1)</span><br><span class="line"></span><br><span class="line">Call:</span><br><span class="line">lm(formula = Y ~ ., data = dat1)</span><br><span class="line"></span><br><span class="line">Residuals:</span><br><span class="line">    Min      1Q  Median      3Q     Max </span><br><span class="line">-<span class="number">3.1750</span> -<span class="number">1.6709</span>  <span class="number">0.2508</span>  <span class="number">1.3783</span>  <span class="number">3.9254</span> </span><br><span class="line"></span><br><span class="line">Coefficients:</span><br><span class="line">            Estimate Std. Error t value Pr(&gt;|t|)  </span><br><span class="line">(Intercept)  <span class="number">62.4054</span>    <span class="number">70.0710</span>   <span class="number">0.891</span>   <span class="number">0.3991</span>  </span><br><span class="line">X1            <span class="number">1.5511</span>     <span class="number">0.7448</span>   <span class="number">2.083</span>   <span class="number">0.0708</span> .</span><br><span class="line">X2            <span class="number">0.5102</span>     <span class="number">0.7238</span>   <span class="number">0.705</span>   <span class="number">0.5009</span>  </span><br><span class="line">X3            <span class="number">0.1019</span>     <span class="number">0.7547</span>   <span class="number">0.135</span>   <span class="number">0.8959</span>  </span><br><span class="line">X4           -<span class="number">0.1441</span>     <span class="number">0.7091</span>  -<span class="number">0.203</span>   <span class="number">0.8441</span>  </span><br><span class="line">---</span><br><span class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></span><br><span class="line"></span><br><span class="line">Residual standard error: <span class="number">2.446</span> on <span class="number">8</span> degrees of freedom</span><br><span class="line">Multiple R-squared:  <span class="number">0.9824</span>,	Adjusted R-squared:  <span class="number">0.9736</span> </span><br><span class="line"><span class="literal">F</span>-statistic: <span class="number">111.5</span> on <span class="number">4</span> and <span class="number">8</span> DF,  p-value: <span class="number">4.756e-07</span></span><br><span class="line"></span><br><span class="line">lm2 &lt;- step(lm1)</span><br><span class="line">summary(lm2)</span><br><span class="line"></span><br><span class="line">Call:</span><br><span class="line">lm(formula = Y ~ X1 + X2 + X4, data = dat1)</span><br><span class="line"></span><br><span class="line">Residuals:</span><br><span class="line">    Min      1Q  Median      3Q     Max </span><br><span class="line">-<span class="number">3.0919</span> -<span class="number">1.8016</span>  <span class="number">0.2562</span>  <span class="number">1.2818</span>  <span class="number">3.8982</span> </span><br><span class="line"></span><br><span class="line">Coefficients:</span><br><span class="line">            Estimate Std. Error t value Pr(&gt;|t|)    </span><br><span class="line">(Intercept)  <span class="number">71.6483</span>    <span class="number">14.1424</span>   <span class="number">5.066</span> <span class="number">0.000675</span> ***</span><br><span class="line">X1            <span class="number">1.4519</span>     <span class="number">0.1170</span>  <span class="number">12.410</span> <span class="number">5.78e-07</span> ***</span><br><span class="line">X2            <span class="number">0.4161</span>     <span class="number">0.1856</span>   <span class="number">2.242</span> <span class="number">0.051687</span> .  </span><br><span class="line">X4           -<span class="number">0.2365</span>     <span class="number">0.1733</span>  -<span class="number">1.365</span> <span class="number">0.205395</span>    </span><br><span class="line">---</span><br><span class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></span><br><span class="line"></span><br><span class="line">Residual standard error: <span class="number">2.309</span> on <span class="number">9</span> degrees of freedom</span><br><span class="line">Multiple R-squared:  <span class="number">0.9823</span>,	Adjusted R-squared:  <span class="number">0.9764</span> </span><br><span class="line"><span class="literal">F</span>-statistic: <span class="number">166.8</span> on <span class="number">3</span> and <span class="number">9</span> DF,  p-value: <span class="number">3.323e-08</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="岭回归"><a href="#岭回归" class="headerlink" title="岭回归"></a>岭回归</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(glmnet)</span><br><span class="line">ridg1 &lt;- cv.glmnet(x=model.matrix(~.,dat1[,-ncol(dat1)]),</span><br><span class="line">                   y=dat1$Y,</span><br><span class="line">                   family = <span class="string">&#x27;gaussian&#x27;</span>,</span><br><span class="line">                   alpha = <span class="number">0</span>,</span><br><span class="line">                   <span class="comment"># nfolds = 10,</span></span><br><span class="line">                   nlambda = <span class="number">50</span>)</span><br><span class="line"></span><br><span class="line">plot(ridg1)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2018/11/19/5bf27bd81fed3.png" alt="ridg1.png"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">bestlam1=ridg1$lambda.min</span><br><span class="line">[<span class="number">1</span>] <span class="number">1.432556</span></span><br><span class="line"></span><br><span class="line">bestlam2=ridg1$lambda.1se</span><br><span class="line">[<span class="number">1</span>] <span class="number">3.03838</span></span><br><span class="line"></span><br><span class="line">pred.ridg &lt;- predict(ridg1,s=c(bestlam1,bestlam2),</span><br><span class="line">             newx=model.matrix(~.,dat1[,-ncol(dat1)]))</span><br><span class="line">mean((pred.ridg[,<span class="number">1</span>]-dat1$Y)^<span class="number">2</span>)<span class="comment">#当lambda=lambda.min</span></span><br><span class="line">[<span class="number">1</span>] <span class="number">4.525766</span></span><br><span class="line"></span><br><span class="line">mean((pred.ridg[,<span class="number">2</span>]-dat1$Y)^<span class="number">2</span>)<span class="comment">#当lambda=lambda.lse</span></span><br><span class="line">[<span class="number">1</span>] <span class="number">6.223506</span></span><br><span class="line"></span><br><span class="line">predict(ridg1,s=c(bestlam1,bestlam2),</span><br><span class="line">        newx=model.matrix(~.,dat1[,-ncol(dat1)]),</span><br><span class="line">        type=<span class="string">&quot;coefficients&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="number">6</span> x <span class="number">2</span> sparse Matrix of class <span class="string">&quot;dgCMatrix&quot;</span></span><br><span class="line">                     <span class="number">1</span>          <span class="number">2</span></span><br><span class="line">(Intercept) <span class="number">86.7090450</span> <span class="number">87.8027815</span></span><br><span class="line">(Intercept)  .          .        </span><br><span class="line">X1           <span class="number">1.1010431</span>  <span class="number">0.9692898</span></span><br><span class="line">X2           <span class="number">0.2904642</span>  <span class="number">0.2891403</span></span><br><span class="line">X3          -<span class="number">0.2708346</span> -<span class="number">0.3301220</span></span><br><span class="line">X4          -<span class="number">0.3433633</span> -<span class="number">0.3216678</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="lasso回归"><a href="#lasso回归" class="headerlink" title="lasso回归"></a>lasso回归</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(glmnet)</span><br><span class="line">laso2 &lt;- cv.glmnet(x=model.matrix(~.,dat1[,-ncol(dat1)]),</span><br><span class="line">                   y=dat1$Y,</span><br><span class="line">                   family = <span class="string">&#x27;gaussian&#x27;</span>,</span><br><span class="line">                   alpha = <span class="number">1</span>,</span><br><span class="line">                   <span class="comment"># nfolds = 10,</span></span><br><span class="line">                   nlambda = <span class="number">50</span>)</span><br><span class="line">plot(laso2)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2018/11/19/5bf267bcef9c1.png" alt="lambda"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">bestlam1=laso2$lambda.min</span><br><span class="line">[<span class="number">1</span>] <span class="number">0.08954262</span></span><br><span class="line"></span><br><span class="line">bestlam2=laso2$lambda.1se</span><br><span class="line">[<span class="number">1</span>] <span class="number">0.7079278</span></span><br><span class="line"></span><br><span class="line">pred.laso &lt;- predict(laso2,s=c(bestlam1,bestlam2),</span><br><span class="line">             newx=model.matrix(~.,dat1[,-ncol(dat1)]))</span><br><span class="line"></span><br><span class="line">mean((pred.laso[,<span class="number">1</span>]-dat1$Y)^<span class="number">2</span>)<span class="comment">#当lambda=lambda.min</span></span><br><span class="line">[<span class="number">1</span>] <span class="number">3.703116</span></span><br><span class="line"></span><br><span class="line">mean((pred.laso[,<span class="number">2</span>]-dat1$Y)^<span class="number">2</span>)<span class="comment">#当lambda=lambda.lse</span></span><br><span class="line">[<span class="number">1</span>] <span class="number">4.503159</span></span><br><span class="line"><span class="comment"># lambda.min 误差最小, lambda.lse 性能优良,自变量个数最少</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取2个 lambda值 对应的自变量系数</span></span><br><span class="line">predict(laso2,s=c(bestlam1,bestlam2),</span><br><span class="line">        newx=model.matrix(~.,dat1[,-ncol(dat1)]),</span><br><span class="line">        type=<span class="string">&quot;coefficients&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="number">6</span> x <span class="number">2</span> sparse Matrix of class <span class="string">&quot;dgCMatrix&quot;</span></span><br><span class="line">                     <span class="number">1</span>          <span class="number">2</span></span><br><span class="line">(Intercept) <span class="number">71.7384683</span> <span class="number">73.3234255</span></span><br><span class="line">(Intercept)  .          .        </span><br><span class="line">X1           <span class="number">1.4391733</span>  <span class="number">1.3506153</span></span><br><span class="line">X2           <span class="number">0.4143973</span>  <span class="number">0.3898440</span></span><br><span class="line">X3           .          .        </span><br><span class="line">X4          -<span class="number">0.2336221</span> -<span class="number">0.2250169</span></span><br></pre></td></tr></table></figure>
+<p>lasso回归tips</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># cvfit = cv.glmnet(x, y, family = &quot;binomial&quot;, type.measure = &quot;class&quot;)</span></span><br><span class="line"><span class="comment"># library(doParallel)</span></span><br><span class="line"><span class="comment"># # Windows System</span></span><br><span class="line"><span class="comment"># cl &lt;-  makeCluster(6)</span></span><br><span class="line"><span class="comment"># registerDoParallel(cl)</span></span><br><span class="line"><span class="comment"># cvfit = cv.glmnet(x, y, family = &quot;binomial&quot;,</span></span><br><span class="line"><span class="comment">#                   type.measure = &quot;class&quot;, parallel=TRUE)</span></span><br><span class="line"><span class="comment"># stopCluster(cl)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># # CV for 11 alpha value</span></span><br><span class="line"><span class="comment"># for (i in 0:10) &#123;</span></span><br><span class="line"><span class="comment">#   assign(paste(&quot;cvfit&quot;, i, sep=&quot;&quot;),</span></span><br><span class="line"><span class="comment">#          cv.glmnet(x, y, family=&quot;binomial&quot;, type.measure=&quot;class&quot;, alpha=i/10))</span></span><br><span class="line"><span class="comment"># &#125;</span></span><br><span class="line"><span class="comment"># # Plot Solution Paths</span></span><br><span class="line"><span class="comment"># par(mfrow=c(3,1))</span></span><br><span class="line"><span class="comment"># plot(cvfit10, main=&quot;LASSO&quot;)</span></span><br><span class="line"><span class="comment"># plot(cvfit0, main=&quot;Ridge&quot;)</span></span><br><span class="line"><span class="comment"># plot(cvfit5, main=&quot;Elastic Net&quot;)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># select lambda</span></span><br><span class="line"><span class="comment"># cvfit = cv.glmnet(x, y, type.measure = &quot;mse&quot;, nfolds = 20)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># select alpha</span></span><br><span class="line"><span class="comment"># foldid=sample(1:10,size=length(y),replace=TRUE)</span></span><br><span class="line"><span class="comment"># cv1=cv.glmnet(x,y,foldid=foldid,alpha=1)</span></span><br><span class="line"><span class="comment"># cv.5=cv.glmnet(x,y,foldid=foldid,alpha=.5)</span></span><br><span class="line"><span class="comment"># cv0=cv.glmnet(x,y,foldid=foldid,alpha=0)</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2018/11/28/5bfdf06d56f44.png" alt="weight1.png"></p>
+<h3 id="模型之间的比较"><a href="#模型之间的比较" class="headerlink" title="模型之间的比较"></a>模型之间的比较</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">rmse.laso &lt;- min(sqrt(mean((pred.laso[,<span class="number">1</span>]-dat1$Y)^<span class="number">2</span>)),</span><br><span class="line">                 sqrt(mean((pred.laso[,<span class="number">2</span>]-dat1$Y)^<span class="number">2</span>)))</span><br><span class="line">rmse.ridg &lt;- min(sqrt(mean((pred.ridg[,<span class="number">1</span>]-dat1$Y)^<span class="number">2</span>)),</span><br><span class="line">                 sqrt(mean((pred.ridg[,<span class="number">2</span>]-dat1$Y)^<span class="number">2</span>)))</span><br><span class="line">rmse.lm &lt;- sqrt(mean(resid(lm2)^<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># pl.dt &lt;- data.frame(model1,var1,coef1)</span></span><br><span class="line"><span class="comment"># pl.dt &lt;- pl.dt[order(pl.dt$var1,pl.dt$model1),]</span></span><br><span class="line"><span class="comment"># </span></span><br><span class="line"><span class="comment"># library(ggplot2)</span></span><br><span class="line"><span class="comment"># ggplot(pl.dt,aes(x=var1,y=coef1,fill=model1))+</span></span><br><span class="line"><span class="comment">#   geom_bar(stat = &#x27;identity&#x27;,position = &#x27;dodge&#x27;)+</span></span><br><span class="line"><span class="comment">#   geom_text(aes(x=seq(0.7,by=0.33,length.out = nrow(pl.dt)),</span></span><br><span class="line"><span class="comment">#                 y=ifelse(coef1&gt;0,coef1+0.1,coef1-0.1),</span></span><br><span class="line"><span class="comment">#                 label=round(coef1,2)),size=3,col=&#x27;darkgray&#x27;)+</span></span><br><span class="line"><span class="comment">#   labs(title=&#x27;RMSE&amp;Coef of linear/Lasso/Ridge&#x27;,y=&#x27;&#x27;,x=&#x27;&#x27;)+</span></span><br><span class="line"><span class="comment">#   theme(legend.position = &#x27;top&#x27;,</span></span><br><span class="line"><span class="comment">#         legend.justification = &#x27;left&#x27;,</span></span><br><span class="line"><span class="comment">#         legend.key.height = unit(0.1,&#x27;cm&#x27;),</span></span><br><span class="line"><span class="comment">#         panel.background = element_blank(),</span></span><br><span class="line"><span class="comment">#         axis.ticks.y = element_blank(),</span></span><br><span class="line"><span class="comment">#         axis.text.y = element_blank(),</span></span><br><span class="line"><span class="comment">#         axis.ticks.x = element_blank())+</span></span><br><span class="line"><span class="comment">#   scale_fill_grey(start = 0.6,end=0)</span></span><br><span class="line"><span class="comment"># </span></span><br><span class="line"><span class="comment"># </span></span><br><span class="line"><span class="comment"># plot(laso2,s=&#x27;lambda.min&#x27;)</span></span><br><span class="line"><span class="comment"># update(laso2,s=&#x27;lambda.min&#x27;)</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2018/11/19/5bf2ae1d5b3ac.png" alt="coef1.png"></p>
+<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
+<li><a target="_blank" rel="noopener" href="http://blog.51cto.com/4441501/1561970">用R建立岭回归和lasso回归</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/jiabiao1602/article/details/39177125">用VIF查看共线性问题</a></li>
+<li><a target="_blank" rel="noopener" href="https://cosx.org/2016/10/data-mining-1-lasso/">热门数据挖掘模型应用入门（一）: LASSO 回归</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/yitianguxingjian/article/details/69874867#commentBox">LASSO-Logistic模型–基于R语言glmnet包</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/orchidzouqr/article/details/53582801">R语言解决Lasso问题–glmnet包(广义线性模型)</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/49586199">R语言–岭回归，lasso回归</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/regression/" rel="tag"># regression</a>
+              <a href="/tags/ridge/" rel="tag"># ridge</a>
+              <a href="/tags/lasso/" rel="tag"># lasso</a>
+              <a href="/tags/feather-selection/" rel="tag"># feather selection</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/10/10/gephi1/" rel="prev" title="社会网络关系分析 By gephi">
+      <i class="fa fa-chevron-left"></i> 社会网络关系分析 By gephi
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/12/17/parallel01/" rel="next" title="R语言多线程并行处理之parallel包">
+      R语言多线程并行处理之parallel包 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E9%A2%98%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">开题：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF%E5%8F%8A%E6%AD%A5%E9%AA%A4%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">思路及步骤：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92"><span class="nav-number">2.1.</span> <span class="nav-text">简单线性回归</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E9%AA%8C%E8%87%AA%E5%8F%98%E9%87%8F%E4%B9%8B%E9%97%B4%E6%9C%89%E6%97%A0%E5%85%B1%E7%BA%BF%E6%80%A7"><span class="nav-number">2.2.</span> <span class="nav-text">检验自变量之间有无共线性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E6%9C%893"><span class="nav-number">3.</span> <span class="nav-text">解决方案有3:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#step-lm"><span class="nav-number">3.1.</span> <span class="nav-text">step(lm)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B2%AD%E5%9B%9E%E5%BD%92"><span class="nav-number">3.2.</span> <span class="nav-text">岭回归</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lasso%E5%9B%9E%E5%BD%92"><span class="nav-number">3.3.</span> <span class="nav-text">lasso回归</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">3.4.</span> <span class="nav-text">模型之间的比较</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">4.</span> <span class="nav-text">References:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

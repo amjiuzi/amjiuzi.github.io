@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快 安装安装R版本的 lightgbm, 相较于之前的 install.packages(‘xx’) 分分钟完事, 会略显繁琐笔者在安装之初也是填了n次坑, 与 巨硬的R包作者 来往了好几次才成功, 故将安装过程笔记放在这里, 以饷后来人   非GPU版">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微软大杀器 LightGBM 在R中安装及使用注解">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2017/11/19/ligtgbm1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快 安装安装R版本的 lightgbm, 相较于之前的 install.packages(‘xx’) 分分钟完事, 会略显繁琐笔者在安装之初也是填了n次坑, 与 巨硬的R包作者 来往了好几次才成功, 故将安装过程笔记放在这里, 以饷后来人   非GPU版">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2017/11/22/5a15542c813c6.png">
+<meta property="article:published_time" content="2017-11-19T08:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:28.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="分类">
+<meta property="article:tag" content="lightgbm">
+<meta property="article:tag" content="回归">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2017/11/22/5a15542c813c6.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2017/11/19/ligtgbm1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>微软大杀器 LightGBM 在R中安装及使用注解 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/11/19/ligtgbm1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          微软大杀器 LightGBM 在R中安装及使用注解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-11-19 16:02:34" itemprop="dateCreated datePublished" datetime="2017-11-19T16:02:34+08:00">2017-11-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:28" itemprop="dateModified" datetime="2020-08-23T21:16:28+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Classify/" itemprop="url" rel="index"><span itemprop="name">Classify</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿帮助，请出门左转 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">Convenient Entrance</a>, 合作愉快</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>安装R版本的 lightgbm, 相较于之前的 install.packages(‘xx’) 分分钟完事, 会略显繁琐<br>笔者在安装之初也是填了n次坑, 与 巨硬的R包作者 来往了好几次才成功, 故将安装过程笔记放在这里, 以饷后来人  </p>
+<h3 id="非GPU版本"><a href="#非GPU版本" class="headerlink" title="非GPU版本"></a>非GPU版本</h3><h4 id="1-0-官方安装指导"><a href="#1-0-官方安装指导" class="headerlink" title="1.0 官方安装指导"></a>1.0 官方安装指导</h4><p><a target="_blank" rel="noopener" href="https://github.com/Microsoft/LightGBM/tree/master/R-package">LightGBM R package Manual</a></p>
+<h4 id="1-1-安装前的准备"><a href="#1-1-安装前的准备" class="headerlink" title="1.1 安装前的准备"></a>1.1 安装前的准备</h4><p>安装 <a target="_blank" rel="noopener" href="https://git-scm.com/">git</a> 和 <a target="_blank" rel="noopener" href="https://cmake.org/">cmake</a><br>注: lightgbm 不支持 32-bit R/Rtools</p>
+<h4 id="1-2-1-windows-平台"><a href="#1-2-1-windows-平台" class="headerlink" title="1.2.1 windows 平台"></a>1.2.1 windows 平台</h4><p>安装 64 位 Rtools 并将 启动路径放置于 环境变量的path中<br>也可以直接运行代码 ：  </p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(devtools)</span><br><span class="line">options(devtools.install.args = <span class="string">&quot;--no-multiarch&quot;</span>) <span class="comment"># if you have 64-bit R only, you can skip this</span></span><br><span class="line">install_github(<span class="string">&quot;Microsoft/LightGBM&quot;</span>, subdir = <span class="string">&quot;R-package&quot;</span>)</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>or scripts in powershell:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd path to r library</span><br><span class="line">git clone --recursive https:&#x2F;&#x2F;github.com&#x2F;microsoft&#x2F;LightGBM</span><br><span class="line">cd .&#x2F;LightGBM</span><br><span class="line">Rscript .&#x2F;build_r.R</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-2-linux-平台"><a href="#1-2-2-linux-平台" class="headerlink" title="1.2.2 linux 平台"></a>1.2.2 linux 平台</h4><p>先安装 <a target="_blank" rel="noopener" href="https://www.open-mpi.org/">Open MPI</a><br>尔后运行以下代码 ：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --recursive https://github.com/Microsoft/LightGBM ; <span class="built_in">cd</span> LightGBM</span><br><span class="line">mkdir build ; <span class="built_in">cd</span> build</span><br><span class="line">cmake -DUSE_MPI=ON ..</span><br><span class="line">make -j4</span><br><span class="line">**Note: glibc &gt;= 2.14 is required.**</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-3-osx-平台"><a href="#1-2-3-osx-平台" class="headerlink" title="1.2.3 osx 平台"></a>1.2.3 osx 平台</h4><p>先安装 gcc 和 Open MPI :</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">brew install openmpi</span><br><span class="line">brew install cmake</span><br><span class="line">brew install gcc --without-multilib</span><br></pre></td></tr></table></figure>
+<p>尔后 :</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --recursive https://github.com/Microsoft/LightGBM ; <span class="built_in">cd</span> LightGBM</span><br><span class="line"><span class="built_in">export</span> CXX=g++-7 CC=gcc-7</span><br><span class="line">mkdir build ; <span class="built_in">cd</span> build</span><br><span class="line">cmake -DUSE_MPI=ON ..</span><br><span class="line">make -j4</span><br></pre></td></tr></table></figure>
+
+<h3 id="GPU版本"><a href="#GPU版本" class="headerlink" title="GPU版本"></a>GPU版本</h3><p><a target="_blank" rel="noopener" href="https://github.com/Microsoft/LightGBM/blob/master/docs/Installation-Guide.rst#build-gpu-version">参考资料</a></p>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><h3 id="1-回归"><a href="#1-回归" class="headerlink" title="1. 回归"></a>1. 回归</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">train_dt &lt;- df1 %&gt;% filter(label1!=<span class="number">0</span>)</span><br><span class="line">test_dt &lt;- df1 %&gt;% filter(label1==<span class="number">0</span>)</span><br><span class="line">indx1 &lt;- sample(c(<span class="number">0</span>,<span class="number">1</span>),size = nrow(train_dt),replace = <span class="literal">TRUE</span>,prob = c(<span class="number">0.8</span>,<span class="number">0.2</span>))  </span><br><span class="line">train1 &lt;- train_dt %&gt;% filter(indx1==<span class="number">0</span>)</span><br><span class="line">valid1 &lt;- train_dt %&gt;% filter(indx1==<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">library</span>(lightgbm)</span><br><span class="line"><span class="comment">#lgb.unloader(wipe = TRUE)</span></span><br><span class="line">bia1 &lt;- train1 %&gt;% </span><br><span class="line">  select(-ids1,-label1) %&gt;% </span><br><span class="line">  data.matrix() <span class="comment"># change class(Vars) into numeric</span></span><br><span class="line">bia2 &lt;- train1$price_1mi</span><br><span class="line">dtrain &lt;- lgb.Dataset(data=bia1,</span><br><span class="line">                      label=bia2,</span><br><span class="line">                      is_sparse=<span class="literal">FALSE</span>,</span><br><span class="line">                      <span class="comment"># colnames/categorical_feather used for specifying categorical feathers</span></span><br><span class="line">                      colnames = colnames(train1 %&gt;% select(-ids1,-label1)),</span><br><span class="line">                      categorical_feature = c(<span class="string">&#x27;cateVar1&#x27;</span>,<span class="string">&#x27;cateVar2&#x27;</span>))</span><br><span class="line"> </span><br><span class="line">bia3 &lt;- valid1 %&gt;% </span><br><span class="line">  select(-ids1,-label1) %&gt;%</span><br><span class="line">  data.matrix() <span class="comment"># change class(Vars) into numeric</span></span><br><span class="line">bia4 &lt;- valid1$price_1mi</span><br><span class="line">dtest &lt;- lgb.Dataset.create.valid(dataset=dtrain,</span><br><span class="line">                                  data=bia3,</span><br><span class="line">                                  label=bia4)</span><br><span class="line">valids &lt;- list(test=dtest)</span><br><span class="line"></span><br><span class="line">params &lt;- list(objective = <span class="string">&quot;regression&quot;</span>, metric = <span class="string">&quot;l2&quot;</span>) <span class="comment"># L2 not twelve</span></span><br><span class="line">lgb1 &lt;- lgb.train(params=params,</span><br><span class="line">                  data=dtrain,</span><br><span class="line">                  valids = valids,</span><br><span class="line">                  min_data =<span class="number">1</span>, <span class="comment"># min data in a group</span></span><br><span class="line">                  learning_rate=<span class="number">0.1</span>, <span class="comment"># smaller,slower,maybe more accurate</span></span><br><span class="line">                  nrounds = <span class="number">300</span>,</span><br><span class="line">                  early_stopping_rounds = <span class="number">20</span>) <span class="comment">#if not better than last 20 rounds,stop</span></span><br><span class="line"></span><br><span class="line">bia7 &lt;- test_dt %&gt;% </span><br><span class="line">  select(-ids1,-label1) %&gt;%</span><br><span class="line">  data.matrix() <span class="comment"># change class(Vars) into numeric</span></span><br><span class="line"></span><br><span class="line">pre.lgb=predict(lgb1,bia7)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-分类"><a href="#2-分类" class="headerlink" title="2. 分类"></a>2. 分类</h3><p>根据官网demo文件提示<br>MultiClass模型中 label必须是 数值型且必须起始于0  </p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># We must convert factors to numeric</span></span><br><span class="line"><span class="comment"># They must be starting from number 0 to use multiclass</span></span><br><span class="line"><span class="comment"># For instance: 0, 1, 2, 3, 4, 5...</span></span><br><span class="line">iris$Species &lt;- as.numeric(as.factor(iris$Species)) - <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>Binary模型中, label必须是 数值型[0,1]  </p>
+<p>so, 重要的事情说三遍！ 重要的事情说三遍！ 重要的事情说三遍 … 也不一定记得住:  </p>
+<blockquote>
+<p>lightgbm 做分类预测, label 必须是 数值 且 起始于0</p>
+</blockquote>
+<h4 id="2-1-二分类"><a href="#2-1-二分类" class="headerlink" title="2.1 二分类"></a>2.1 二分类</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(bit64)</span><br><span class="line"><span class="keyword">library</span>(data.table)</span><br><span class="line"><span class="keyword">library</span>(dplyr)</span><br><span class="line"><span class="keyword">library</span>(lightgbm)</span><br><span class="line"></span><br><span class="line">info1 &lt;- fread(<span class="string">&#x27;./data2/info1.csv&#x27;</span>,header = <span class="literal">TRUE</span>,encoding = <span class="string">&#x27;UTF-8&#x27;</span>)</span><br><span class="line"></span><br><span class="line">train_dt &lt;- info1 %&gt;% filter(!is.na(overdue))</span><br><span class="line">test_dt &lt;- info1 %&gt;% filter(is.na(overdue))</span><br><span class="line"></span><br><span class="line">set.seed(<span class="number">123</span>)</span><br><span class="line">train_dt$valid_inx &lt;- sample(c(<span class="number">1</span>,<span class="number">0</span>),nrow(train_dt),replace = <span class="literal">TRUE</span>,prob = c(<span class="number">0.2</span>,<span class="number">0.8</span>))</span><br><span class="line"></span><br><span class="line">bia1 &lt;- train_dt %&gt;% filter(valid_inx==<span class="number">0</span>) %&gt;% </span><br><span class="line">  select(-userid,-overdue,-valid_inx) %&gt;% data.matrix()</span><br><span class="line">bia2 &lt;- <span class="number">1</span>-(train_dt %&gt;% filter(valid_inx==<span class="number">0</span>))$overdue</span><br><span class="line">bia3 &lt;- train_dt %&gt;% filter(valid_inx==<span class="number">1</span>) %&gt;% </span><br><span class="line">  select(-userid,-overdue,-valid_inx) %&gt;% data.matrix()</span><br><span class="line">bia4 &lt;- <span class="number">1</span>-(train_dt %&gt;% filter(valid_inx==<span class="number">1</span>))$overdue</span><br><span class="line"></span><br><span class="line">dtrain &lt;- lgb.Dataset(data = bia1, </span><br><span class="line">                      label = bia2,</span><br><span class="line">                      is_sparse = <span class="literal">FALSE</span>,</span><br><span class="line">                      <span class="comment"># colnames/categorical_feather used for specifying categorical feathers</span></span><br><span class="line">                      colnames = colnames(bia1),</span><br><span class="line">                      categorical_feature = c(<span class="string">&#x27;sex&#x27;</span>,<span class="string">&#x27;occupation&#x27;</span>,<span class="string">&#x27;education&#x27;</span>,<span class="string">&#x27;marriage&#x27;</span>))</span><br><span class="line">dtest &lt;- lgb.Dataset.create.valid(dtrain, </span><br><span class="line">                                  data = bia3, </span><br><span class="line">                                  label = bia4)</span><br><span class="line">valids &lt;- list(test = dtest)</span><br><span class="line"></span><br><span class="line">param &lt;- list(num_leaves =<span class="number">70</span>, <span class="comment"># 70/80 default,2^(max_depth)</span></span><br><span class="line">              min_data_in_leaf=<span class="number">1</span>, </span><br><span class="line">              learning_rate = <span class="number">0.1</span>, <span class="comment"># smaller,slower,maybe more accurate</span></span><br><span class="line">              is_unbalance=<span class="literal">TRUE</span>, <span class="comment"># unbalance TrainingSet</span></span><br><span class="line">              nthread = <span class="number">3</span>,</span><br><span class="line">              verbose = <span class="number">1</span>,</span><br><span class="line">              metric=c(<span class="string">&quot;AUC&quot;</span>, <span class="string">&quot;binary_logloss&quot;</span>), <span class="comment"># evaluate rules</span></span><br><span class="line">              objective = <span class="string">&quot;binary&quot;</span>)</span><br><span class="line">lgb2 &lt;- lgb.train(params=param, </span><br><span class="line">                  data=dtrain,</span><br><span class="line">                  nrounds = <span class="number">200</span>,</span><br><span class="line">                  early_stopping_rounds = <span class="number">10</span>,</span><br><span class="line">                  valids = valids,</span><br><span class="line">                  bagging_fraction = <span class="number">0.7</span>, <span class="comment"># random sample ratio from trainSet</span></span><br><span class="line">                  bagging_freq = <span class="number">10</span>, <span class="comment"># random sample freq from trainSet</span></span><br><span class="line">                  bagging_seed = <span class="number">1</span>) <span class="comment"># set.seed</span></span><br><span class="line"></span><br><span class="line">pred2 &lt;- predict(lgb2,data.matrix(test_dt %&gt;% select(-userid,-overdue)))</span><br><span class="line">pred20 &lt;- as.data.frame(cbind(userid=test_dt$userid,probability = <span class="number">1</span>-pred2))</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-多分类"><a href="#2-2-多分类" class="headerlink" title="2.2  多分类"></a>2.2  多分类</h4><h5 id="多分类-与-二分类参数设置上的不同主要有"><a href="#多分类-与-二分类参数设置上的不同主要有" class="headerlink" title="多分类 与 二分类参数设置上的不同主要有:"></a>多分类 与 二分类参数设置上的不同主要有:</h5><p>需要设置 num_class(label类别数量)</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">params &lt;- list(objective = <span class="string">&quot;multiclass&quot;</span>, metric = <span class="string">&quot;multi_error&quot;</span>, num_class = <span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+<p>predict 结果输出形式可以自定义</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># A (30x3) matrix with the predictions, use parameter reshape</span></span><br><span class="line"><span class="comment"># class1 class2 class3</span></span><br><span class="line"><span class="comment">#   obs1   obs1   obs1</span></span><br><span class="line"><span class="comment">#   obs2   obs2   obs2</span></span><br><span class="line"><span class="comment">#   ....   ....   ....</span></span><br><span class="line">my_preds &lt;- predict(model, test[, <span class="number">1</span>:<span class="number">4</span>], reshape = <span class="literal">TRUE</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># We can also get the predicted scores before the Sigmoid/Softmax application</span></span><br><span class="line">my_preds &lt;- predict(model, test[, <span class="number">1</span>:<span class="number">4</span>], rawscore = <span class="literal">TRUE</span>, reshape = <span class="literal">TRUE</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># We can also get the leaf index</span></span><br><span class="line">my_preds &lt;- predict(model, test[, <span class="number">1</span>:<span class="number">4</span>], predleaf = <span class="literal">TRUE</span>, reshape = <span class="literal">TRUE</span>)</span><br></pre></td></tr></table></figure>
+<p>下面是lightgbm官网对 iris 数据集的分类预测demo, 供实践参考</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span>(lightgbm)</span><br><span class="line"><span class="comment"># We load the default iris dataset shipped with R</span></span><br><span class="line">data(iris)</span><br><span class="line"></span><br><span class="line"><span class="comment"># We must convert factors to numeric</span></span><br><span class="line"><span class="comment"># They must be starting from number 0 to use multiclass</span></span><br><span class="line"><span class="comment"># For instance: 0, 1, 2, 3, 4, 5...</span></span><br><span class="line">iris$Species &lt;- as.numeric(as.factor(iris$Species)) - <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># We cut the data set into 80% train and 20% validation</span></span><br><span class="line"><span class="comment"># The 10 last samples of each class are for validation</span></span><br><span class="line"></span><br><span class="line">train &lt;- as.matrix(iris[c(<span class="number">1</span>:<span class="number">40</span>, <span class="number">51</span>:<span class="number">90</span>, <span class="number">101</span>:<span class="number">140</span>), ])</span><br><span class="line">test &lt;- as.matrix(iris[c(<span class="number">41</span>:<span class="number">50</span>, <span class="number">91</span>:<span class="number">100</span>, <span class="number">141</span>:<span class="number">150</span>), ])</span><br><span class="line">dtrain &lt;- lgb.Dataset(data = train[, <span class="number">1</span>:<span class="number">4</span>], label = train[, <span class="number">5</span>])</span><br><span class="line">dtest &lt;- lgb.Dataset.create.valid(dtrain, data = test[, <span class="number">1</span>:<span class="number">4</span>], label = test[, <span class="number">5</span>])</span><br><span class="line">valids &lt;- list(test = dtest)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Method 1 of training</span></span><br><span class="line">params &lt;- list(objective = <span class="string">&quot;multiclass&quot;</span>, metric = <span class="string">&quot;multi_error&quot;</span>, num_class = <span class="number">3</span>)</span><br><span class="line">model &lt;- lgb.train(params = params,</span><br><span class="line">                  data = dtrain,</span><br><span class="line">                  nrounds = <span class="number">100</span>,</span><br><span class="line">                  valids = valids,</span><br><span class="line">                   min_data = <span class="number">1</span>,</span><br><span class="line">                   learning_rate = <span class="number">1</span>,</span><br><span class="line">                   early_stopping_rounds = <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># possibility for each class by cols:</span></span><br><span class="line">my_preds &lt;- predict(model, test[, <span class="number">1</span>:<span class="number">4</span>], reshape = <span class="literal">TRUE</span>)</span><br><span class="line">            [,<span class="number">1</span>]       [,<span class="number">2</span>]       [,<span class="number">3</span>]</span><br><span class="line"> [<span class="number">1</span>,] <span class="number">0.82590130</span> <span class="number">0.08704935</span> <span class="number">0.08704935</span></span><br><span class="line"> [<span class="number">2</span>,] <span class="number">0.82590130</span> <span class="number">0.08704935</span> <span class="number">0.08704935</span></span><br><span class="line"> [<span class="number">3</span>,] <span class="number">0.82590130</span> <span class="number">0.08704935</span> <span class="number">0.08704935</span></span><br><span class="line"> [<span class="number">4</span>,] <span class="number">0.82590130</span> <span class="number">0.08704935</span> <span class="number">0.08704935</span></span><br><span class="line"> [<span class="number">5</span>,] <span class="number">0.82590130</span> <span class="number">0.08704935</span> <span class="number">0.08704935</span></span><br><span class="line"> [<span class="number">6</span>,] <span class="number">0.82590130</span> <span class="number">0.08704935</span> <span class="number">0.08704935</span></span><br><span class="line"><span class="comment"># We can also get the predicted scores before the Sigmoid/Softmax application</span></span><br><span class="line">my_preds &lt;- predict(model, test[, <span class="number">1</span>:<span class="number">4</span>], rawscore = <span class="literal">TRUE</span>, reshape = <span class="literal">TRUE</span>)</span><br><span class="line">       [,<span class="number">1</span>]  [,<span class="number">2</span>]  [,<span class="number">3</span>]</span><br><span class="line"> [<span class="number">1</span>,]  <span class="number">1.50</span> -<span class="number">0.75</span> -<span class="number">0.75</span></span><br><span class="line"> [<span class="number">2</span>,]  <span class="number">1.50</span> -<span class="number">0.75</span> -<span class="number">0.75</span></span><br><span class="line"> [<span class="number">3</span>,]  <span class="number">1.50</span> -<span class="number">0.75</span> -<span class="number">0.75</span></span><br><span class="line"> [<span class="number">4</span>,]  <span class="number">1.50</span> -<span class="number">0.75</span> -<span class="number">0.75</span></span><br><span class="line"> [<span class="number">5</span>,]  <span class="number">1.50</span> -<span class="number">0.75</span> -<span class="number">0.75</span></span><br><span class="line"> [<span class="number">6</span>,]  <span class="number">1.50</span> -<span class="number">0.75</span> -<span class="number">0.75</span></span><br><span class="line"><span class="comment"># We can also get the leaf index</span></span><br><span class="line">my_preds &lt;- predict(model, test[, <span class="number">1</span>:<span class="number">4</span>], predleaf = <span class="literal">TRUE</span>)</span><br><span class="line">      [,<span class="number">1</span>] [,<span class="number">2</span>] [,<span class="number">3</span>]</span><br><span class="line"> [<span class="number">7</span>,]    <span class="number">0</span>    <span class="number">0</span>    <span class="number">0</span></span><br><span class="line"> [<span class="number">8</span>,]    <span class="number">0</span>    <span class="number">0</span>    <span class="number">0</span></span><br><span class="line"> [<span class="number">9</span>,]    <span class="number">0</span>    <span class="number">0</span>    <span class="number">0</span></span><br><span class="line">[<span class="number">10</span>,]    <span class="number">0</span>    <span class="number">0</span>    <span class="number">0</span></span><br><span class="line">[<span class="number">11</span>,]    <span class="number">1</span>    <span class="number">6</span>    <span class="number">0</span></span><br><span class="line">[<span class="number">12</span>,]    <span class="number">2</span>    <span class="number">6</span>    <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-参数调优"><a href="#3-参数调优" class="headerlink" title="3. 参数调优"></a>3. 参数调优</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## For faster speed</span></span><br><span class="line"><span class="comment"># Use bagging by setting bagging_fraction and bagging_freq</span></span><br><span class="line"><span class="comment"># Use feature sub-sampling by setting feature_fraction</span></span><br><span class="line"><span class="comment"># Use small max_bin</span></span><br><span class="line"><span class="comment"># Use save_binary to speed up data loading in future learning</span></span><br><span class="line"><span class="comment"># Use parallel learning, refer to parallel learning guide.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## For better accuracy</span></span><br><span class="line"><span class="comment"># Use large max_bin (may be slower)</span></span><br><span class="line"><span class="comment"># Use small learning_rate with large num_iterations</span></span><br><span class="line"><span class="comment"># Use large num_leaves(may cause over-fitting)</span></span><br><span class="line"><span class="comment"># Use bigger training data</span></span><br><span class="line"><span class="comment"># Try dart</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## Deal with over-fitting</span></span><br><span class="line"><span class="comment"># Use small max_bin</span></span><br><span class="line"><span class="comment"># Use small num_leaves</span></span><br><span class="line"><span class="comment"># Use min_data_in_leaf and min_sum_hessian_in_leaf</span></span><br><span class="line"><span class="comment"># Use bagging by set bagging_fraction and bagging_freq</span></span><br><span class="line"><span class="comment"># Use feature sub-sampling by set feature_fraction</span></span><br><span class="line"><span class="comment"># Use bigger training data</span></span><br><span class="line"><span class="comment"># Try lambda_l1, lambda_l2 and min_gain_to_split to regularization</span></span><br><span class="line"><span class="comment"># Try max_depth to avoid growing deep tree</span></span><br></pre></td></tr></table></figure>
+<h3 id="4-lightgbm-在变量筛选中的应用"><a href="#4-lightgbm-在变量筛选中的应用" class="headerlink" title="4. lightgbm 在变量筛选中的应用"></a>4. lightgbm 在变量筛选中的应用</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(lightgbm)</span><br><span class="line">bia1 &lt;- data.matrix(res12[,!<span class="string">&#x27;clus1&#x27;</span>])</span><br><span class="line">bia2 &lt;- data.matrix(res12[,clus1])</span><br><span class="line">dtrain &lt;- lgb.Dataset(data = bia1,label=bia2)</span><br><span class="line"></span><br><span class="line">param &lt;- list(num_leaves =<span class="number">70</span>, <span class="comment"># 70/80 default,2^(max_depth)</span></span><br><span class="line">              min_data_in_leaf=<span class="number">1</span>, </span><br><span class="line">              learning_rate = <span class="number">0.1</span>, <span class="comment"># smaller,slower,maybe more accurate</span></span><br><span class="line">              is_unbalance=<span class="literal">TRUE</span>, <span class="comment"># unbalance TrainingSet</span></span><br><span class="line">              nthread = <span class="number">3</span>,</span><br><span class="line">              verbose = <span class="number">1</span>,</span><br><span class="line">              metric=c(<span class="string">&quot;AUC&quot;</span>, <span class="string">&quot;binary_logloss&quot;</span>), <span class="comment"># evaluate rules</span></span><br><span class="line">              objective = <span class="string">&quot;binary&quot;</span>)</span><br><span class="line">lgb1 &lt;- lightgbm(dtrain,params = param)</span><br><span class="line">imp1 &lt;- lgb.importance(lgb1)</span><br><span class="line">lgb.plot.importance(imp1)</span><br><span class="line">imp1</span><br><span class="line">          Feature        Gain       Cover  Frequency</span><br><span class="line"> <span class="number">1</span>: jiesuanshouru <span class="number">0.599729486</span> <span class="number">0.244486721</span> <span class="number">0.04492754</span></span><br><span class="line"> <span class="number">2</span>:   feiyongheji <span class="number">0.216185486</span> <span class="number">0.262755905</span> <span class="number">0.12608696</span></span><br><span class="line"> <span class="number">3</span>:       pingtai <span class="number">0.048864385</span> <span class="number">0.106493301</span> <span class="number">0.11449275</span></span><br><span class="line"> <span class="number">4</span>:       jianshu <span class="number">0.038807389</span> <span class="number">0.127947235</span> <span class="number">0.13913043</span></span><br><span class="line"> <span class="number">5</span>:          tiji <span class="number">0.025553761</span> <span class="number">0.164054285</span> <span class="number">0.13623188</span></span><br><span class="line"> <span class="number">6</span>:      quantity <span class="number">0.023815582</span> <span class="number">0.032542275</span> <span class="number">0.08260870</span></span><br><span class="line"> <span class="number">7</span>:        yunfei <span class="number">0.017709297</span> <span class="number">0.028658092</span> <span class="number">0.07681159</span></span><br><span class="line"> <span class="number">8</span>:      kuasheng <span class="number">0.009361531</span> <span class="number">0.009675487</span> <span class="number">0.08260870</span></span><br><span class="line"> <span class="number">9</span>:           G_M <span class="number">0.008982684</span> <span class="number">0.008325581</span> <span class="number">0.08115942</span></span><br><span class="line"><span class="number">10</span>:           G_G <span class="number">0.005955803</span> <span class="number">0.005383301</span> <span class="number">0.05652174</span></span><br><span class="line"><span class="number">11</span>:     lin_zhuan <span class="number">0.005034596</span> <span class="number">0.009677818</span> <span class="number">0.05942029</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/11/22/5a15542c813c6.png" alt="imp1"><br>根据 imp1 中各变量的gain值,结合变量重要度图示 选取要保留的变量</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/Microsoft/LightGBM/tree/master/R-package">lightgbm R-package github</a>  </li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Microsoft/LightGBM/tree/master/R-package/demo">lightgbm demos</a></li>
+<li><a target="_blank" rel="noopener" href="https://bacterous.github.io/2018/09/13/LightGBM%E4%BD%BF%E7%94%A8">LightGBM使用</a></li>
+<li><a target="_blank" rel="noopener" href="https://lightgbm.readthedocs.io/en/latest/Features.html#optimization-in-parallel-learning">optimization-in-parallel-learning</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/%E5%88%86%E7%B1%BB/" rel="tag"># 分类</a>
+              <a href="/tags/lightgbm/" rel="tag"># lightgbm</a>
+              <a href="/tags/%E5%9B%9E%E5%BD%92/" rel="tag"># 回归</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/11/11/arules1/" rel="prev" title="关联规则分析之规则发现">
+      <i class="fa fa-chevron-left"></i> 关联规则分析之规则发现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/11/23/kmeans1/" rel="next" title="大数据聚类之kmeans">
+      大数据聚类之kmeans <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%9EGPU%E7%89%88%E6%9C%AC"><span class="nav-number">1.1.</span> <span class="nav-text">非GPU版本</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-0-%E5%AE%98%E6%96%B9%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.0 官方安装指导</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E5%AE%89%E8%A3%85%E5%89%8D%E7%9A%84%E5%87%86%E5%A4%87"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.1 安装前的准备</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-1-windows-%E5%B9%B3%E5%8F%B0"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.2.1 windows 平台</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-2-linux-%E5%B9%B3%E5%8F%B0"><span class="nav-number">1.1.4.</span> <span class="nav-text">1.2.2 linux 平台</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-3-osx-%E5%B9%B3%E5%8F%B0"><span class="nav-number">1.1.5.</span> <span class="nav-text">1.2.3 osx 平台</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GPU%E7%89%88%E6%9C%AC"><span class="nav-number">1.2.</span> <span class="nav-text">GPU版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9B%9E%E5%BD%92"><span class="nav-number">2.1.</span> <span class="nav-text">1. 回归</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%88%86%E7%B1%BB"><span class="nav-number">2.2.</span> <span class="nav-text">2. 分类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E4%BA%8C%E5%88%86%E7%B1%BB"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.1 二分类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%A4%9A%E5%88%86%E7%B1%BB"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2  多分类</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A4%9A%E5%88%86%E7%B1%BB-%E4%B8%8E-%E4%BA%8C%E5%88%86%E7%B1%BB%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE%E4%B8%8A%E7%9A%84%E4%B8%8D%E5%90%8C%E4%B8%BB%E8%A6%81%E6%9C%89"><span class="nav-number">2.2.2.1.</span> <span class="nav-text">多分类 与 二分类参数设置上的不同主要有:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%82%E6%95%B0%E8%B0%83%E4%BC%98"><span class="nav-number">2.3.</span> <span class="nav-text">3. 参数调优</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-lightgbm-%E5%9C%A8%E5%8F%98%E9%87%8F%E7%AD%9B%E9%80%89%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">2.4.</span> <span class="nav-text">4. lightgbm 在变量筛选中的应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

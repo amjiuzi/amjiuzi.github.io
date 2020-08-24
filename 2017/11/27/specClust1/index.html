@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="$kmeans$ 的改进算法 – 谱聚类有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习 1. 相关概念科普度矩阵度矩阵为对角矩阵，对角线上的值表示 与该点 有来往的 其他点的个数 即度 为 与节点 相连的 个数 邻接矩阵邻接矩阵 表示图上 各点之间 是否有联系或者联系程度, 可以是 1&#x2F;0 也可以是 具体权值">
+<meta property="og:type" content="article">
+<meta property="og:title" content="谱聚类的R解释">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2017/11/27/specClust1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="$kmeans$ 的改进算法 – 谱聚类有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习 1. 相关概念科普度矩阵度矩阵为对角矩阵，对角线上的值表示 与该点 有来往的 其他点的个数 即度 为 与节点 相连的 个数 邻接矩阵邻接矩阵 表示图上 各点之间 是否有联系或者联系程度, 可以是 1&#x2F;0 也可以是 具体权值">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2017/09/16/59bc9f9b9dfa2.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/18/59bf30f511586.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/16/59bc9ed29e6a1.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/16/59bc9ed2849d7.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/16/59bc9ed28e7d6.png">
+<meta property="article:published_time" content="2017-11-27T08:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:46.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="kmeans">
+<meta property="article:tag" content="聚类">
+<meta property="article:tag" content="specc">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2017/09/16/59bc9f9b9dfa2.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2017/11/27/specClust1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>谱聚类的R解释 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/11/27/specClust1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          谱聚类的R解释
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-11-27 16:02:34" itemprop="dateCreated datePublished" datetime="2017-11-27T16:02:34+08:00">2017-11-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:46" itemprop="dateModified" datetime="2020-08-23T21:16:46+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Cluster/" itemprop="url" rel="index"><span itemprop="name">Cluster</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>$kmeans$ 的改进算法 – 谱聚类<br>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习</p>
+<h2 id="1-相关概念科普"><a href="#1-相关概念科普" class="headerlink" title="1. 相关概念科普"></a>1. 相关概念科普</h2><h3 id="度矩阵"><a href="#度矩阵" class="headerlink" title="度矩阵"></a>度矩阵</h3><p>度矩阵为对角矩阵，对角线上的值表示 与该点 有来往的 其他点的个数 即<em>度 为 与节点 相连的 个数</em></p>
+<h3 id="邻接矩阵"><a href="#邻接矩阵" class="headerlink" title="邻接矩阵"></a>邻接矩阵</h3><p>邻接矩阵 表示图上 各点之间 是否有联系或者联系程度, 可以是 1/0 也可以是 具体权值<br><img src="https://i.loli.net/2017/09/16/59bc9f9b9dfa2.png" alt="laplas1"></p>
+<a id="more"></a>
+<p><img src="https://i.loli.net/2017/09/18/59bf30f511586.png" alt="laplas2"></p>
+<h3 id="拉普拉斯矩阵"><a href="#拉普拉斯矩阵" class="headerlink" title="拉普拉斯矩阵  "></a>拉普拉斯矩阵  </h3><p><strong>图论</strong>中的的 拉普拉斯矩阵(也被称为导纳矩阵/吉尔霍夫矩阵/离散拉普拉斯)是图的矩阵表示. <strong>它是 度矩阵 和 邻接矩阵 的差</strong>. 拉普拉斯矩阵 结合 吉尔霍夫理论 可以用来计算图的最小生成树的个数。<br>拉普拉斯矩阵还可用来寻找图的其他属性: 谱图理论(spectral graph theory)<br>黎曼几何的Cheeger不等式有涉及了拉普拉斯矩阵的离散模拟. 这或许是谱图理论中最重要的定理也是在算法应用中最有用的facts.<strong>它通过拉普拉斯矩阵的第二特征值来近似图的最小割</strong>  <br><strong>谱的定义</strong> 就是：<br>方阵作为线性算子，它的所有特征值的全体 统称方阵的<strong>谱</strong>；<br>方阵的<strong>谱半径</strong>为最大的特征值；<br>矩阵A的谱半径：($A^{T} \cdot A$)的最大特征值。<br>其实，这里谱的本质是伪逆，是$SVD$中奇异值的平方</p>
+<h2 id="2-谱聚类的基本思想"><a href="#2-谱聚类的基本思想" class="headerlink" title="2. 谱聚类的基本思想"></a>2. 谱聚类的基本思想</h2><h3 id="2-1-聚类与图论"><a href="#2-1-聚类与图论" class="headerlink" title="2.1 聚类与图论"></a>2.1 聚类与图论</h3><p>所谓聚类(Clustering), 就是要把一堆样本合理地分成两份或者$K​$份. 从图论的角度来说,聚类的问题就相当于一个图的分割问题. 即给定一个图$G = (V, E)​$, 顶点集$V​$表示各个样本,带权的边表示各个样本之间的相似度,谱聚类的目的便是要找到一种合理的分割图的方法,使得分割后形成若干个 子图,连接不同 子图 的边的权重*(相似度)<em>尽可能低,同 子图内 的边的权重</em>(相似度)*尽可能高.被割掉各边的权值和越小代表被它们连接的子图之间的相似度越小,隔得越远. 物以类聚,人以群分,相似的在一块儿,不相似的彼此远离<br>至于如何把图的顶点集分割/切割为不相交的子图有多种办法,如<br>* cut/Ratio Cut<br>* Normalized Cut<br>* 不基于图，而是转换成SVD能解的问题</p>
+<h3 id="2-2-最小割"><a href="#2-2-最小割" class="headerlink" title="2.2 最小割"></a>2.2 最小割</h3><p>在将数据从点集的结构转换为了图的结构后，我们可以引入更多图论中的概念来帮助理解聚类的本质. 比如说<strong>最小割</strong>的概念(Minimum cut)<br>最小割是指去掉图中的一些带权边，在使得图从联通图变为不联通图的前提下，尽可能的让去掉的边权值之和尽可能小。对于数据的相似性图来说，最小割就是要去除一些很弱的相似性，把数据点从一个互相连接的整体分为两个或者多个独立的部分，这其实就是一个聚类的过程。去除的权值就是聚类后不同组别间的相似程度，我们希望这个值尽可能的小，也就是希望不同组别之间的差距尽可能的大<br>不过，仅仅是用最小割来聚类存在着一些缺陷，因为我们只考虑了不同类的点之间相似度要小，而一个好的聚类还要具有同一类点相似度大的特征。比如下图就是一个例子，一个好的聚类应该是在绿线处分割整个图，但使用最小割却会割在红色的位置<br><img src="https://i.loli.net/2017/09/16/59bc9ed29e6a1.png" alt="specc3"></p>
+<p>如下图所示,每个顶点是一个样本,共有7个样本(实际中一个样本是特征向量). 边的权值就是样本之间的相似度. 然后我们需要分割,分割之后要使得连接不同组之间的边的权重尽可能低(组间相似度小),组内部的边的权重尽可能高(组内相似度高)<br><img src="https://i.loli.net/2017/09/16/59bc9ed2849d7.png" alt="specc1"></p>
+<p>比如我们把中间的边去掉,就满足上面的簇间相似性最小，簇内相似性最大。如下图<br><img src="https://i.loli.net/2017/09/16/59bc9ed28e7d6.png" alt="specc2"></p>
+<h2 id="3-算法步骤"><a href="#3-算法步骤" class="headerlink" title="3. 算法步骤"></a>3. 算法步骤</h2><p>谱聚类算法主要有下面几部分：</p>
+<h3 id="3-1-未正则拉普拉斯矩阵-的谱聚类算法"><a href="#3-1-未正则拉普拉斯矩阵-的谱聚类算法" class="headerlink" title="3.1 未正则拉普拉斯矩阵 的谱聚类算法"></a>3.1 未正则拉普拉斯矩阵 的谱聚类算法</h3><h4 id="3-1-1-计算得到图的邻接矩阵-W-，以及拉普拉斯矩阵-L-；"><a href="#3-1-1-计算得到图的邻接矩阵-W-，以及拉普拉斯矩阵-L-；" class="headerlink" title="3.1.1 计算得到图的邻接矩阵 $W$，以及拉普拉斯矩阵 $L$；"></a>3.1.1 计算得到图的邻接矩阵 $W$，以及拉普拉斯矩阵 $L$；</h4><p>给定样本的原始特征,我们需要计算两两样本之间的相似度值,才能构造出邻接矩阵$W$ . 我们一般使用高斯核函数来计算相似度。公式如下：</p>
+<p>$$<br>S(x,y)=e^{-\frac{||x-y||^{2}}{2\sigma^{2}}}<br>$$ <br>即<br>$$<br>S(x,y)=e^{-{\frac{\sqrt{\sum_{i=1}^{k}\left(x_{i}-y_{i}\right)^{2}}}{2\sigma^2}}}<br>$$</p>
+<p>如果样本$x,y$是对应数据集$dt$的第$i,j$行,则上述公式中的</p>
+<p>$$<br>\begin {aligned}<br>\sqrt{\sum_{i=1}^{k}\left(x_{i}-y_{i}\right)^{2}}&amp;= \sqrt{\sum_{i,j=1}^{n}(dt[x,]-dt[y,])^2} \<br>&amp;= \sqrt{\sum_{i,j=1}^{n}(dt[i,]-dt[j,]) * t(dt[i,]-dt[j,])} \<br>&amp;=dist(dt)<br>\end {aligned}<br>$$</p>
+<p>高斯核相似度公式用 R 来表达:</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S(dt) = exp(-(dist(dt)^<span class="number">2</span>)/(<span class="number">2</span>*sigma^<span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+
+<p>其中$x$ 和 $y$ 是两个样本(行向量),$x_{i}$ $y_{i}$是样本$x,y$对应的第$i$个原始特征向量，我们可以计算出它们二者之间的相关性(高斯核). 注意,<strong>邻接矩阵的对角线元素一致等于零</strong>. 这样我们就得到了邻接矩阵$W$</p>
+<p>拉普拉斯矩阵 $L = D - W$, 其中$D$为上面图的度矩阵，度是图论中的概念，也就是矩阵E行或列的元素之和。后面我们就要基于矩阵$L$来进行研究</p>
+<h3 id="3-1-2-聚类划分准则"><a href="#3-1-2-聚类划分准则" class="headerlink" title="3.1.2 聚类划分准则"></a>3.1.2 聚类划分准则</h3><p>关于划分准则的问题是聚类技术中的核心。谱聚类被看作属于图论领域的问题，那个其划分也会和边的权重有关</p>
+<p>准则1：最小化进行分割时去掉的边的权重之和<br>$$<br>cut (A_{1} \ldots A_{k}) = \frac {1}{2} \cdot \sum_{i=1}^{k} W (A_{i},\overline{A_{i})}<br>$$<br>这个准则直观地让分割之后簇之间的相似度最小了。但是有个问题，就是这个准则没有考虑到簇的大小，容易造成一个样本就能分为一个簇。为了避免这个问题，有了下面的准则<br>准则2：考虑簇的大小 <br>$$<br>RationCut\left(A_{1},\ldots ,A_{k} \right)=\frac{1}{2} \cdot \sum_{i=1}^{k} \frac{W\left(A_{i},\overline{A_{i}}\right)} {||A_{i}||}<br>$$</p>
+<p>准则2相比于准则1的改进，类似于$C4.5$中的增益比率和$ID3$的信息增益的改进。在$RatioCut$中，如果某一组包含的顶点数越少，那么它的值就越大。在一个最小化问题中，这相当于是惩罚，也就是不鼓励将组分得太小。现在只要将最小化$RatioCut$解出来，分割就完成了。不幸的是，这是个$NP$难问题。想要在多项式时间内解出来，就要对这个问题作一个转化了。在转化的过程中，就用到上面提到的L的那一组性质，经过若干推导，最后可以得到这样的一个问题<br>$$<br>\begin {aligned}<br>\min_{H \in \mathbb{R}^{n \cdot k}} (Tr(H^{T}LH)) \<br>s.t. H^{T}H=I<br>\end {aligned}<br>$$<br>但到了这关键的最后一步，咱们却遇到了一个比较棘手的问题，即由之前得到的拉普拉斯矩阵的性质$L$最小特征值为$0$，对应的特征值为$1$.其不满足$f$与$1$正交的条件,那该怎么办呢？根据论文<a target="_blank" rel="noopener" href="http://staff.ustc.edu.cn/~ynyang/group-meeting/2013/Spectral%20clustering%20-%20Luxburg.pdf">“A Tutorial on Spectral Clustering”</a>中所说的Rayleigh-Ritz 理论，我们可以取第$2$小的特征值，以及对应的特征向量$v$<br>更进一步，由于实际中，特征向量$v$里的元素是连续的任意实数，所以可以根据$v$是大于0，还是小于0对应到离散情况下的$f=(f_{1},\ldots ,f_{n}) \prime \in \mathbb{R}^{n\cdot k}$,决定$f$是取$\sqrt{\frac{|A|} {|\overline{A}|}}$还是取 $-\sqrt{\frac{|A|} {|\overline{A}|}}$ .而如果能取$v$的前$k$个特征向量,进行$Kmeans$聚类,得到$K$个簇,便从二聚类扩展到了$K$聚类的问题  <em>( $\overline{A}$表示A的补集)</em><br>而所要求的这前$K$个特征向量就是拉普拉斯矩阵的特征向量(计算拉普拉斯矩阵的特征值,特征值按照从小到大顺序排序,特征值对应的特征向量也按照特征值递增的顺序排列,取前$K$个特征向量,便是我们所要求的前$K$个特征向量)!<br>所以，问题就转换成了：求拉普拉斯矩阵的前$K$个特征值，再对前$K$个特征值对应的特征向量进行 $Kmeans$聚类。而两类的问题也很容易推广到$K$类的问题，即求特征值并取前$K$个最小的,将对应的特征向量排列起来,再进行$Kmeans$聚类. 两类分类和多类分类的问题，如出一辙<br>$RatioCut$巧妙地把一个NP难度的问题转换成拉普拉斯矩阵特征值(向量)的问题，将离散的聚类问题松弛为连续的特征向量，最小的系列特征向量对应着图最优的系列划分方法。剩下的仅是将松弛化的问题再离散化，即将特征向量再划分开，便可以得到相应的类别。不能不说妙哉！</p>
+<h4 id="3-1-3-求出-L-的前-k-个特征值及对应的特征向量"><a href="#3-1-3-求出-L-的前-k-个特征值及对应的特征向量" class="headerlink" title="3.1.3 求出$L$的前$k$个特征值及对应的特征向量"></a>3.1.3 求出$L$的前$k$个特征值及对应的特征向量</h4><p>在本文中,除非特殊说明,否则“前$k$个”指按照特征值的大小从小到大的顺序)以及对应的特征向量  <br><em>PS： $L=D-W$是计算前 $k$小的特征向量，如果是$L=W-D$则是计算前 $k$大</em></p>
+<h4 id="3-1-4-根据新生成的特征矩阵进行-kmeans-聚类"><a href="#3-1-4-根据新生成的特征矩阵进行-kmeans-聚类" class="headerlink" title="3.1.4 根据新生成的特征矩阵进行$kmeans$聚类"></a>3.1.4 根据新生成的特征矩阵进行$kmeans$聚类</h4><p>把这$k$个特征(列)向量排列在一起组成一个$n \cdot k$的矩阵,将其中每一行看作$k$维空间中的一个向量,并使用$Kmeans$算法进行聚类. 聚类的结果中每一行所属的类别就是原来 Graph 中的节点亦即最初的$n$个数据点分别所属的类别</p>
+<h4 id="3-1-5-总结一下完整的谱聚类算法的流程"><a href="#3-1-5-总结一下完整的谱聚类算法的流程" class="headerlink" title="3.1.5 总结一下完整的谱聚类算法的流程"></a>3.1.5 总结一下完整的谱聚类算法的流程</h4><p>* 确认输入参数：一个描述数据相似性图的邻接矩阵$W$，和聚类的目标类数目$k$<br>* 计算度矩阵 $D$和 拉普拉斯矩阵 $L$<br>* 计算特征值方程$L\cdot y = \lambda \cdot D \cdot y$的前$k$个特征向量，记为$y_{1} \ldots y_{k}$<br>* 通过 $y_{1} \ldots y_{k}$按列排成矩阵 $Y \in \mathbb{R}^{n \cdot k}$<br>* $Y$ 的第 $i$行的行向量记为 $x_{i} \prime (i \leq n)$<br>* 对 $x_{i} \prime$ 进行 $kmeans$ 聚类<br>* 将 $x_{i} \prime$ 的类别分配给 $x_{i}$, 即 $class(x_{i})=class(x_{i} \prime)$<br>* 输出聚类结果<br>整个过程都只用到了包括求解特征值等基本线性代数运算，因此谱聚类是一种推导有些繁杂，但是实现很简单的聚类算法</p>
+<h3 id="3-2-正则的拉普拉斯矩阵-的谱聚类算法"><a href="#3-2-正则的拉普拉斯矩阵-的谱聚类算法" class="headerlink" title="3.2 正则的拉普拉斯矩阵 的谱聚类算法"></a>3.2 正则的拉普拉斯矩阵 的谱聚类算法</h3><h4 id="3-2-1-对称拉普拉斯矩阵的谱聚类算法"><a href="#3-2-1-对称拉普拉斯矩阵的谱聚类算法" class="headerlink" title="3.2.1 对称拉普拉斯矩阵的谱聚类算法"></a>3.2.1 对称拉普拉斯矩阵的谱聚类算法</h4><p>* 将 为正则拉普拉斯中的 $L = D -W$ 替换成 $L=D^{-\frac{1}{2}}\cdot(D-W)\cdot D^{\frac{1}{2}}$<br>* 同时在完成$k$维特征向量提取之后,进行$kmeans$聚类之前,添加一步:<br>将$k$维 特征向量对应的 各样本 进行单位化使得$|y_{i}|=1$即<br>$$<br>mx[i,]=\frac{mx[i,]} {\sqrt{\sum_{i=1}^{k}mx[i,]^2}}<br>$$</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mx2 &lt;- mx1/sqrt(rowSums(mx1^<span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+<p>* 然后在此基础上继续 $kmeans$ 聚类</p>
+<blockquote>
+<p>下面是在参加某赛事时正则化谱聚类实现步骤</p>
+</blockquote>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(data.table)</span><br><span class="line"><span class="keyword">library</span>(dplyr)</span><br><span class="line"><span class="keyword">library</span>(ggplot2)</span><br><span class="line"><span class="keyword">library</span>(geosphere)</span><br><span class="line">setwd(<span class="string">&#x27;xxx/spec&#x27;</span>)</span><br><span class="line">train1 &lt;- fread(<span class="string">&#x27;train.csv&#x27;</span>,header = <span class="literal">FALSE</span>,encoding = <span class="string">&#x27;UTF-8&#x27;</span>)</span><br><span class="line">test1 &lt;- fread(<span class="string">&#x27;test.csv&#x27;</span>,header = <span class="literal">FALSE</span>,encoding = <span class="string">&#x27;UTF-8&#x27;</span>)</span><br><span class="line">dt_all &lt;- rbind(train1,test1)</span><br><span class="line"></span><br><span class="line">dist2 = distm(dt_all[,c(<span class="string">&#x27;longitude&#x27;</span>,<span class="string">&#x27;latitude&#x27;</span>)])/<span class="number">1000</span></span><br><span class="line">lamb1 &lt;- sqrt(ncol(dt_all[,c(<span class="string">&#x27;longitude&#x27;</span>,<span class="string">&#x27;latitude&#x27;</span>)]))/sqrt(<span class="number">2</span>)</span><br><span class="line">W1 &lt;- exp(-dist2^<span class="number">2</span>/(<span class="number">2</span>*lamb1^<span class="number">2</span>))</span><br><span class="line">rm(dist2)</span><br><span class="line">W1[W1&lt;<span class="number">1e-15</span>]=<span class="number">0</span></span><br><span class="line">W2 &lt;- as(W1,<span class="string">&#x27;sparseMatrix&#x27;</span>)</span><br><span class="line">diag1 &lt;- rowSums(W1)</span><br><span class="line">rm(W1)</span><br><span class="line">D1 &lt;- Matrix::sparseMatrix(i=seq(<span class="number">1</span>,length(diag1)),</span><br><span class="line">                           j=seq(<span class="number">1</span>,length(diag1)),</span><br><span class="line">                           x=diag1) <span class="comment"># 度矩阵</span></span><br><span class="line">D2 &lt;- Matrix::sparseMatrix(i=seq(<span class="number">1</span>,length(diag1)),</span><br><span class="line">                           j=seq(<span class="number">1</span>,length(diag1)),</span><br><span class="line">                           x=diag1^(-<span class="number">1</span>/<span class="number">2</span>))</span><br><span class="line">D3 &lt;- Matrix::sparseMatrix(i=seq(<span class="number">1</span>,length(diag1)),</span><br><span class="line">                           j=seq(<span class="number">1</span>,length(diag1)),</span><br><span class="line">                           x=diag1^(<span class="number">1</span>/<span class="number">2</span>))</span><br><span class="line">L1 &lt;- D1-W2</span><br><span class="line">L2 &lt;- D2%*%L1%*%D3 <span class="comment">#拉普拉斯矩阵</span></span><br><span class="line">rm(L1,D1,D2,D3)</span><br><span class="line">eig1 &lt;- eigen(L2)</span><br><span class="line">mx1 &lt;- eig1$vectors[,-c(<span class="number">1</span>:(ncol(eig1$vectors)-k))]</span><br><span class="line">mx2 &lt;- mx2/sqrt(rowSums(mx1^<span class="number">2</span>))</span><br><span class="line"><span class="comment"># find best k value for kmeans</span></span><br><span class="line"><span class="keyword">library</span>(factoextra)</span><br><span class="line">fviz_nbclust(area1, kmeans, method = <span class="string">&quot;silhouette&quot;</span>,k.max = <span class="number">50</span>)</span><br><span class="line"><span class="comment"># the larger the better for result value(this formu is friendly for bigdata)</span></span><br><span class="line">kmean1 &lt;- kmean(mx2,<span class="number">49</span>)</span><br><span class="line"><span class="comment"># plot</span></span><br><span class="line">ggplot()+</span><br><span class="line">  geom_point(data=dt_all,aes(x=longitude,y=latitude,color=as.factor(kmean1$cluster)))+</span><br><span class="line">  geom_text(data=<span class="literal">NULL</span>,aes(x=kmean1$centers[,<span class="number">1</span>],</span><br><span class="line">                          y=kmean1$centers[,<span class="number">2</span>],</span><br><span class="line">                          label=row.names(kmean1$centers)))+</span><br><span class="line">  theme(legend.position = <span class="string">&#x27;none&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>由于样本huge,eigen时cost too much, so kmeans替代，以上代码作为R实现步骤留念，指不定哪天R真正解决了分布式问题,谱聚类就能跟kmeans一样高效了<br><em>Kernlab包中有specc函数可实现此功能,但碍于样本量巨大,2个小时没出结果也只能作罢</em></p>
+</blockquote>
+<h4 id="3-2-2-随机游走拉普拉斯矩阵-的谱聚类算法"><a href="#3-2-2-随机游走拉普拉斯矩阵-的谱聚类算法" class="headerlink" title="3.2.2 随机游走拉普拉斯矩阵 的谱聚类算法"></a>3.2.2 随机游走拉普拉斯矩阵 的谱聚类算法</h4><p>它的变化就是将 $L$ 矩阵的$L=D-W$计算方式改为$L=D^{-1}(D-W)$,其他步骤与 未正则拉普拉斯矩阵 的谱聚类算法相同</p>
+<h2 id="4-参考文献与推荐阅读"><a href="#4-参考文献与推荐阅读" class="headerlink" title="4. 参考文献与推荐阅读"></a>4. 参考文献与推荐阅读</h2><p>- r语言谱聚类干货<a target="_blank" rel="noopener" href="http://www.datasciencelab.cn/clustering/spectral">谱聚类Spectral Clustering</a><br>- <a target="_blank" rel="noopener" href="https://yq.aliyun.com/articles/69946?spm=5176.8246799.0.0.CzG21k">谱聚类</a><br>- <a target="_blank" rel="noopener" href="http://blog.csdn.net/yc_1993/article/details/52997074">谱聚类spectral clustering及其实现详解</a><br>- <a target="_blank" rel="noopener" href="http://blog.csdn.net/v_july_v/article/details/40738211">谱和谱聚类</a></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://xudongyang.coding.me/math-in-hexo/">Hexo中渲染MathJax数学公式-per_page:false</a></li>
+<li><a href="">高斯核计算相似矩阵中sigma=sqrt(ncol(mx1))/sqrt(2)</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.geohey.com/yong-ji-qi-xue-xi-zuo-kao-pu-de-ju-lei-pu-ju-lei-spectral-clustering/">用机器学习做靠谱的聚类——谱聚类</a> </li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/kmeans/" rel="tag"># kmeans</a>
+              <a href="/tags/%E8%81%9A%E7%B1%BB/" rel="tag"># 聚类</a>
+              <a href="/tags/specc/" rel="tag"># specc</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/11/23/kmeans1/" rel="prev" title="大数据聚类之kmeans">
+      <i class="fa fa-chevron-left"></i> 大数据聚类之kmeans
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/12/04/arules2/" rel="next" title="R语言实现购物篮分析-Apriori和eclat算法">
+      R语言实现购物篮分析-Apriori和eclat算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5%E7%A7%91%E6%99%AE"><span class="nav-number">1.</span> <span class="nav-text">1. 相关概念科普</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%A6%E7%9F%A9%E9%98%B5"><span class="nav-number">1.1.</span> <span class="nav-text">度矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%82%BB%E6%8E%A5%E7%9F%A9%E9%98%B5"><span class="nav-number">1.2.</span> <span class="nav-text">邻接矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E7%9F%A9%E9%98%B5"><span class="nav-number">1.3.</span> <span class="nav-text">拉普拉斯矩阵  </span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E8%B0%B1%E8%81%9A%E7%B1%BB%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%80%9D%E6%83%B3"><span class="nav-number">2.</span> <span class="nav-text">2. 谱聚类的基本思想</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E8%81%9A%E7%B1%BB%E4%B8%8E%E5%9B%BE%E8%AE%BA"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 聚类与图论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E6%9C%80%E5%B0%8F%E5%89%B2"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 最小割</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%AE%97%E6%B3%95%E6%AD%A5%E9%AA%A4"><span class="nav-number">3.</span> <span class="nav-text">3. 算法步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E6%9C%AA%E6%AD%A3%E5%88%99%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E7%9F%A9%E9%98%B5-%E7%9A%84%E8%B0%B1%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 未正则拉普拉斯矩阵 的谱聚类算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-1-%E8%AE%A1%E7%AE%97%E5%BE%97%E5%88%B0%E5%9B%BE%E7%9A%84%E9%82%BB%E6%8E%A5%E7%9F%A9%E9%98%B5-W-%EF%BC%8C%E4%BB%A5%E5%8F%8A%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E7%9F%A9%E9%98%B5-L-%EF%BC%9B"><span class="nav-number">3.1.1.</span> <span class="nav-text">3.1.1 计算得到图的邻接矩阵 $W$，以及拉普拉斯矩阵 $L$；</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-%E8%81%9A%E7%B1%BB%E5%88%92%E5%88%86%E5%87%86%E5%88%99"><span class="nav-number">3.2.</span> <span class="nav-text">3.1.2 聚类划分准则</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-3-%E6%B1%82%E5%87%BA-L-%E7%9A%84%E5%89%8D-k-%E4%B8%AA%E7%89%B9%E5%BE%81%E5%80%BC%E5%8F%8A%E5%AF%B9%E5%BA%94%E7%9A%84%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F"><span class="nav-number">3.2.1.</span> <span class="nav-text">3.1.3 求出$L$的前$k$个特征值及对应的特征向量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-4-%E6%A0%B9%E6%8D%AE%E6%96%B0%E7%94%9F%E6%88%90%E7%9A%84%E7%89%B9%E5%BE%81%E7%9F%A9%E9%98%B5%E8%BF%9B%E8%A1%8C-kmeans-%E8%81%9A%E7%B1%BB"><span class="nav-number">3.2.2.</span> <span class="nav-text">3.1.4 根据新生成的特征矩阵进行$kmeans$聚类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-5-%E6%80%BB%E7%BB%93%E4%B8%80%E4%B8%8B%E5%AE%8C%E6%95%B4%E7%9A%84%E8%B0%B1%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="nav-number">3.2.3.</span> <span class="nav-text">3.1.5 总结一下完整的谱聚类算法的流程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E6%AD%A3%E5%88%99%E7%9A%84%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E7%9F%A9%E9%98%B5-%E7%9A%84%E8%B0%B1%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95"><span class="nav-number">3.3.</span> <span class="nav-text">3.2 正则的拉普拉斯矩阵 的谱聚类算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-%E5%AF%B9%E7%A7%B0%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E7%9F%A9%E9%98%B5%E7%9A%84%E8%B0%B1%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95"><span class="nav-number">3.3.1.</span> <span class="nav-text">3.2.1 对称拉普拉斯矩阵的谱聚类算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-2-%E9%9A%8F%E6%9C%BA%E6%B8%B8%E8%B5%B0%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E7%9F%A9%E9%98%B5-%E7%9A%84%E8%B0%B1%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95"><span class="nav-number">3.3.2.</span> <span class="nav-text">3.2.2 随机游走拉普拉斯矩阵 的谱聚类算法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE%E4%B8%8E%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB"><span class="nav-number">4.</span> <span class="nav-text">4. 参考文献与推荐阅读</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

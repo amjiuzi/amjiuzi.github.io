@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在R中做图像处理的资料相对较少, 本文是在学习挖掘算法过程中根据先贤们的提点加以实践，改进的结果. 俗话说： 内行看门道,外行看热闹. 我不是专业做图像处理的但希望本文能起到抛砖引玉的效果如果有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习 1. 整体直方图均衡化算法1.1 数据准备123456789101112131415library(raster)stac1 &lt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在R中测试2种图像增强方式">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2017/09/05/imgEm1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="在R中做图像处理的资料相对较少, 本文是在学习挖掘算法过程中根据先贤们的提点加以实践，改进的结果. 俗话说： 内行看门道,外行看热闹. 我不是专业做图像处理的但希望本文能起到抛砖引玉的效果如果有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习 1. 整体直方图均衡化算法1.1 数据准备123456789101112131415library(raster)stac1 &lt;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b1126d1ef85.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/13/59b894d1aee7d.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/13/59b894d02c34d.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/13/59b8994fb8e5f.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b0fb0f642a4.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b0eeeebf98d.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b10250a9d33.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b0fb0f642a4.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b1503a75cd2.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b10250a9d33.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b0fb0f642a4.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/07/59b0eeeebf98d.png">
+<meta property="article:published_time" content="2017-09-05T12:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:24.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="图像处理">
+<meta property="article:tag" content="raster">
+<meta property="article:tag" content="SVD">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2017/09/07/59b1126d1ef85.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2017/09/05/imgEm1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>在R中测试2种图像增强方式 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/09/05/imgEm1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在R中测试2种图像增强方式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-09-05 20:02:34" itemprop="dateCreated datePublished" datetime="2017-09-05T20:02:34+08:00">2017-09-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:24" itemprop="dateModified" datetime="2020-08-23T21:16:24+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Image/" itemprop="url" rel="index"><span itemprop="name">Image</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在R中做图像处理的资料相对较少, 本文是在学习挖掘算法过程中根据先贤们的提点加以实践，改进的结果. 俗话说： 内行看门道,外行看热闹. 我不是专业做图像处理的但希望本文能起到抛砖引玉的效果<br>如果有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习</p>
+<h3 id="1-整体直方图均衡化算法"><a href="#1-整体直方图均衡化算法" class="headerlink" title="1. 整体直方图均衡化算法"></a>1. 整体直方图均衡化算法</h3><h4 id="1-1-数据准备"><a href="#1-1-数据准备" class="headerlink" title="1.1 数据准备"></a>1.1 数据准备</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(raster)</span><br><span class="line">stac1 &lt;- stack(<span class="string">&#x27;/images/histEq1/soc3.jpg&#x27;</span>)</span><br><span class="line">dim(stac1)</span><br><span class="line">[<span class="number">1</span>]  <span class="number">625</span> <span class="number">1024</span>    <span class="number">3</span></span><br><span class="line">stac1</span><br><span class="line">class       : RasterStack </span><br><span class="line">dimensions  : <span class="number">625</span>, <span class="number">1024</span>, <span class="number">640000</span>, <span class="number">3</span>  (nrow, ncol, ncell, nlayers)</span><br><span class="line">resolution  : <span class="number">1</span>, <span class="number">1</span>  (x, y)</span><br><span class="line">extent      : <span class="number">0</span>, <span class="number">1024</span>, <span class="number">0</span>, <span class="number">625</span>  (xmin, xmax, ymin, ymax)</span><br><span class="line">coord. ref. : <span class="literal">NA</span> </span><br><span class="line">names       : soc3.1, soc3.2, soc3.3 </span><br><span class="line">min values  :      <span class="number">0</span>,      <span class="number">0</span>,      <span class="number">0</span> </span><br><span class="line">max values  :    <span class="number">255</span>,    <span class="number">255</span>,    <span class="number">255</span> </span><br><span class="line"></span><br><span class="line">plotRGB(stac1)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/09/07/59b1126d1ef85.png" alt="pic0"></p>
+<a id="more"></a>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">img_enhance1 &lt;- <span class="keyword">function</span>(x)&#123;</span><br><span class="line">  freq1 &lt;- as.data.frame(table(as.vector(x)))</span><br><span class="line">  freq1$cums1 &lt;- cumsum(freq1[,<span class="number">2</span>])</span><br><span class="line">  freq1$value2 &lt;- round((freq1$cums1-min(freq1$cums1))/(max(freq1$cums1)-min(freq1$cums1))*<span class="number">255</span>)</span><br><span class="line">  freq2 &lt;- freq1[,c(<span class="number">1</span>,<span class="number">4</span>)];colnames(freq2)=c(<span class="string">&#x27;value1&#x27;</span>,<span class="string">&#x27;value2&#x27;</span>)</span><br><span class="line">  raw1 &lt;- data.frame(as.vector(x));colnames(raw1)=c(<span class="string">&#x27;value1&#x27;</span>)</span><br><span class="line">  raw2 &lt;- merge(raw1,freq2,by=<span class="string">&#x27;value1&#x27;</span>)</span><br><span class="line">  value2 &lt;- matrix(raw2$value2,ncol = dim(x)[<span class="number">2</span>])</span><br><span class="line">  <span class="keyword">return</span>(value2)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># raster to array</span></span><br><span class="line">stac.ary &lt;- as.array(stac1)</span><br><span class="line">dim(stac.ary)</span><br><span class="line">[<span class="number">1</span>]  <span class="number">625</span> <span class="number">1024</span>    <span class="number">3</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># array to raster</span></span><br><span class="line">red1 &lt;- raster(stac.ary[,,<span class="number">1</span>],xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line">grn1 &lt;- raster(stac.ary[,,<span class="number">2</span>],xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line">blu2 &lt;- raster(stac.ary[,,<span class="number">3</span>],xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line">red2 &lt;- raster(img_enhance1(stac.ary[,,<span class="number">1</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line">grn2 &lt;- raster(img_enhance1(stac.ary[,,<span class="number">2</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line">blu2 &lt;- raster(img_enhance1(stac.ary[,,<span class="number">3</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line"></span><br><span class="line">img.new1 &lt;- brick(red1,grn1,blu1)</span><br><span class="line">img.new2 &lt;- brick(red1,grn1,blu2)</span><br><span class="line">img.new3 &lt;- brick(red1,grn2,blu1)</span><br><span class="line">img.new4 &lt;- brick(red1,grn2,blu2)</span><br><span class="line">img.new5 &lt;- brick(red2,grn1,blu1)</span><br><span class="line">img.new6 &lt;- brick(red2,grn1,blu2)</span><br><span class="line">img.new7 &lt;- brick(red2,grn2,blu1)</span><br><span class="line">img.new8 &lt;- brick(red2,grn2,blu2)</span><br></pre></td></tr></table></figure>
+<h4 id="1-2-基础优化"><a href="#1-2-基础优化" class="headerlink" title="1.2 基础优化"></a>1.2 基础优化</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">plotRGB(img.new1,r=<span class="number">1</span>,g=<span class="number">2</span>,b=<span class="number">3</span>,stretch=<span class="string">&#x27;lin&#x27;</span>)</span><br><span class="line">plotRGB(img.new2,r=<span class="number">1</span>,g=<span class="number">2</span>,b=<span class="number">3</span>,stretch=<span class="string">&#x27;lin&#x27;</span>)</span><br><span class="line">plotRGB(img.new3,r=<span class="number">1</span>,g=<span class="number">2</span>,b=<span class="number">3</span>,stretch=<span class="string">&#x27;lin&#x27;</span>)</span><br><span class="line">plotRGB(img.new4,r=<span class="number">1</span>,g=<span class="number">2</span>,b=<span class="number">3</span>,stretch=<span class="string">&#x27;lin&#x27;</span>)</span><br><span class="line">plotRGB(img.new5,r=<span class="number">1</span>,g=<span class="number">2</span>,b=<span class="number">3</span>,stretch=<span class="string">&#x27;lin&#x27;</span>)</span><br><span class="line">plotRGB(img.new6,r=<span class="number">1</span>,g=<span class="number">2</span>,b=<span class="number">3</span>,stretch=<span class="string">&#x27;lin&#x27;</span>)</span><br><span class="line">plotRGB(img.new7,r=<span class="number">1</span>,g=<span class="number">2</span>,b=<span class="number">3</span>,stretch=<span class="string">&#x27;lin&#x27;</span>)</span><br><span class="line">plotRGB(img.new8,r=<span class="number">1</span>,g=<span class="number">2</span>,b=<span class="number">3</span>,stretch=<span class="string">&#x27;lin&#x27;</span>)</span><br><span class="line">dev.off()</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/09/13/59b894d1aee7d.png" alt="p8014"><br><img src="https://i.loli.net/2017/09/13/59b894d02c34d.png" alt="p8058"></p>
+<p>以上 8 幅图中, 第1幅图是原图，第2副的效果是与原图最近似,所以下一步优化可以在 图2 的基础上进行 </p>
+<h4 id="1-3-调整优化"><a href="#1-3-调整优化" class="headerlink" title="1.3 调整优化"></a>1.3 调整优化</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">img_enhance2 &lt;- <span class="keyword">function</span>(x)&#123;</span><br><span class="line">  freq1 &lt;- as.data.frame(table(as.vector(x)))</span><br><span class="line">  freq1$cums1 &lt;- cumsum(freq1[,<span class="number">2</span>])</span><br><span class="line">  freq1$value2 &lt;- round((freq1$cums1-min(freq1$cums1))/(max(freq1$cums1)-min(freq1$cums1))*<span class="number">255</span>)</span><br><span class="line">  freq2 &lt;- freq1[,c(<span class="number">1</span>,<span class="number">4</span>)];colnames(freq2)=c(<span class="string">&#x27;value1&#x27;</span>,<span class="string">&#x27;value2&#x27;</span>)</span><br><span class="line">  raw1 &lt;- data.frame(as.vector(x));colnames(raw1)=c(<span class="string">&#x27;value1&#x27;</span>)</span><br><span class="line">  raw2 &lt;- merge(raw1,freq2,by=<span class="string">&#x27;value1&#x27;</span>)</span><br><span class="line">  value2 &lt;- matrix(ifelse(raw2$value2&gt;=raw2$value1,raw2$value2,raw2$value1),ncol = dim(x)[<span class="number">2</span>])</span><br><span class="line">  <span class="keyword">return</span>(value2)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">red3 &lt;- raster(img_enhance2(stac.ary[,,<span class="number">1</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line">grn3 &lt;- raster(img_enhance2(stac.ary[,,<span class="number">2</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line">blu3 &lt;- raster(img_enhance2(stac.ary[,,<span class="number">3</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line">img.new21 &lt;- brick(red1,grn1,blu3)</span><br><span class="line">plotRGB(img.new21,r=<span class="number">1</span>,g=<span class="number">2</span>,b=<span class="number">3</span>,stretch=<span class="string">&#x27;lin&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>改进后的效果图<br><img src="https://i.loli.net/2017/09/13/59b8994fb8e5f.png" alt="p8021.png"></li>
+</ul>
+<h3 id="2-SVD算法"><a href="#2-SVD算法" class="headerlink" title="2. SVD算法"></a>2. SVD算法</h3><h4 id="信息保留100-噪点去除"><a href="#信息保留100-噪点去除" class="headerlink" title="信息保留100%,噪点去除"></a>信息保留100%,噪点去除</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># red</span></span><br><span class="line">sv1 &lt;- svd(stac.ary[,,<span class="number">1</span>])</span><br><span class="line">lambda1 &lt;- sv1$d^<span class="number">2</span>/(nrow(stac.ary[,,<span class="number">1</span>])-<span class="number">1</span>)</span><br><span class="line">cumsum(lambda1)/sum(lambda1)</span><br><span class="line"></span><br><span class="line">red4 &lt;- raster(sv1$u[,<span class="number">1</span>:<span class="number">493</span>] %*% diag(sv1$d[<span class="number">1</span>:<span class="number">493</span>]) %*% t(sv1$v[,<span class="number">1</span>:<span class="number">493</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line"><span class="comment"># green</span></span><br><span class="line">sv2 &lt;- svd(stac.ary[,,<span class="number">2</span>])</span><br><span class="line">lambda2 &lt;- sv2$d^<span class="number">2</span>/(nrow(stac.ary[,,<span class="number">2</span>])-<span class="number">1</span>)</span><br><span class="line">cumsum(lambda2)/sum(lambda2)</span><br><span class="line"></span><br><span class="line">grn4 &lt;- raster(sv2$u[,<span class="number">1</span>:<span class="number">486</span>] %*% diag(sv2$d[<span class="number">1</span>:<span class="number">486</span>]) %*% t(sv2$v[,<span class="number">1</span>:<span class="number">486</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line"><span class="comment"># blue</span></span><br><span class="line">sv3 &lt;- svd(stac.ary[,,<span class="number">3</span>])</span><br><span class="line">lambda3 &lt;- sv3$d^<span class="number">2</span>/(nrow(stac.ary[,,<span class="number">3</span>])-<span class="number">1</span>)</span><br><span class="line">cumsum(lambda3)/sum(lambda3)</span><br><span class="line"></span><br><span class="line">blu4 &lt;- raster(sv3$u[,<span class="number">1</span>:<span class="number">491</span>] %*% diag(sv3$d[<span class="number">1</span>:<span class="number">491</span>]) %*% t(sv3$v[,<span class="number">1</span>:<span class="number">491</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line"></span><br><span class="line">img.new9 &lt;- brick(red4,grn4,blu4)</span><br><span class="line">plotRGB(img.new9,r=<span class="number">1</span>,g=<span class="number">2</span>,b=<span class="number">3</span>,stretch=<span class="string">&#x27;lin&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>SVD降噪图1<br><img src="https://i.loli.net/2017/09/07/59b0fb0f642a4.png" alt="p90.png"></li>
+<li>原图<br><img src="https://i.loli.net/2017/09/07/59b0eeeebf98d.png" alt="p801"></li>
+</ul>
+<p>仔细观察会发现降噪后,笼罩在群山周围的白色雾霾清淡了许多,沙滩也比原来微微泛黄, 降噪的作用还是很明显的</p>
+<h4 id="信息保留99-噪点去除"><a href="#信息保留99-噪点去除" class="headerlink" title="信息保留99%,噪点去除"></a>信息保留99%,噪点去除</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">red5 &lt;- raster(sv1$u[,<span class="number">1</span>:<span class="number">174</span>] %*% diag(sv1$d[<span class="number">1</span>:<span class="number">174</span>]) %*% t(sv1$v[,<span class="number">1</span>:<span class="number">174</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line">grn5 &lt;- raster(sv2$u[,<span class="number">1</span>:<span class="number">172</span>] %*% diag(sv2$d[<span class="number">1</span>:<span class="number">172</span>]) %*% t(sv2$v[,<span class="number">1</span>:<span class="number">172</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line">blu5 &lt;- raster(sv3$u[,<span class="number">1</span>:<span class="number">172</span>] %*% diag(sv3$d[<span class="number">1</span>:<span class="number">172</span>]) %*% t(sv3$v[,<span class="number">1</span>:<span class="number">172</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line"></span><br><span class="line">img.new91 &lt;- brick(red5,grn5,blu5)</span><br><span class="line">plotRGB(img.new91,r=<span class="number">1</span>,g=<span class="number">2</span>,b=<span class="number">3</span>,stretch=<span class="string">&#x27;lin&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>SVD降噪图2<br><img src="https://i.loli.net/2017/09/07/59b10250a9d33.png" alt="p91.png"></li>
+<li>SVD降噪图1<br><img src="https://i.loli.net/2017/09/07/59b0fb0f642a4.png" alt="p90.png"></li>
+</ul>
+<p>仔细观察会发现重新降噪后,强光对照片的影响被进一步弱化,照片比原图温暖了许多,一些图片细节也显现了出来, 降噪的作用进一步增强</p>
+<h4 id="信息保留98-噪点去除"><a href="#信息保留98-噪点去除" class="headerlink" title="信息保留98%,噪点去除"></a>信息保留98%,噪点去除</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">red6 &lt;- raster(sv1$u[,<span class="number">1</span>:<span class="number">105</span>] %*% diag(sv1$d[<span class="number">1</span>:<span class="number">105</span>]) %*% t(sv1$v[,<span class="number">1</span>:<span class="number">105</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line">grn6 &lt;- raster(sv2$u[,<span class="number">1</span>:<span class="number">103</span>] %*% diag(sv2$d[<span class="number">1</span>:<span class="number">103</span>]) %*% t(sv2$v[,<span class="number">1</span>:<span class="number">103</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line">blu6 &lt;- raster(sv3$u[,<span class="number">1</span>:<span class="number">103</span>] %*% diag(sv3$d[<span class="number">1</span>:<span class="number">103</span>]) %*% t(sv3$v[,<span class="number">1</span>:<span class="number">103</span>]),</span><br><span class="line">               xmn=<span class="number">0</span>,xmx=<span class="number">1024</span>,ymn=<span class="number">0</span>,ymx=<span class="number">625</span>)</span><br><span class="line"></span><br><span class="line">img.new92 &lt;- brick(red6,grn6,blu6)</span><br><span class="line">plotRGB(img.new92,r=<span class="number">1</span>,g=<span class="number">2</span>,b=<span class="number">3</span>,stretch=<span class="string">&#x27;lin&#x27;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<ul>
+<li>98%<br><img src="https://i.loli.net/2017/09/07/59b1503a75cd2.png" alt="p92.png"></li>
+<li>99%<br><img src="https://i.loli.net/2017/09/07/59b10250a9d33.png" alt="p91.png"></li>
+<li>100%<br><img src="https://i.loli.net/2017/09/07/59b0fb0f642a4.png" alt="p90.png"></li>
+<li>原图<br><img src="https://i.loli.net/2017/09/07/59b0eeeebf98d.png" alt="p801"></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag"># 图像处理</a>
+              <a href="/tags/raster/" rel="tag"># raster</a>
+              <a href="/tags/SVD/" rel="tag"># SVD</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/09/02/raster1/" rel="prev" title="raster包 处理RGB图像 \[译\]">
+      <i class="fa fa-chevron-left"></i> raster包 处理RGB图像 \[译\]
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/09/07/quadrant1/" rel="next" title="简约而不简单的 象限图 在R中的产生过程">
+      简约而不简单的 象限图 在R中的产生过程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%95%B4%E4%BD%93%E7%9B%B4%E6%96%B9%E5%9B%BE%E5%9D%87%E8%A1%A1%E5%8C%96%E7%AE%97%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">1. 整体直方图均衡化算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 数据准备</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E5%9F%BA%E7%A1%80%E4%BC%98%E5%8C%96"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 基础优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-%E8%B0%83%E6%95%B4%E4%BC%98%E5%8C%96"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 调整优化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-SVD%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">2. SVD算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%A1%E6%81%AF%E4%BF%9D%E7%95%99100-%E5%99%AA%E7%82%B9%E5%8E%BB%E9%99%A4"><span class="nav-number">2.1.</span> <span class="nav-text">信息保留100%,噪点去除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%A1%E6%81%AF%E4%BF%9D%E7%95%9999-%E5%99%AA%E7%82%B9%E5%8E%BB%E9%99%A4"><span class="nav-number">2.2.</span> <span class="nav-text">信息保留99%,噪点去除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%A1%E6%81%AF%E4%BF%9D%E7%95%9998-%E5%99%AA%E7%82%B9%E5%8E%BB%E9%99%A4"><span class="nav-number">2.3.</span> <span class="nav-text">信息保留98%,噪点去除</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

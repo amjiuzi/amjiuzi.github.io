@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快 A. 矩阵描述 有 $n \times p$ 阶矩阵 $X$    n为样本个数, p为特征变量个数2. 假设矩阵已完成去中心化, 即 $x &#x3D; x-mean(x)$ 1x&#x3D;scale(x,center&#x3D;TRUE,scale&#x3D;FALSE) # 中心化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="主成分分析与SVD关系的理论学习 \[译\]">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2017/08/17/pca2svd/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快 A. 矩阵描述 有 $n \times p$ 阶矩阵 $X$    n为样本个数, p为特征变量个数2. 假设矩阵已完成去中心化, 即 $x &#x3D; x-mean(x)$ 1x&#x3D;scale(x,center&#x3D;TRUE,scale&#x3D;FALSE) # 中心化">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2017/08/18/599641f4cd5e9.png">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/08/18/599641f4d5c5c.png">
+<meta property="article:published_time" content="2017-08-17T12:36:37.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:34.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="SVD">
+<meta property="article:tag" content="pca">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2017/08/18/599641f4cd5e9.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2017/08/17/pca2svd/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>主成分分析与SVD关系的理论学习 \[译\] | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/08/17/pca2svd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          主成分分析与SVD关系的理论学习 \[译\]
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-17 20:36:37" itemprop="dateCreated datePublished" datetime="2017-08-17T20:36:37+08:00">2017-08-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:34" itemprop="dateModified" datetime="2020-08-23T21:16:34+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Prediction/" itemprop="url" rel="index"><span itemprop="name">Prediction</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿服务，请出门左转 <a href="izuoye.taobao.com">Convenient Entrance</a>, 合作愉快</p>
+<h2 id="A-矩阵描述"><a href="#A-矩阵描述" class="headerlink" title="A. 矩阵描述"></a>A. 矩阵描述</h2><ol>
+<li>有 $n \times p$ 阶矩阵 $X$  </li>
+</ol>
+<p><em>n为样本个数, p为特征变量个数</em><br>2. 假设矩阵已完成去中心化, 即 $x = x-mean(x)$</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x=scale(x,center=<span class="literal">TRUE</span>,scale=<span class="literal">FALSE</span>) <span class="comment"># 中心化,只是减去均值</span></span><br></pre></td></tr></table></figure>
+<h2 id="B-过程演化"><a href="#B-过程演化" class="headerlink" title="B. 过程演化"></a>B. 过程演化</h2><ol>
+<li>通过公式<br>$$\frac{X^\mathrm{T} \times X}{n-1}$$<br>得到其 $p \times p$ 阶的协方差矩阵 $C$<br>因它是 $p \times p$ 的方阵，所以可以实现对角化,即<br>$$C= V \times L \times V^\mathrm{T}$$<br><em>V 是特征向量矩阵(每一列都是一组特征向量)</em><br><em>L 是一个对称方阵,对角线上的值是由大到小排列的$\lambda$特征值</em><br>特征向量 <em>V</em> 被称作数据的  <em>主轴</em> 或 <em>主方向</em> ,数据在主轴上的投影被称为 <em>主成分</em>,<br>也叫 <em>主成分得分(PC scores)</em>,他们可以被看做新的,转化后的变量<a id="more"></a>
+第 $j$ 个主成分等于 $X \times V$ 的第 $j$ 列<br>第 $i$ 个数据点的坐标值等于 $X \times V$ 的第 $i$ 行</li>
+<li>如果我们现在执行X的奇异值分解，我们得到一个分解式<br>$$ X = U \times S  \times V^\mathrm{T} $$</li>
+</ol>
+<p><em>S 是奇异值 $S_{i}$构成的对角矩阵</em><br>至此我们很容易发现:<br>$$ C = \frac{V \times S \times U^\mathrm{T} \times U \times S \times V^\mathrm{T}} {n-1} = V \times \frac{S^2}{n-1} \times V^\mathrm{T} $$<br>3. 进一步解释,<br>右奇异矩阵 <em>V</em> 是 <strong>主轴</strong>或 <strong>主方向</strong><br> 奇异值$S$ 通过$ \lambda_{i} = \frac{S_{i}^2}{n-1} $与协方差矩阵$C$的特征值$\lambda$相关联<br> 主成分得分(PCScores) :<br> $$PCScores = X \times V = U \times S \times V^\mathrm{T} \times V = U \times S $$</p>
+<h2 id="C-结论总结"><a href="#C-结论总结" class="headerlink" title="C. 结论总结:"></a>C. 结论总结:</h2><ol>
+<li>如果 $ X = U \times S \times V^\mathrm{T} $,则 $V$ 的各列就是 <strong>主轴</strong>或<strong>主方向</strong></li>
+<li>$ U \times S $ 生成结果矩阵的各列就是各主成分(得分)</li>
+<li>协方差矩阵 $C$ 的特征值$\lambda_{i}$ 与 奇异值 $S$ 之间的换算关系为：<br>$$\lambda_{i} = \frac{S_{i}^2}{n-1}$$<br>通过奇异值 $S_{i}$ 换算出的 $\lambda_{i}$ 表示各主成分之间的差异，即 $\lambda_{i}$ 为各主成分的方差贡献大小(在pca中我们经常拿 $\frac{\lambda_{i}}{\sum(\lambda_{i})}$来表示各主成分的方差贡献率,并以$\frac{\lambda_{1:i}}{\sum(\lambda_{1:i})}$作为通过各主成分导出汇总所有主成分项得分的系数<br>$$PC0 = PC_{i} \times as.matrix(\frac{\lambda_{i}}{\sum \lambda_{i} }),ncol=1)$$</li>
+<li>标准得分就是 $\sqrt{n-1} \times U$计算出的各列<br>因子载荷就是$\frac{V \times S}{\sqrt{n-1}}$计算出的各列<br>参见<a target="_blank" rel="noopener" href="https://stats.stackexchange.com/questions/125684">here</a>和<a target="_blank" rel="noopener" href="https://stats.stackexchange.com/questions/143905">here</a>来理解为什么不能将 因子载荷 和 主方向 相混淆</li>
+<li>上面所有这些成立的前提是$X$ 已经去中心化,即$(x-mean(x))$,因为只有如此协方差矩阵能用$\frac{X^\mathrm{T} \times X}{n-1}$来表示</li>
+<li>以上所有结论都是基于样本在行,变量在列的情况; 如果变量在行,样本在列,那么U和V互换位置进行解释</li>
+<li>如果对相关矩阵(而不是协方差矩阵)进行主成分分析,那么 X 的各列不光要去中心化还得进行标准化即<br>$$x = \frac{x-mean(x)}{sd(x)}$$<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x = scale(x,center=<span class="literal">TRUE</span>,scale=<span class="literal">TRUE</span>)</span><br></pre></td></tr></table></figure></li>
+<li>为了将数据维数从$p$降到$k(k&lt;p)$,可以选取$U$的前$K$列 和 $S$ 的左上 $k \times k$ 部分,两者的乘积 $U_{k} \times S_{k}$就是包含了前k列主成分的 $n \times k$ 阶主成分得分矩阵</li>
+<li>将前 $k$ 个主成分 乘以 对应的主轴(主方向) $V_{k}$,得到 $X_{k} = U_{k} \times S_{k} \times V_{k}^\mathrm{T}$ 矩阵, 这个矩阵具有 $n \times p$ 的原始大小规格但源于更低的阶数(k阶), 这个矩阵实现了 通过前 $k$ 个主成分来重构 原始数据的想法, 它只有最低的重构误差, <a target="_blank" rel="noopener" href="https://stats.stackexchange.com/questions/130721">see my answer here</a></li>
+<li>严格意义上讲, $U$ 是 $n x n$的矩阵, $V$ 是 $p \times p$的矩阵, 如果 $n &gt; p$, 则 $U$ 中剩余的 $n - p$列将为$0$,因此应该使用瘦身版的$SVD$,即 $U$ 保留 $n \times p$阶矩阵,放弃归为$0$的 $n-p$ 列.如果$n$远大于$p$,矩阵$U$就没必要维持这么大的规格,此论断同样适用于$n$远小于$p$的情况</li>
+</ol>
+<h3 id="英文原版"><a href="#英文原版" class="headerlink" title="英文原版"></a>英文原版</h3><p><img src="https://i.loli.net/2017/08/18/599641f4cd5e9.png" alt="pic1.png"><br><img src="https://ooo.0o0.ooo/2017/08/18/599641f4d5c5c.png" alt="pic2.png"></p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/SVD/" rel="tag"># SVD</a>
+              <a href="/tags/pca/" rel="tag"># pca</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/08/15/svd-image/" rel="prev" title="SVD的R实现及在图像处理中简单应用">
+      <i class="fa fa-chevron-left"></i> SVD的R实现及在图像处理中简单应用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/08/18/pca1/" rel="next" title="PCA(主成分分析)的SVD诠释">
+      PCA(主成分分析)的SVD诠释 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#A-%E7%9F%A9%E9%98%B5%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">A. 矩阵描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-%E8%BF%87%E7%A8%8B%E6%BC%94%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">B. 过程演化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%BB%93%E8%AE%BA%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">C. 结论总结:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8B%B1%E6%96%87%E5%8E%9F%E7%89%88"><span class="nav-number">3.1.</span> <span class="nav-text">英文原版</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

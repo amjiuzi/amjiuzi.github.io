@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快   基本函数解析1. 分组和统计 (Grouping and counting) summarise, tally, count, group_size, n_groups, ungroup, do  123456789101112131415161">
+<meta property="og:type" content="article">
+<meta property="og:title" content="流式处理 dplyr 在R中的使用">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2017/08/26/dplyr1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快   基本函数解析1. 分组和统计 (Grouping and counting) summarise, tally, count, group_size, n_groups, ungroup, do  123456789101112131415161">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-08-26T12:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:20.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="dplyr">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2017/08/26/dplyr1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>流式处理 dplyr 在R中的使用 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/08/26/dplyr1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          流式处理 dplyr 在R中的使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-26 20:02:34" itemprop="dateCreated datePublished" datetime="2017-08-26T20:02:34+08:00">2017-08-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:20" itemprop="dateModified" datetime="2020-08-23T21:16:20+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Basic/" itemprop="url" rel="index"><span itemprop="name">Basic</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿服务，请出门左转 <a href="izuoye.taobao.com">Convenient Entrance</a>, 合作愉快  </p>
+<h2 id="基本函数解析"><a href="#基本函数解析" class="headerlink" title="基本函数解析"></a>基本函数解析</h2><h3 id="1-分组和统计-Grouping-and-counting"><a href="#1-分组和统计-Grouping-and-counting" class="headerlink" title="1. 分组和统计 (Grouping and counting)"></a>1. 分组和统计 (Grouping and counting)</h3><blockquote>
+<p>summarise, tally, count, group_size, n_groups, ungroup, do</p>
+</blockquote>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&gt; a1 &lt;- data.frame(a1=c(<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">4</span>),a2=letters[<span class="number">1</span>:<span class="number">6</span>],b3=c(<span class="number">0</span>,<span class="number">1</span>,<span class="number">5</span>,<span class="number">7</span>,<span class="literal">NA</span>,<span class="number">9</span>))</span><br><span class="line">&gt; a1</span><br><span class="line">  a1 a2 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  a  <span class="number">0</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  b  <span class="number">1</span></span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>  c  <span class="number">5</span></span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>  d  <span class="number">7</span></span><br><span class="line"><span class="number">5</span>  <span class="number">2</span>  e <span class="literal">NA</span></span><br><span class="line"><span class="number">6</span>  <span class="number">4</span>  f  <span class="number">9</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% summarise(cnt1=n())</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1  cnt1</span><br><span class="line">  &lt;dbl&gt; &lt;int&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>     <span class="number">2</span></span><br><span class="line"><span class="number">2</span>     <span class="number">2</span>     <span class="number">3</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">1</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% tally()</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1     n</span><br><span class="line">  &lt;dbl&gt; &lt;int&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>     <span class="number">2</span></span><br><span class="line"><span class="number">2</span>     <span class="number">2</span>     <span class="number">3</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">1</span></span><br><span class="line">&gt; a1 %&gt;% count(a1)</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1     n</span><br><span class="line">  &lt;dbl&gt; &lt;int&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>     <span class="number">2</span></span><br><span class="line"><span class="number">2</span>     <span class="number">2</span>     <span class="number">3</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% summarise(cnt1=n()) %&gt;% arrange(desc(cnt1))</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1  cnt1</span><br><span class="line">  &lt;dbl&gt; &lt;int&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">2</span>     <span class="number">3</span></span><br><span class="line"><span class="number">2</span>     <span class="number">1</span>     <span class="number">2</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">1</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% tally(sort=<span class="literal">TRUE</span>)</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1     n</span><br><span class="line">  &lt;dbl&gt; &lt;int&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">2</span>     <span class="number">3</span></span><br><span class="line"><span class="number">2</span>     <span class="number">1</span>     <span class="number">2</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">1</span></span><br><span class="line">&gt; a1 %&gt;% count(a1,sort=<span class="literal">TRUE</span>)</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1     n</span><br><span class="line">  &lt;dbl&gt; &lt;int&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">2</span>     <span class="number">3</span></span><br><span class="line"><span class="number">2</span>     <span class="number">1</span>     <span class="number">2</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">1</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% summarise(b31=sum(b3,na.rm=<span class="literal">TRUE</span>))</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1   b31</span><br><span class="line">  &lt;dbl&gt; &lt;dbl&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>     <span class="number">1</span></span><br><span class="line"><span class="number">2</span>     <span class="number">2</span>    <span class="number">12</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">9</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% tally(wt= b3 )</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1     n</span><br><span class="line">  &lt;dbl&gt; &lt;dbl&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>     <span class="number">1</span></span><br><span class="line"><span class="number">2</span>     <span class="number">2</span>    <span class="number">12</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">9</span></span><br><span class="line">&gt; a1 %&gt;% count(a1,wt= b3)</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1     n</span><br><span class="line">  &lt;dbl&gt; &lt;dbl&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>     <span class="number">1</span></span><br><span class="line"><span class="number">2</span>     <span class="number">2</span>    <span class="number">12</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">9</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% group_size()</span><br><span class="line">[<span class="number">1</span>] <span class="number">2</span> <span class="number">3</span> <span class="number">1</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% n_groups()</span><br><span class="line">[<span class="number">1</span>] <span class="number">3</span></span><br><span class="line">&gt; </span><br><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% summarise(cnt1=n()) %&gt;% ungroup() %&gt;% arrange(desc(cnt1))</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1  cnt1</span><br><span class="line">  &lt;dbl&gt; &lt;int&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">2</span>     <span class="number">3</span></span><br><span class="line"><span class="number">2</span>     <span class="number">1</span>     <span class="number">2</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">1</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% summarise(cnt1=n()) %&gt;% arrange(desc(cnt1))</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1  cnt1</span><br><span class="line">  &lt;dbl&gt; &lt;int&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">2</span>     <span class="number">3</span></span><br><span class="line"><span class="number">2</span>     <span class="number">1</span>     <span class="number">2</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% do(tail(.,<span class="number">2</span>)) <span class="comment"># 提取每组的后2条数据</span></span><br><span class="line"><span class="comment"># A tibble: 5 x 3</span></span><br><span class="line"><span class="comment"># Groups:   a1 [3]</span></span><br><span class="line">     a1     a2    b3</span><br><span class="line">  &lt;dbl&gt; &lt;fctr&gt; &lt;dbl&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>      a     <span class="number">0</span></span><br><span class="line"><span class="number">2</span>     <span class="number">1</span>      b     <span class="number">1</span></span><br><span class="line"><span class="number">3</span>     <span class="number">2</span>      d     <span class="number">7</span></span><br><span class="line"><span class="number">4</span>     <span class="number">2</span>      e    <span class="literal">NA</span></span><br><span class="line"><span class="number">5</span>     <span class="number">4</span>      f     <span class="number">9</span></span><br><span class="line">&gt; t2 &lt;- a1 %&gt;% group_by(a1) %&gt;% do(t1=summary(.$b3)) </span><br><span class="line">&gt; t2</span><br><span class="line">Source: local data frame [<span class="number">3</span> x <span class="number">2</span>]</span><br><span class="line">Groups: &lt;by row&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1                   t1</span><br><span class="line">* &lt;dbl&gt;               &lt;list&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span> &lt;S3: summaryDefault&gt;</span><br><span class="line"><span class="number">2</span>     <span class="number">2</span> &lt;S3: summaryDefault&gt;</span><br><span class="line"><span class="number">3</span>     <span class="number">4</span> &lt;S3: summaryDefault&gt;</span><br><span class="line">&gt; t2[[<span class="number">2</span>,<span class="string">&#x27;t1&#x27;</span>]]</span><br><span class="line">   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    <span class="literal">NA</span><span class="string">&#x27;s </span></span><br><span class="line"><span class="string">    5.0     5.5     6.0     6.0     6.5     7.0       1 </span></span><br><span class="line"><span class="string">&gt; t2$t1</span></span><br><span class="line"><span class="string">[[1]]</span></span><br><span class="line"><span class="string">   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span><br><span class="line"><span class="string">   0.00    0.25    0.50    0.50    0.75    1.00 </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[[2]]</span></span><br><span class="line"><span class="string">   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA&#x27;</span>s </span><br><span class="line">    <span class="number">5.0</span>     <span class="number">5.5</span>     <span class="number">6.0</span>     <span class="number">6.0</span>     <span class="number">6.5</span>     <span class="number">7.0</span>       <span class="number">1</span> </span><br><span class="line"></span><br><span class="line">[[<span class="number">3</span>]]</span><br><span class="line">   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span><br><span class="line">      <span class="number">9</span>       <span class="number">9</span>       <span class="number">9</span>       <span class="number">9</span>       <span class="number">9</span>       <span class="number">9</span> </span><br><span class="line"></span><br><span class="line">&gt; t2 &lt;- iris %&gt;% group_by(Species) %&gt;% do(mod=lm(Sepal.Length~Sepal.Width,data=.))</span><br><span class="line">&gt; t2</span><br><span class="line">Source: local data frame [<span class="number">3</span> x <span class="number">2</span>]</span><br><span class="line">Groups: &lt;by row&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     Species       t1</span><br><span class="line">*     &lt;fctr&gt;   &lt;list&gt;</span><br><span class="line"><span class="number">1</span>     setosa &lt;S3: lm&gt;</span><br><span class="line"><span class="number">2</span> versicolor &lt;S3: lm&gt;</span><br><span class="line"><span class="number">3</span>  virginica &lt;S3: lm&gt;</span><br><span class="line">&gt; t2$mod</span><br><span class="line">[[<span class="number">1</span>]]</span><br><span class="line"></span><br><span class="line">Call:</span><br><span class="line">lm(formula = Sepal.Length ~ Sepal.Width, data = .)</span><br><span class="line"></span><br><span class="line">Coefficients:</span><br><span class="line">(Intercept)  Sepal.Width  </span><br><span class="line">     <span class="number">2.6390</span>       <span class="number">0.6905</span>  </span><br><span class="line"></span><br><span class="line">[[<span class="number">2</span>]]</span><br><span class="line"></span><br><span class="line">Call:</span><br><span class="line">lm(formula = Sepal.Length ~ Sepal.Width, data = .)</span><br><span class="line"></span><br><span class="line">Coefficients:</span><br><span class="line">(Intercept)  Sepal.Width  </span><br><span class="line">     <span class="number">3.5397</span>       <span class="number">0.8651</span>  </span><br><span class="line"></span><br><span class="line">[[<span class="number">3</span>]]</span><br><span class="line"></span><br><span class="line">Call:</span><br><span class="line">lm(formula = Sepal.Length ~ Sepal.Width, data = .)</span><br><span class="line"></span><br><span class="line">Coefficients:</span><br><span class="line">(Intercept)  Sepal.Width  </span><br><span class="line">     <span class="number">3.9068</span>       <span class="number">0.9015</span>  </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-列选取及更改列名-Choosing-columns"><a href="#2-列选取及更改列名-Choosing-columns" class="headerlink" title="2. 列选取及更改列名 (Choosing columns)"></a>2. 列选取及更改列名 (Choosing columns)</h3><blockquote>
+<p>select, rename</p>
+</blockquote>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">a1 &lt;- data.frame(a1=c(<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>),a2=c(<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;d&#x27;</span>),b3=c(<span class="number">0</span>,<span class="number">1</span>,<span class="number">5</span>,<span class="number">7</span>))</span><br><span class="line">a1</span><br><span class="line">  a1 a2 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  a  <span class="number">0</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  b  <span class="number">1</span></span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>  c  <span class="number">5</span></span><br><span class="line"><span class="number">4</span>  <span class="number">4</span>  d  <span class="number">7</span></span><br><span class="line"></span><br><span class="line">a1 %&gt;% select(a1,b3) <span class="comment"># 提取 a1,b3列</span></span><br><span class="line">  a1 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  <span class="number">0</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  <span class="number">1</span></span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>  <span class="number">5</span></span><br><span class="line"><span class="number">4</span>  <span class="number">4</span>  <span class="number">7</span></span><br><span class="line">a1 %&gt;% select(-a1,-b3) <span class="comment"># 排除 a1,b3列</span></span><br><span class="line">  a2</span><br><span class="line"><span class="number">1</span>  a</span><br><span class="line"><span class="number">2</span>  b</span><br><span class="line"><span class="number">3</span>  c</span><br><span class="line"><span class="number">4</span>  d</span><br><span class="line">a1 %&gt;% select(a1:b3) <span class="comment"># 提取a1到b3之间的所有列</span></span><br><span class="line">  a1 a2 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  a  <span class="number">0</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  b  <span class="number">1</span></span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>  c  <span class="number">5</span></span><br><span class="line"><span class="number">4</span>  <span class="number">4</span>  d  <span class="number">7</span></span><br><span class="line">a1 %&gt;% select(-contains(<span class="string">&#x27;a&#x27;</span>)) <span class="comment"># 排除列名称包含&#x27;a&#x27;的所有列</span></span><br><span class="line">  b3</span><br><span class="line"><span class="number">1</span>  <span class="number">0</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span></span><br><span class="line"><span class="number">3</span>  <span class="number">5</span></span><br><span class="line"><span class="number">4</span>  <span class="number">7</span></span><br><span class="line">a1 %&gt;% select(one_of(c(<span class="string">&#x27;a1&#x27;</span>,<span class="string">&#x27;b3&#x27;</span>))) <span class="comment"># 提取a1,b3列;等同于select(a1,b3)</span></span><br><span class="line">  a1 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  <span class="number">0</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  <span class="number">1</span></span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>  <span class="number">5</span></span><br><span class="line"><span class="number">4</span>  <span class="number">4</span>  <span class="number">7</span></span><br><span class="line">a1 %&gt;% rename(a3=b3) <span class="comment"># 修改列名并 保留 其他列</span></span><br><span class="line">  a1 a2 a3</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  a  <span class="number">0</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  b  <span class="number">1</span></span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>  c  <span class="number">5</span></span><br><span class="line"><span class="number">4</span>  <span class="number">4</span>  d  <span class="number">7</span></span><br><span class="line">a1 %&gt;% select(a3=b3) <span class="comment"># 修改列名但 排除 其他列</span></span><br><span class="line">  a3</span><br><span class="line"><span class="number">1</span>  <span class="number">0</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span></span><br><span class="line"><span class="number">3</span>  <span class="number">5</span></span><br><span class="line"><span class="number">4</span>  <span class="number">7</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-行选取及样本量统计-Choosing-rows"><a href="#3-行选取及样本量统计-Choosing-rows" class="headerlink" title="3. 行选取及样本量统计 (Choosing rows)"></a>3. 行选取及样本量统计 (Choosing rows)</h3><blockquote>
+<p>filter,between,slice,top_n,sample_n,distinct,n_distinct</p>
+</blockquote>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">a1 &lt;- data.frame(a1=c(<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">4</span>),a2=letters[<span class="number">1</span>:<span class="number">8</span>],b3=c(<span class="literal">NA</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">7</span>,<span class="number">9</span>,<span class="literal">NA</span>,<span class="number">6</span>,<span class="number">8</span>))</span><br><span class="line">&gt; a1</span><br><span class="line">  a1 a2 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  a <span class="literal">NA</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  b  <span class="number">3</span></span><br><span class="line"><span class="number">3</span>  <span class="number">1</span>  c  <span class="number">5</span></span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>  d  <span class="number">7</span></span><br><span class="line"><span class="number">5</span>  <span class="number">2</span>  e  <span class="number">9</span></span><br><span class="line"><span class="number">6</span>  <span class="number">2</span>  f <span class="literal">NA</span></span><br><span class="line"><span class="number">7</span>  <span class="number">2</span>  g  <span class="number">6</span></span><br><span class="line"><span class="number">8</span>  <span class="number">4</span>  h  <span class="number">8</span></span><br><span class="line">&gt; a1 %&gt;% filter(a1&gt;<span class="number">1</span>) <span class="comment"># 筛选 a1列值 &gt;1 的样本数据</span></span><br><span class="line">  a1 a2 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">2</span>  d  <span class="number">7</span></span><br><span class="line"><span class="number">2</span>  <span class="number">2</span>  e  <span class="number">9</span></span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>  f <span class="literal">NA</span></span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>  g  <span class="number">6</span></span><br><span class="line"><span class="number">5</span>  <span class="number">4</span>  h  <span class="number">8</span></span><br><span class="line">&gt; a1 %&gt;% filter(a1&gt;<span class="number">1</span>,a1&lt;<span class="number">4</span>) <span class="comment"># 筛选 a1列值 &gt;1 且 &lt;4 的样本数据</span></span><br><span class="line">  a1 a2 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">2</span>  d  <span class="number">7</span></span><br><span class="line"><span class="number">2</span>  <span class="number">2</span>  e  <span class="number">9</span></span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>  f <span class="literal">NA</span></span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>  g  <span class="number">6</span></span><br><span class="line">&gt; a1 %&gt;% filter(between(a1,<span class="number">1</span>,<span class="number">4</span>)) <span class="comment"># 筛选 a1列值 &gt;=1 且 =&lt;4 的样本数据</span></span><br><span class="line">  a1 a2 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  a <span class="literal">NA</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  b  <span class="number">3</span></span><br><span class="line"><span class="number">3</span>  <span class="number">1</span>  c  <span class="number">5</span></span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>  d  <span class="number">7</span></span><br><span class="line"><span class="number">5</span>  <span class="number">2</span>  e  <span class="number">9</span></span><br><span class="line"><span class="number">6</span>  <span class="number">2</span>  f <span class="literal">NA</span></span><br><span class="line"><span class="number">7</span>  <span class="number">2</span>  g  <span class="number">6</span></span><br><span class="line"><span class="number">8</span>  <span class="number">4</span>  h  <span class="number">8</span></span><br><span class="line">&gt; a1 %&gt;% filter(between(a1,<span class="number">2</span>,<span class="number">3</span>)) <span class="comment"># 筛选 a1列值 &gt;=2 且 =&lt;3 的样本数据</span></span><br><span class="line">  a1 a2 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">2</span>  d  <span class="number">7</span></span><br><span class="line"><span class="number">2</span>  <span class="number">2</span>  e  <span class="number">9</span></span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>  f <span class="literal">NA</span></span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>  g  <span class="number">6</span></span><br><span class="line">&gt; a1 %&gt;% filter(!is.na(b3)) <span class="comment"># 筛选 b3列值 不等于NA 的样本数据</span></span><br><span class="line">  a1 a2 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  b  <span class="number">3</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  c  <span class="number">5</span></span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>  d  <span class="number">7</span></span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>  e  <span class="number">9</span></span><br><span class="line"><span class="number">5</span>  <span class="number">2</span>  g  <span class="number">6</span></span><br><span class="line"><span class="number">6</span>  <span class="number">4</span>  h  <span class="number">8</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">&gt; a1 %&gt;% slice(<span class="number">1</span>:<span class="number">3</span>) <span class="comment"># 筛选 默认排序下的 1至3 行样本</span></span><br><span class="line"><span class="comment"># A tibble: 3 x 3</span></span><br><span class="line">     a1     a2    b3</span><br><span class="line">  &lt;dbl&gt; &lt;fctr&gt; &lt;dbl&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>      a    <span class="literal">NA</span></span><br><span class="line"><span class="number">2</span>     <span class="number">1</span>      b     <span class="number">3</span></span><br><span class="line"><span class="number">3</span>     <span class="number">1</span>      c     <span class="number">5</span></span><br><span class="line">&gt; a1 %&gt;% top_n(<span class="number">2</span>,b3) <span class="comment"># 筛选 按照 b3列倒序排列后 值最大的前 2 个样本</span></span><br><span class="line">  a1 a2 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">2</span>  e  <span class="number">9</span></span><br><span class="line"><span class="number">2</span>  <span class="number">4</span>  h  <span class="number">8</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1)%&gt;% slice(<span class="number">1</span>:<span class="number">2</span>) <span class="comment"># 筛选 按照啊a1分组后每组默认排序下的 1至3 行样本</span></span><br><span class="line"><span class="comment"># A tibble: 5 x 3</span></span><br><span class="line"><span class="comment"># Groups:   a1 [3]</span></span><br><span class="line">     a1     a2    b3</span><br><span class="line">  &lt;dbl&gt; &lt;fctr&gt; &lt;dbl&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>      a    <span class="literal">NA</span></span><br><span class="line"><span class="number">2</span>     <span class="number">1</span>      b     <span class="number">3</span></span><br><span class="line"><span class="number">3</span>     <span class="number">2</span>      d     <span class="number">7</span></span><br><span class="line"><span class="number">4</span>     <span class="number">2</span>      e     <span class="number">9</span></span><br><span class="line"><span class="number">5</span>     <span class="number">4</span>      h     <span class="number">8</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1)%&gt;% top_n(<span class="number">2</span>,b3) <span class="comment"># 筛选 按照啊a1分组后每组b3列倒序下的 1至2 行样本</span></span><br><span class="line"><span class="comment"># A tibble: 5 x 3</span></span><br><span class="line"><span class="comment"># Groups:   a1 [3]</span></span><br><span class="line">     a1     a2    b3</span><br><span class="line">  &lt;dbl&gt; &lt;fctr&gt; &lt;dbl&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>      b     <span class="number">3</span></span><br><span class="line"><span class="number">2</span>     <span class="number">1</span>      c     <span class="number">5</span></span><br><span class="line"><span class="number">3</span>     <span class="number">2</span>      d     <span class="number">7</span></span><br><span class="line"><span class="number">4</span>     <span class="number">2</span>      e     <span class="number">9</span></span><br><span class="line"><span class="number">5</span>     <span class="number">4</span>      h     <span class="number">8</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1)%&gt;% arrange(desc(b3))%&gt;% slice(<span class="number">1</span>:<span class="number">2</span>) <span class="comment"># 筛选 按照啊a1分组后每组b3列倒序下的 1至2 行样本</span></span><br><span class="line"><span class="comment"># A tibble: 5 x 3</span></span><br><span class="line"><span class="comment"># Groups:   a1 [3]</span></span><br><span class="line">     a1     a2    b3</span><br><span class="line">  &lt;dbl&gt; &lt;fctr&gt; &lt;dbl&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>      c     <span class="number">5</span></span><br><span class="line"><span class="number">2</span>     <span class="number">1</span>      b     <span class="number">3</span></span><br><span class="line"><span class="number">3</span>     <span class="number">2</span>      e     <span class="number">9</span></span><br><span class="line"><span class="number">4</span>     <span class="number">2</span>      d     <span class="number">7</span></span><br><span class="line"><span class="number">5</span>     <span class="number">4</span>      h     <span class="number">8</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1)%&gt;% sample_n(<span class="number">2</span>,replace=<span class="literal">TRUE</span>) <span class="comment"># 筛选 按照啊a1分组后每组默认排序下的 1至2 行样本; replace=true 实现样本数不够2自动重复抽样</span></span><br><span class="line"><span class="comment"># A tibble: 6 x 3</span></span><br><span class="line"><span class="comment"># Groups:   a1 [3]</span></span><br><span class="line">     a1     a2    b3</span><br><span class="line">  &lt;dbl&gt; &lt;fctr&gt; &lt;dbl&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>      a    <span class="literal">NA</span></span><br><span class="line"><span class="number">2</span>     <span class="number">1</span>      b     <span class="number">3</span></span><br><span class="line"><span class="number">3</span>     <span class="number">2</span>      e     <span class="number">9</span></span><br><span class="line"><span class="number">4</span>     <span class="number">2</span>      g     <span class="number">6</span></span><br><span class="line"><span class="number">5</span>     <span class="number">4</span>      h     <span class="number">8</span></span><br><span class="line"><span class="number">6</span>     <span class="number">4</span>      h     <span class="number">8</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&gt; a1 %&gt;% select(a1)%&gt;% unique() <span class="comment"># 筛选 a1 列的唯一项</span></span><br><span class="line">  a1</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span></span><br><span class="line"><span class="number">4</span>  <span class="number">2</span></span><br><span class="line"><span class="number">8</span>  <span class="number">4</span></span><br><span class="line">&gt; a1 %&gt;% select(a1)%&gt;% distinct() <span class="comment"># 筛选 a1 列的唯一项</span></span><br><span class="line">  a1</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span></span><br><span class="line"><span class="number">2</span>  <span class="number">2</span></span><br><span class="line"><span class="number">3</span>  <span class="number">4</span></span><br><span class="line">&gt; a1 %&gt;% distinct(a1) <span class="comment"># 筛选 a1 列的唯一项</span></span><br><span class="line">  a1</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span></span><br><span class="line"><span class="number">2</span>  <span class="number">2</span></span><br><span class="line"><span class="number">3</span>  <span class="number">4</span></span><br><span class="line">&gt; </span><br><span class="line">&gt; a1 %&gt;% select(a1)%&gt;% n_distinct() <span class="comment"># 统计 a1 列的唯一项个数</span></span><br><span class="line">[<span class="number">1</span>] <span class="number">3</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% summarise(cnt1=n_distinct(a1))  <span class="comment"># 按照a1分组 统计 a1 列的唯一项个数</span></span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1  cnt1</span><br><span class="line">  &lt;dbl&gt; &lt;int&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>     <span class="number">1</span></span><br><span class="line"><span class="number">2</span>     <span class="number">2</span>     <span class="number">1</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">1</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% summarise(cnt1=n())  <span class="comment"># 按照a1分组 统计 各组样本个数</span></span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1  cnt1</span><br><span class="line">  &lt;dbl&gt; &lt;int&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>     <span class="number">3</span></span><br><span class="line"><span class="number">2</span>     <span class="number">2</span>     <span class="number">4</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h3 id="4-新变量生成-Adding-new-variables"><a href="#4-新变量生成-Adding-new-variables" class="headerlink" title="4. 新变量生成 (Adding new variables)"></a>4. 新变量生成 (Adding new variables)</h3><blockquote>
+<p>mutate,transmute,add_rownames</p>
+</blockquote>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">&gt; a1 %&gt;% mutate(a201=toupper(a2),b301=b3/a1) <span class="comment"># 在保留原数据基础上 生成新数据列</span></span><br><span class="line">  a1 a2 b3 a201 b301</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  a <span class="literal">NA</span>    A   <span class="literal">NA</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  b  <span class="number">3</span>    B  <span class="number">3.0</span></span><br><span class="line"><span class="number">3</span>  <span class="number">1</span>  c  <span class="number">5</span>    C  <span class="number">5.0</span></span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>  d  <span class="number">7</span>    D  <span class="number">3.5</span></span><br><span class="line"><span class="number">5</span>  <span class="number">2</span>  e  <span class="number">9</span>    E  <span class="number">4.5</span></span><br><span class="line"><span class="number">6</span>  <span class="number">2</span>  f <span class="literal">NA</span>    <span class="literal">F</span>   <span class="literal">NA</span></span><br><span class="line"><span class="number">7</span>  <span class="number">2</span>  g  <span class="number">6</span>    G  <span class="number">3.0</span></span><br><span class="line"><span class="number">8</span>  <span class="number">4</span>  h  <span class="number">8</span>    H  <span class="number">2.0</span></span><br><span class="line">&gt; a1 %&gt;% transmute(a201=toupper(a2),b301=b3/a1) <span class="comment"># 在丢弃原数据基础上 只生成新数据列</span></span><br><span class="line">  a201 b301</span><br><span class="line"><span class="number">1</span>    A   <span class="literal">NA</span></span><br><span class="line"><span class="number">2</span>    B  <span class="number">3.0</span></span><br><span class="line"><span class="number">3</span>    C  <span class="number">5.0</span></span><br><span class="line"><span class="number">4</span>    D  <span class="number">3.5</span></span><br><span class="line"><span class="number">5</span>    E  <span class="number">4.5</span></span><br><span class="line"><span class="number">6</span>    <span class="literal">F</span>   <span class="literal">NA</span></span><br><span class="line"><span class="number">7</span>    G  <span class="number">3.0</span></span><br><span class="line"><span class="number">8</span>    H  <span class="number">2.0</span></span><br><span class="line">&gt; a1 %&gt;% head()</span><br><span class="line">  a1 a2 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  a <span class="literal">NA</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  b  <span class="number">3</span></span><br><span class="line"><span class="number">3</span>  <span class="number">1</span>  c  <span class="number">5</span></span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>  d  <span class="number">7</span></span><br><span class="line"><span class="number">5</span>  <span class="number">2</span>  e  <span class="number">9</span></span><br><span class="line"><span class="number">6</span>  <span class="number">2</span>  f <span class="literal">NA</span></span><br><span class="line">&gt; a1 %&gt;% add_rownames(<span class="string">&#x27;model&#x27;</span>) %&gt;% head() <span class="comment"># 在原有数据基础上 将rownames(dt)添加至&#x27;model&#x27;列</span></span><br><span class="line"><span class="comment"># A tibble: 6 x 4</span></span><br><span class="line">  model    a1     a2    b3</span><br><span class="line">  &lt;chr&gt; &lt;dbl&gt; &lt;fctr&gt; &lt;dbl&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>     <span class="number">1</span>      a    <span class="literal">NA</span></span><br><span class="line"><span class="number">2</span>     <span class="number">2</span>     <span class="number">1</span>      b     <span class="number">3</span></span><br><span class="line"><span class="number">3</span>     <span class="number">3</span>     <span class="number">1</span>      c     <span class="number">5</span></span><br><span class="line"><span class="number">4</span>     <span class="number">4</span>     <span class="number">2</span>      d     <span class="number">7</span></span><br><span class="line"><span class="number">5</span>     <span class="number">5</span>     <span class="number">2</span>      e     <span class="number">9</span></span><br><span class="line"><span class="number">6</span>     <span class="number">6</span>     <span class="number">2</span>      f    <span class="literal">NA</span></span><br><span class="line">Warning message:</span><br><span class="line">Deprecated, use tibble::rownames_to_column() instead. </span><br><span class="line">&gt; a1 %&gt;% tbl_df()</span><br><span class="line"><span class="comment"># A tibble: 8 x 3</span></span><br><span class="line">     a1     a2    b3</span><br><span class="line">  &lt;dbl&gt; &lt;fctr&gt; &lt;dbl&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>      a    <span class="literal">NA</span></span><br><span class="line"><span class="number">2</span>     <span class="number">1</span>      b     <span class="number">3</span></span><br><span class="line"><span class="number">3</span>     <span class="number">1</span>      c     <span class="number">5</span></span><br><span class="line"><span class="number">4</span>     <span class="number">2</span>      d     <span class="number">7</span></span><br><span class="line"><span class="number">5</span>     <span class="number">2</span>      e     <span class="number">9</span></span><br><span class="line"><span class="number">6</span>     <span class="number">2</span>      f    <span class="literal">NA</span></span><br><span class="line"><span class="number">7</span>     <span class="number">2</span>      g     <span class="number">6</span></span><br><span class="line"><span class="number">8</span>     <span class="number">4</span>      h     <span class="number">8</span></span><br></pre></td></tr></table></figure>
+<h3 id="5-数据集合并-merge-join-tables"><a href="#5-数据集合并-merge-join-tables" class="headerlink" title="5. 数据集合并 (merge (join) tables)"></a>5. 数据集合并 (merge (join) tables)</h3><blockquote>
+<p>left/right_join,inner/full_join,semi/anti_join</p>
+</blockquote>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">&gt; a1 &lt;- data.frame(a1=c(<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>),a2=letters[<span class="number">1</span>:<span class="number">4</span>],a3=c(<span class="number">5</span>,<span class="number">7</span>,<span class="number">9</span>,<span class="literal">NA</span>))</span><br><span class="line">&gt; b1 &lt;- data.frame(a1=c(<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">3</span>),a2=letters[<span class="number">2</span>:<span class="number">5</span>])</span><br><span class="line">&gt; a1;b1</span><br><span class="line">  a1 a2 a3</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  a  <span class="number">5</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  b  <span class="number">7</span></span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>  c  <span class="number">9</span></span><br><span class="line"><span class="number">4</span>  <span class="number">4</span>  d <span class="literal">NA</span></span><br><span class="line"><span class="comment"># ----------</span></span><br><span class="line">  a1 a2</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  b</span><br><span class="line"><span class="number">2</span>  <span class="number">2</span>  c</span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>  d</span><br><span class="line"><span class="number">4</span>  <span class="number">3</span>  e</span><br><span class="line"></span><br><span class="line">&gt; a1 %&gt;% left_join(b1,by=<span class="string">&#x27;a1&#x27;</span>) <span class="comment"># 左连接,以左侧数据集为基础将 右侧 数据补充进 左侧 数据集</span></span><br><span class="line">  a1 a2.x a3 a2.y</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>    a  <span class="number">5</span>    b</span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>    b  <span class="number">7</span>    b</span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>    c  <span class="number">9</span>    c</span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>    c  <span class="number">9</span>    d</span><br><span class="line"><span class="number">5</span>  <span class="number">4</span>    d <span class="literal">NA</span> &lt;<span class="literal">NA</span>&gt;</span><br><span class="line">&gt; a1 %&gt;% right_join(b1,by=<span class="string">&#x27;a1&#x27;</span>) <span class="comment"># 右连接,以 右侧 数据集为基础将 左侧 数据补充进 右侧 数据集</span></span><br><span class="line">  a1 a2.x a3 a2.y</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>    a  <span class="number">5</span>    b</span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>    b  <span class="number">7</span>    b</span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>    c  <span class="number">9</span>    c</span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>    c  <span class="number">9</span>    d</span><br><span class="line"><span class="number">5</span>  <span class="number">3</span> &lt;<span class="literal">NA</span>&gt; <span class="literal">NA</span>    e</span><br><span class="line">&gt; a1 %&gt;% inner_join(b1,by=<span class="string">&#x27;a1&#x27;</span>) <span class="comment"># 内连接,以两数据集公共部分为基础进行数据集合并</span></span><br><span class="line">  a1 a2.x a3 a2.y</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>    a  <span class="number">5</span>    b</span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>    b  <span class="number">7</span>    b</span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>    c  <span class="number">9</span>    c</span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>    c  <span class="number">9</span>    d</span><br><span class="line">&gt; a1 %&gt;% full_join(b1,by=<span class="string">&#x27;a1&#x27;</span>) <span class="comment"># 全连接,以两数据集并集为基础进行数据集合并</span></span><br><span class="line">  a1 a2.x a3 a2.y</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>    a  <span class="number">5</span>    b</span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>    b  <span class="number">7</span>    b</span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>    c  <span class="number">9</span>    c</span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>    c  <span class="number">9</span>    d</span><br><span class="line"><span class="number">5</span>  <span class="number">4</span>    d <span class="literal">NA</span> &lt;<span class="literal">NA</span>&gt;</span><br><span class="line"><span class="number">6</span>  <span class="number">3</span> &lt;<span class="literal">NA</span>&gt; <span class="literal">NA</span>    e</span><br><span class="line">&gt; a1 %&gt;% semi_join(b1,by=c(<span class="string">&#x27;a1&#x27;</span>,<span class="string">&#x27;a2&#x27;</span>)) <span class="comment"># 保留与 b1 数据集a1,a2字段 重合 的 a1 数据集部分</span></span><br><span class="line">  a1 a2 a3</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  b  <span class="number">7</span></span><br><span class="line"><span class="number">2</span>  <span class="number">2</span>  c  <span class="number">9</span></span><br><span class="line">Warning message:</span><br><span class="line">Column `a2` joining factors with different levels, coercing to character vector </span><br><span class="line">&gt; a1 %&gt;% anti_join(b1,by=c(<span class="string">&#x27;a1&#x27;</span>,<span class="string">&#x27;a2&#x27;</span>)) <span class="comment"># 保留与 b1 数据集a1,a2字段 不重合 的 a1 数据集部分</span></span><br><span class="line">  a1 a2 a3</span><br><span class="line"><span class="number">1</span>  <span class="number">4</span>  d <span class="literal">NA</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  a  <span class="number">5</span></span><br><span class="line">Warning message:</span><br><span class="line">Column `a2` joining factors with different levels, coercing to character vector </span><br></pre></td></tr></table></figure>
+
+<h2 id="实例解析"><a href="#实例解析" class="headerlink" title="实例解析"></a>实例解析</h2><h3 id="1-利用-mutate-更新字段信息"><a href="#1-利用-mutate-更新字段信息" class="headerlink" title="1. 利用 mutate 更新字段信息"></a>1. 利用 mutate 更新字段信息</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">a1=data.frame(b1=c(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>),b2=c(<span class="literal">NA</span>,<span class="literal">NA</span>,<span class="number">1</span>))</span><br><span class="line">a1</span><br><span class="line">  b1 b2</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span> <span class="literal">NA</span></span><br><span class="line"><span class="number">2</span>  <span class="number">2</span> <span class="literal">NA</span></span><br><span class="line"><span class="number">3</span>  <span class="number">3</span>  <span class="number">1</span></span><br><span class="line">a1 &lt;- a1 %&gt;% mutate(b2=ifelse(is.na(b2),<span class="string">&#x27;tmp3&#x27;</span>,b2))</span><br><span class="line">a1</span><br><span class="line">  b1   b2</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span> tmp3</span><br><span class="line"><span class="number">2</span>  <span class="number">2</span> tmp3</span><br><span class="line"><span class="number">3</span>  <span class="number">3</span>    <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-查看组内billtime平均差值"><a href="#2-查看组内billtime平均差值" class="headerlink" title="2. 查看组内billtime平均差值"></a>2. 查看组内billtime平均差值</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dif1 &lt;- bill_all %&gt;% select(userid,bill_time) %&gt;% <span class="comment"># 提取保留字段</span></span><br><span class="line">  mutate(bill_time=as.numeric(bill_time)) %&gt;% <span class="comment">#转化数据类型</span></span><br><span class="line">  filter(!bill_time==<span class="number">0</span>) %&gt;%  <span class="comment"># 筛选条件数据</span></span><br><span class="line">  group_by(userid) %&gt;%  <span class="comment"># 分组</span></span><br><span class="line">  summarise(dif1=mean(diff(bill_time))) <span class="comment"># 计算平均差值</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-两表拼接并生成新列"><a href="#3-两表拼接并生成新列" class="headerlink" title="3. 两表拼接并生成新列"></a>3. 两表拼接并生成新列</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bill_all3 &lt;- bill_all2 %&gt;% </span><br><span class="line">  left_join(loantime_all,by=<span class="string">&#x27;userid&#x27;</span>) %&gt;% <span class="comment"># 通过左连接将loantime补备入bill2表中</span></span><br><span class="line">  mutate(be2af=ifelse(bill_time&gt;loan_time,<span class="number">1</span>,<span class="number">0</span>)) <span class="comment"># 通过ifelse判断并将结果生成新字段be2af</span></span><br></pre></td></tr></table></figure>
+<h3 id="4-by客户-计算其历次借贷交易值是否有异常"><a href="#4-by客户-计算其历次借贷交易值是否有异常" class="headerlink" title="4. by客户,计算其历次借贷交易值是否有异常"></a>4. by客户,计算其历次借贷交易值是否有异常</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">last_debt_rang &lt;- bill_all3 %&gt;% </span><br><span class="line">  group_by(userid) %&gt;% <span class="comment"># 按照客户id分组</span></span><br><span class="line">  filter(last_debt &gt; <span class="number">0</span>) %&gt;% <span class="comment"># 筛选正向欠款</span></span><br><span class="line">  summarise(q25=quantile(last_debt,<span class="number">0.25</span>), <span class="comment"># 下四分位</span></span><br><span class="line">            q75=quantile(last_debt,<span class="number">0.75</span>), <span class="comment"># 上四分位</span></span><br><span class="line">            q50=q75-q25, <span class="comment"># 四分位距</span></span><br><span class="line">            ul=q75+<span class="number">1.5</span>*q50, <span class="comment"># 上限</span></span><br><span class="line">            ll=q25-<span class="number">1.5</span>*q50) <span class="comment"># 下限</span></span><br><span class="line">last_debt_lof &lt;- bill_all3 %&gt;% add_rownames(<span class="string">&#x27;rowids1&#x27;</span>) %&gt;% <span class="comment"># 添加ids列</span></span><br><span class="line">  select(rowids1,userid,last_debt) %&gt;% <span class="comment"># 缩小数据集</span></span><br><span class="line">  left_join(last_debt_rang%&gt;% select(userid,ll,ul),by=<span class="string">&#x27;userid&#x27;</span>) %&gt;% 补备上下限信息</span><br><span class="line">  mutate(debt_lof=ifelse(last_debt&gt;ul,<span class="number">1</span>,<span class="number">0</span>)) <span class="comment"># 判断交易值是否异常</span></span><br></pre></td></tr></table></figure>
+<p><em>注意dplyr的神奇，新生成的变量立马就能被后面的计算无缝引用</em></p>
+<h3 id="5-待补备中…"><a href="#5-待补备中…" class="headerlink" title="5. 待补备中…"></a>5. 待补备中…</h3>
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/dplyr/" rel="tag"># dplyr</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/08/21/Rselenium/" rel="prev" title="R语言轻松完成 网络爬虫(rvest和Rselenium)">
+      <i class="fa fa-chevron-left"></i> R语言轻松完成 网络爬虫(rvest和Rselenium)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/08/28/histEq1/" rel="next" title="直方图均衡化算法(HistogramEqualization)原理R语言白话版">
+      直方图均衡化算法(HistogramEqualization)原理R语言白话版 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%87%BD%E6%95%B0%E8%A7%A3%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">基本函数解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%88%86%E7%BB%84%E5%92%8C%E7%BB%9F%E8%AE%A1-Grouping-and-counting"><span class="nav-number">1.1.</span> <span class="nav-text">1. 分组和统计 (Grouping and counting)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%88%97%E9%80%89%E5%8F%96%E5%8F%8A%E6%9B%B4%E6%94%B9%E5%88%97%E5%90%8D-Choosing-columns"><span class="nav-number">1.2.</span> <span class="nav-text">2. 列选取及更改列名 (Choosing columns)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%A1%8C%E9%80%89%E5%8F%96%E5%8F%8A%E6%A0%B7%E6%9C%AC%E9%87%8F%E7%BB%9F%E8%AE%A1-Choosing-rows"><span class="nav-number">1.3.</span> <span class="nav-text">3. 行选取及样本量统计 (Choosing rows)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%96%B0%E5%8F%98%E9%87%8F%E7%94%9F%E6%88%90-Adding-new-variables"><span class="nav-number">1.4.</span> <span class="nav-text">4. 新变量生成 (Adding new variables)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%95%B0%E6%8D%AE%E9%9B%86%E5%90%88%E5%B9%B6-merge-join-tables"><span class="nav-number">1.5.</span> <span class="nav-text">5. 数据集合并 (merge (join) tables)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B%E8%A7%A3%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">实例解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%88%A9%E7%94%A8-mutate-%E6%9B%B4%E6%96%B0%E5%AD%97%E6%AE%B5%E4%BF%A1%E6%81%AF"><span class="nav-number">2.1.</span> <span class="nav-text">1. 利用 mutate 更新字段信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%9F%A5%E7%9C%8B%E7%BB%84%E5%86%85billtime%E5%B9%B3%E5%9D%87%E5%B7%AE%E5%80%BC"><span class="nav-number">2.2.</span> <span class="nav-text">2. 查看组内billtime平均差值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%A4%E8%A1%A8%E6%8B%BC%E6%8E%A5%E5%B9%B6%E7%94%9F%E6%88%90%E6%96%B0%E5%88%97"><span class="nav-number">2.3.</span> <span class="nav-text">3. 两表拼接并生成新列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-by%E5%AE%A2%E6%88%B7-%E8%AE%A1%E7%AE%97%E5%85%B6%E5%8E%86%E6%AC%A1%E5%80%9F%E8%B4%B7%E4%BA%A4%E6%98%93%E5%80%BC%E6%98%AF%E5%90%A6%E6%9C%89%E5%BC%82%E5%B8%B8"><span class="nav-number">2.4.</span> <span class="nav-text">4. by客户,计算其历次借贷交易值是否有异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%BE%85%E8%A1%A5%E5%A4%87%E4%B8%AD%E2%80%A6"><span class="nav-number">2.5.</span> <span class="nav-text">5. 待补备中…</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

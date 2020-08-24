@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快   听题:山上建有多个样方，各样方内微量元素配比不同，现统计了各样方内的样本成活株数及样方内微量元素含量，想知道影响成活株数的主要微量元素有哪些 合并&#x2F;规整数据12345678910# --- datasetsetwd(&amp;#x27;xxx&#x2F;yangf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="R语言利用回归完成影响因素特征画像">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2018/01/03/poisson1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快   听题:山上建有多个样方，各样方内微量元素配比不同，现统计了各样方内的样本成活株数及样方内微量元素含量，想知道影响成活株数的主要微量元素有哪些 合并&#x2F;规整数据12345678910# --- datasetsetwd(&amp;#x27;xxx&#x2F;yangf">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2018/01/05/5a4f4391de7ae.png">
+<meta property="article:published_time" content="2018-01-03T12:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:36.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="画像">
+<meta property="article:tag" content="回归">
+<meta property="article:tag" content="poisson">
+<meta property="article:tag" content="泊松">
+<meta property="article:tag" content="线性">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2018/01/05/5a4f4391de7ae.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2018/01/03/poisson1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>R语言利用回归完成影响因素特征画像 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2018/01/03/poisson1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          R语言利用回归完成影响因素特征画像
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-01-03 20:02:34" itemprop="dateCreated datePublished" datetime="2018-01-03T20:02:34+08:00">2018-01-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:36" itemprop="dateModified" datetime="2020-08-23T21:16:36+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Prediction/" itemprop="url" rel="index"><span itemprop="name">Prediction</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿服务，请出门左转 <a href="izuoye.taobao.com">Convenient Entrance</a>, 合作愉快  </p>
+<h2 id="听题"><a href="#听题" class="headerlink" title="听题:"></a>听题:</h2><p>山上建有多个样方，各样方内微量元素配比不同，现统计了各样方内的样本成活株数及样方内微量元素含量，<br>想知道影响成活株数的主要微量元素有哪些</p>
+<h3 id="合并-规整数据"><a href="#合并-规整数据" class="headerlink" title="合并/规整数据"></a>合并/规整数据</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># --- dataset</span></span><br><span class="line">setwd(<span class="string">&#x27;xxx/yangfang&#x27;</span>)</span><br><span class="line">env1 &lt;- read.csv(<span class="string">&#x27;./env.csv&#x27;</span>,header = <span class="literal">TRUE</span>)</span><br><span class="line">trees1 &lt;- read.table(<span class="string">&#x27;./tree_plot.txt&#x27;</span>,header = <span class="literal">TRUE</span>)</span><br><span class="line">trees2 &lt;- trees1[!is.na(trees1$gx),]</span><br><span class="line">env1$x2 &lt;- as.numeric(factor(env1$x))</span><br><span class="line">env1$y2 &lt;- as.numeric(factor(env1$y))</span><br><span class="line"></span><br><span class="line">trees2$x2 &lt;- as.numeric(cut(trees2$gx,breaks = seq(<span class="number">0</span>,<span class="number">1000</span>,by=<span class="number">20</span>)))</span><br><span class="line">trees2$y2 &lt;- as.numeric(cut(trees2$gy,breaks = seq(<span class="number">0</span>,<span class="number">500</span>,by=<span class="number">20</span>)))</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(data.table)</span><br><span class="line">tree.dt1 &lt;- data.table(trees2)</span><br><span class="line">env.dt1 &lt;- data.table(env1)</span><br><span class="line">cnt1 &lt;- tree.dt1[,.N,by=.(x2,y2)]</span><br><span class="line">colnames(cnt1)[<span class="number">3</span>] &lt;- <span class="string">&#x27;trees&#x27;</span></span><br><span class="line">env2 &lt;- merge(env.dt1,cnt1,by=c(<span class="string">&#x27;x2&#x27;</span>,<span class="string">&#x27;y2&#x27;</span>),all.x=<span class="literal">TRUE</span>)</span><br><span class="line"></span><br><span class="line">env20 &lt;- env2[,-c(<span class="number">1</span>:<span class="number">4</span>),with=<span class="literal">FALSE</span>]</span><br><span class="line">dim(env20)</span><br><span class="line">[<span class="number">1</span>] <span class="number">1250</span>    <span class="number">6</span></span><br><span class="line">str(env20)</span><br><span class="line"></span><br><span class="line">Classes ‘data.table’ and <span class="string">&#x27;data.frame&#x27;</span>:	<span class="number">1250</span> obs. of  <span class="number">6</span> variables:</span><br><span class="line"> $ Ca   : num  <span class="number">2223</span> <span class="number">1850</span> <span class="number">1294</span> <span class="number">1200</span> <span class="number">1383</span> <span class="keyword">...</span></span><br><span class="line"> $ K    : num  <span class="number">169</span> <span class="number">155</span> <span class="number">142</span> <span class="number">134</span> <span class="number">137</span> <span class="keyword">...</span></span><br><span class="line"> $ P    : num  <span class="number">1.1</span> <span class="number">1.31</span> <span class="number">1.75</span> <span class="number">1.97</span> <span class="number">1.99</span> <span class="keyword">...</span></span><br><span class="line"> $ N    : num  <span class="number">14.7</span> <span class="number">14.9</span> <span class="number">15.5</span> <span class="number">16.1</span> <span class="number">17.2</span> <span class="keyword">...</span></span><br><span class="line"> $ pH   : num  <span class="number">4.65</span> <span class="number">4.56</span> <span class="number">4.31</span> <span class="number">4.17</span> <span class="number">4.2</span> <span class="keyword">...</span></span><br><span class="line"> $ trees: int  <span class="number">94</span> <span class="number">168</span> <span class="number">128</span> <span class="number">129</span> <span class="number">149</span> <span class="number">91</span> <span class="number">132</span> <span class="number">140</span> <span class="number">148</span> <span class="number">159</span> <span class="keyword">...</span></span><br><span class="line"> - attr(*, <span class="string">&quot;.internal.selfref&quot;</span>)=&lt;externalptr&gt; </span><br></pre></td></tr></table></figure>
+
+<h3 id="多元线性回归"><a href="#多元线性回归" class="headerlink" title="多元线性回归"></a>多元线性回归</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># --- linear regression</span></span><br><span class="line">shapiro.test(residuals(lm(trees~.,data=env20)))</span><br><span class="line">shapiro.test(residuals(lm(log(trees)~.,data=env20)))</span><br><span class="line">shapiro.test(residuals(lm((trees/<span class="number">1000</span>)~.,data=env20)))</span><br><span class="line">shapiro.test(residuals(lm((<span class="number">1</span>/trees)~.,data=env20)))</span><br><span class="line">shapiro.test(residuals(lm(sqrt(trees)~.,data=env20)))</span><br><span class="line"></span><br><span class="line">lm1 &lt;- lm(sqrt(trees)~.,data=env20)</span><br><span class="line">summary(lm1)</span><br><span class="line"></span><br><span class="line">Call:</span><br><span class="line">lm(formula = sqrt(trees) ~ ., data = env20)</span><br><span class="line"></span><br><span class="line">Residuals:</span><br><span class="line">    Min      1Q  Median      3Q     Max </span><br><span class="line">-<span class="number">4.4475</span> -<span class="number">0.7429</span> -<span class="number">0.0231</span>  <span class="number">0.7662</span>  <span class="number">4.0751</span> </span><br><span class="line"></span><br><span class="line">Coefficients:</span><br><span class="line">              Estimate Std. Error t value Pr(&gt;|t|)    </span><br><span class="line">(Intercept)  <span class="number">1.233e+01</span>  <span class="number">5.764e-01</span>  <span class="number">21.384</span>  &lt; <span class="number">2e-16</span> ***</span><br><span class="line">Ca           <span class="number">7.789e-05</span>  <span class="number">1.131e-04</span>   <span class="number">0.689</span>    <span class="number">0.491</span>    </span><br><span class="line">K           -<span class="number">1.730e-03</span>  <span class="number">1.130e-03</span>  -<span class="number">1.531</span>    <span class="number">0.126</span>    </span><br><span class="line">P           -<span class="number">1.418e-01</span>  <span class="number">2.226e-02</span>  -<span class="number">6.369</span> <span class="number">2.67e-10</span> ***</span><br><span class="line">N           -<span class="number">8.668e-07</span>  <span class="number">5.553e-03</span>   <span class="number">0.000</span>    <span class="number">1.000</span>    </span><br><span class="line">pH           <span class="number">6.651e-02</span>  <span class="number">1.469e-01</span>   <span class="number">0.453</span>    <span class="number">0.651</span>    </span><br><span class="line">---</span><br><span class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></span><br><span class="line"></span><br><span class="line">Residual standard error: <span class="number">1.192</span> on <span class="number">1244</span> degrees of freedom</span><br><span class="line">Multiple R-squared:  <span class="number">0.0368</span>,	Adjusted R-squared:  <span class="number">0.03293</span> </span><br><span class="line"><span class="literal">F</span>-statistic: <span class="number">9.505</span> on <span class="number">5</span> and <span class="number">1244</span> DF,  p-value: <span class="number">6.551e-09</span></span><br><span class="line"></span><br><span class="line">lm2 &lt;- step(lm1)</span><br><span class="line">summary(lm2)</span><br><span class="line"></span><br><span class="line">Call:</span><br><span class="line">lm(formula = sqrt(trees) ~ K + P, data = env20)</span><br><span class="line"></span><br><span class="line">Residuals:</span><br><span class="line">    Min      1Q  Median      3Q     Max </span><br><span class="line">-<span class="number">4.4903</span> -<span class="number">0.7483</span> -<span class="number">0.0194</span>  <span class="number">0.7531</span>  <span class="number">4.0833</span> </span><br><span class="line"></span><br><span class="line">Coefficients:</span><br><span class="line">              Estimate Std. Error t value Pr(&gt;|t|)    </span><br><span class="line">(Intercept) <span class="number">12.6258457</span>  <span class="number">0.1105008</span> <span class="number">114.260</span>  &lt; <span class="number">2e-16</span> ***</span><br><span class="line">K           -<span class="number">0.0008743</span>  <span class="number">0.0004866</span>  -<span class="number">1.797</span>   <span class="number">0.0726</span> .  </span><br><span class="line">P           -<span class="number">0.1418133</span>  <span class="number">0.0210965</span>  -<span class="number">6.722</span> <span class="number">2.72e-11</span> ***</span><br><span class="line">---</span><br><span class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></span><br><span class="line"></span><br><span class="line">Residual standard error: <span class="number">1.191</span> on <span class="number">1247</span> degrees of freedom</span><br><span class="line">Multiple R-squared:  <span class="number">0.03619</span>,	Adjusted R-squared:  <span class="number">0.03464</span> </span><br><span class="line"><span class="literal">F</span>-statistic: <span class="number">23.41</span> on <span class="number">2</span> and <span class="number">1247</span> DF,  p-value: <span class="number">1.045e-10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># - 残差正态性检验</span></span><br><span class="line">shapiro.test(residuals(lreg6))</span><br><span class="line"><span class="comment"># - 残差齐次检验</span></span><br><span class="line"><span class="keyword">library</span>(car)</span><br><span class="line">ncvTest(lreg6) </span><br><span class="line"><span class="comment"># 若p&gt;0.05，说明接受原假设，即方差是相等的</span></span><br><span class="line">spreadLevelPlot(lreg6)</span><br><span class="line"><span class="comment"># 点在水平的最佳拟合曲线周围呈水平随机分布，说明方差是相等的</span></span><br><span class="line"><span class="comment"># - 残差独立性检验</span></span><br><span class="line">durbinWatsonTest(lreg6)</span><br></pre></td></tr></table></figure>
+<p>一遍流程下来,貌似很正常.<br>微量元素 P 的显著性达标, P每增加一个单位会有0.1418133单位植物死掉.<br>问题有那么简单?<br>再想想,貌似trees值是对样方内的植物存活数量的统计,是个count,<br>so 是不是 poisson更合适?</p>
+<h3 id="泊松回归"><a href="#泊松回归" class="headerlink" title="泊松回归"></a>泊松回归</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">glm1 &lt;- glm(trees~.,data = env20,</span><br><span class="line">            family = poisson(link = <span class="string">&quot;log&quot;</span>))</span><br><span class="line">summary(glm1)</span><br><span class="line"></span><br><span class="line">Call:</span><br><span class="line">glm(formula = trees ~ ., family = poisson(link = <span class="string">&quot;log&quot;</span>), data = env20)</span><br><span class="line"></span><br><span class="line">Deviance Residuals: </span><br><span class="line">    Min       1Q   Median       3Q      Max  </span><br><span class="line">-<span class="number">8.4347</span>  -<span class="number">1.5769</span>  -<span class="number">0.1565</span>   <span class="number">1.3983</span>   <span class="number">8.4124</span>  </span><br><span class="line"></span><br><span class="line">Coefficients:</span><br><span class="line">              Estimate Std. Error z value Pr(&gt;|z|)    </span><br><span class="line">(Intercept)  <span class="number">5.065e+00</span>  <span class="number">4.003e-02</span> <span class="number">126.514</span>  &lt; <span class="number">2e-16</span> ***</span><br><span class="line">Ca           <span class="number">1.216e-05</span>  <span class="number">7.813e-06</span>   <span class="number">1.556</span> <span class="number">0.119657</span>    </span><br><span class="line">K           -<span class="number">2.769e-04</span>  <span class="number">7.821e-05</span>  -<span class="number">3.540</span> <span class="number">0.000399</span> ***</span><br><span class="line">P           -<span class="number">2.248e-02</span>  <span class="number">1.567e-03</span> -<span class="number">14.349</span>  &lt; <span class="number">2e-16</span> ***</span><br><span class="line">N           -<span class="number">1.427e-04</span>  <span class="number">3.850e-04</span>  -<span class="number">0.371</span> <span class="number">0.710956</span>    </span><br><span class="line">pH           <span class="number">4.374e-03</span>  <span class="number">1.018e-02</span>   <span class="number">0.430</span> <span class="number">0.667553</span>    </span><br><span class="line">---</span><br><span class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></span><br><span class="line"></span><br><span class="line">(Dispersion parameter <span class="keyword">for</span> poisson family taken to be <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    Null deviance: <span class="number">7287.9</span>  on <span class="number">1249</span>  degrees of freedom</span><br><span class="line">Residual deviance: <span class="number">7033.3</span>  on <span class="number">1244</span>  degrees of freedom</span><br><span class="line">AIC: <span class="number">15558</span></span><br><span class="line"></span><br><span class="line">Number of Fisher Scoring iterations: <span class="number">4</span></span><br></pre></td></tr></table></figure>
+
+<p>这次主要影响因素变成了 K 和 P 两种元素,<br>每增加1个单位 K/P 分别会有 2.769e-04/2.248e-02 单位植物死亡<br>意味着土壤中不该含有钾元素和磷元素?? 貌似不太符合常理吧<br>正常思维应该是 某元素含量高于或者低于某个阙值对植物成活造成有利或者不利影响才对<br>于是乎 cart回归树 试试</p>
+<h2 id="特征画像"><a href="#特征画像" class="headerlink" title="特征画像"></a>特征画像</h2><h3 id="cart回归树"><a href="#cart回归树" class="headerlink" title="cart回归树"></a>cart回归树</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## -- rpart</span></span><br><span class="line"><span class="keyword">library</span>(rpart)</span><br><span class="line">cart1 &lt;- rpart(trees~K+P,data = env20,</span><br><span class="line">               method = <span class="string">&#x27;poisson&#x27;</span>)</span><br><span class="line"><span class="comment"># &quot;anova&quot;,线性回归 &quot;poisson&quot;,泊松回归 </span></span><br><span class="line"><span class="comment"># &quot;class&quot;分类 or &quot;exp&quot; 生存分析</span></span><br><span class="line">printcp(cart1)</span><br><span class="line"></span><br><span class="line">Rates regression tree:</span><br><span class="line">rpart(formula = trees ~ K + P, data = env20, method = <span class="string">&quot;poisson&quot;</span>)</span><br><span class="line"></span><br><span class="line">Variables actually used <span class="keyword">in</span> tree construction:</span><br><span class="line">[<span class="number">1</span>] K P</span><br><span class="line"></span><br><span class="line">Root node error: <span class="number">7287.9</span>/<span class="number">1250</span> = <span class="number">5.8303</span></span><br><span class="line"></span><br><span class="line">n= <span class="number">1250</span> </span><br><span class="line"></span><br><span class="line">        CP nsplit rel error  xerror     xstd</span><br><span class="line"><span class="number">1</span> <span class="number">0.035129</span>      <span class="number">0</span>   <span class="number">1.00000</span> <span class="number">1.00126</span> <span class="number">0.043898</span></span><br><span class="line"><span class="number">2</span> <span class="number">0.019492</span>      <span class="number">1</span>   <span class="number">0.96487</span> <span class="number">0.98619</span> <span class="number">0.042941</span></span><br><span class="line"><span class="number">3</span> <span class="number">0.018995</span>      <span class="number">3</span>   <span class="number">0.92589</span> <span class="number">0.97536</span> <span class="number">0.042087</span></span><br><span class="line"><span class="number">4</span> <span class="number">0.016866</span>      <span class="number">4</span>   <span class="number">0.90689</span> <span class="number">0.97240</span> <span class="number">0.042835</span></span><br><span class="line"><span class="number">5</span> <span class="number">0.012961</span>      <span class="number">5</span>   <span class="number">0.89003</span> <span class="number">0.96664</span> <span class="number">0.043331</span></span><br><span class="line"><span class="number">6</span> <span class="number">0.010000</span>      <span class="number">6</span>   <span class="number">0.87706</span> <span class="number">0.97587</span> <span class="number">0.044804</span></span><br><span class="line"></span><br><span class="line">cart2 &lt;- prune(cart1,cp=<span class="number">0.01</span>)</span><br><span class="line">cart2</span><br><span class="line"></span><br><span class="line">n= <span class="number">1250</span> </span><br><span class="line"></span><br><span class="line">node), split, n, deviance, yval</span><br><span class="line">      * denotes terminal node</span><br><span class="line"></span><br><span class="line"> <span class="number">1</span>) root <span class="number">1250</span> <span class="number">7287.92600</span> <span class="number">147.20240</span>  </span><br><span class="line">   <span class="number">2</span>) P&gt;=<span class="number">4.2845</span> <span class="number">226</span> <span class="number">1580.09700</span> <span class="number">135.63750</span>  </span><br><span class="line">     <span class="number">4</span>) K&lt; <span class="number">100.698</span> <span class="number">43</span>  <span class="number">574.47010</span> <span class="number">117.02800</span>  </span><br><span class="line">       <span class="number">8</span>) K&gt;=<span class="number">95.5165</span> <span class="number">7</span>   <span class="number">28.84967</span>  <span class="number">74.78457</span> *</span><br><span class="line">       <span class="number">9</span>) K&lt; <span class="number">95.5165</span> <span class="number">36</span>  <span class="number">402.28810</span> <span class="number">125.25410</span>  </span><br><span class="line">        <span class="number">18</span>) K&lt; <span class="number">89.723</span> <span class="number">27</span>  <span class="number">183.39680</span> <span class="number">112.97160</span> *</span><br><span class="line">        <span class="number">19</span>) K&gt;=<span class="number">89.723</span> <span class="number">9</span>   <span class="number">95.96972</span> <span class="number">162.09990</span> *</span><br><span class="line">     <span class="number">5</span>) K&gt;=<span class="number">100.698</span> <span class="number">183</span>  <span class="number">864.84890</span> <span class="number">140.01120</span> *</span><br><span class="line">   <span class="number">3</span>) P&lt; <span class="number">4.2845</span> <span class="number">1024</span> <span class="number">5451.81300</span> <span class="number">149.75490</span>  </span><br><span class="line">     <span class="number">6</span>) K&gt;=<span class="number">122.461</span> <span class="number">681</span> <span class="number">3543.46800</span> <span class="number">146.55070</span> *</span><br><span class="line">     <span class="number">7</span>) K&lt; <span class="number">122.461</span> <span class="number">343</span> <span class="number">1769.90900</span> <span class="number">156.11640</span>  </span><br><span class="line">      <span class="number">14</span>) P&gt;=<span class="number">3.323</span> <span class="number">60</span>  <span class="number">418.02180</span> <span class="number">142.05060</span> *</span><br><span class="line">      <span class="number">15</span>) P&lt; <span class="number">3.323</span> <span class="number">283</span> <span class="number">1257.42600</span> <span class="number">159.09870</span> *</span><br><span class="line"></span><br><span class="line">rpart.plot::rpart.plot(cart2,</span><br><span class="line">                       extra = <span class="number">100</span>,</span><br><span class="line">                       branch.lty=<span class="number">3</span>,</span><br><span class="line">                       type=<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2018/01/05/5a4f4391de7ae.png" alt="rpartplot1.png"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">env20[,mean(trees)]</span><br><span class="line">[<span class="number">1</span>] <span class="number">147.2024</span></span><br><span class="line">nrow(env20)</span><br><span class="line">[<span class="number">1</span>] <span class="number">1250</span></span><br><span class="line">(env20[,.(mean= round(mean(trees)),per1=.N/<span class="number">1250</span>),</span><br><span class="line">       by=.(p43=ifelse(P&gt;=<span class="number">4.3</span>,<span class="string">&#x27;Yes&#x27;</span>,<span class="string">&#x27;No&#x27;</span>))])</span><br><span class="line">   p43 mean per1</span><br><span class="line"><span class="number">1</span>:  No  <span class="number">150</span> <span class="number">0.82</span></span><br><span class="line"><span class="number">2</span>: Yes  <span class="number">136</span> <span class="number">0.18</span></span><br></pre></td></tr></table></figure>
+<p>结合上面的统计结果, 图展示的内容也就基本明晰了:<br>每分出一个树, 框内则展示分组内 成活数量的均值和符合标准样方占总体的比重.<br>组均值越大, 框的颜色越深<br>[P &gt;= 4.3,90=&lt; K &lt; 96] 时，成活均值最高达到了 162<br>[P &lt; 3.3, K &lt; 122] 时，成活均值较高达到了 159</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
+<li><a target="_blank" rel="noopener" href="http://www.milbo.org/rpart-plot/prp.pdf">Plotting rpart trees with the rpart.plot package</a></li>
+<li><a target="_blank" rel="noopener" href="http://iccm.cc/poisson-regression-in-r/">R语言中的泊松回归</a></li>
+<li><a target="_blank" rel="noopener" href="http://lemondy.github.io/2015/07/06/R-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E6%A3%80%E9%AA%8C/">R - 多元线性回归检验</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/%E7%94%BB%E5%83%8F/" rel="tag"># 画像</a>
+              <a href="/tags/%E5%9B%9E%E5%BD%92/" rel="tag"># 回归</a>
+              <a href="/tags/poisson/" rel="tag"># poisson</a>
+              <a href="/tags/%E6%B3%8A%E6%9D%BE/" rel="tag"># 泊松</a>
+              <a href="/tags/%E7%BA%BF%E6%80%A7/" rel="tag"># 线性</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/30/bayes1/" rel="prev" title="R中的朴素贝叶斯分类">
+      <i class="fa fa-chevron-left"></i> R中的朴素贝叶斯分类
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/01/06/poisson2/" rel="next" title="R语言驾着回归做预测">
+      R语言驾着回归做预测 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AC%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">听题:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E5%B9%B6-%E8%A7%84%E6%95%B4%E6%95%B0%E6%8D%AE"><span class="nav-number">1.1.</span> <span class="nav-text">合并&#x2F;规整数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E5%85%83%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92"><span class="nav-number">1.2.</span> <span class="nav-text">多元线性回归</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%8A%E6%9D%BE%E5%9B%9E%E5%BD%92"><span class="nav-number">1.3.</span> <span class="nav-text">泊松回归</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E7%94%BB%E5%83%8F"><span class="nav-number">2.</span> <span class="nav-text">特征画像</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cart%E5%9B%9E%E5%BD%92%E6%A0%91"><span class="nav-number">2.1.</span> <span class="nav-text">cart回归树</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">3.</span> <span class="nav-text">References:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

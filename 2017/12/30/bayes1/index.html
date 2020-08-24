@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快 简介朴素贝叶斯分类是一种十分简单的分类算法，叫它朴素贝叶斯分类是因为这种方法的思想真的很朴素，朴素贝叶斯的思想基础是这样的：对于给出的待分类项，求解在此项出现的条件下各个类别出现的概率，哪个最大，就认为此待分类项属于哪个类别。通俗来说，就好比这么个道">
+<meta property="og:type" content="article">
+<meta property="og:title" content="R中的朴素贝叶斯分类">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2017/12/30/bayes1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快 简介朴素贝叶斯分类是一种十分简单的分类算法，叫它朴素贝叶斯分类是因为这种方法的思想真的很朴素，朴素贝叶斯的思想基础是这样的：对于给出的待分类项，求解在此项出现的条件下各个类别出现的概率，哪个最大，就认为此待分类项属于哪个类别。通俗来说，就好比这么个道">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-12-30T12:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:10.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="贝叶斯">
+<meta property="article:tag" content="bayes">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2017/12/30/bayes1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>R中的朴素贝叶斯分类 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/12/30/bayes1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          R中的朴素贝叶斯分类
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-30 20:02:34" itemprop="dateCreated datePublished" datetime="2017-12-30T20:02:34+08:00">2017-12-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:10" itemprop="dateModified" datetime="2020-08-23T21:16:10+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Classify/" itemprop="url" rel="index"><span itemprop="name">Classify</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿帮助，请出门左转 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">Convenient Entrance</a>, 合作愉快</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>朴素贝叶斯分类是一种十分简单的分类算法，叫它朴素贝叶斯分类是因为这种方法的思想真的很朴素，朴素贝叶斯的思想基础是这样的：对于给出的待分类项，求解在此项出现的条件下各个类别出现的概率，哪个最大，就认为此待分类项属于哪个类别。通俗来说，就好比这么个道理，你在街上看到一个黑人，我问你你猜这哥们哪里来的，你十有八九猜非洲。为什么呢？因为黑人中非洲人的比率最高，当然人家也可能是美洲人或亚洲人，但在没有其它可用信息下，我们会选择条件概率最大的类别，这就是朴素贝叶斯的思想基础</p>
+<p>贝叶斯分类器已用于以下方面:</p>
+<ul>
+<li>文本分类. 垃圾邮件过滤/作者识别/主题分类等</li>
+<li>计算机网络中的入侵检测和异常检测</li>
+<li>医疗预测. 根据观测到的症状数据,诊断身体状况</li>
+</ul>
+<h2 id="案例讲解"><a href="#案例讲解" class="headerlink" title="案例讲解"></a>案例讲解</h2><h3 id="朴素贝叶斯分类"><a href="#朴素贝叶斯分类" class="headerlink" title="朴素贝叶斯分类"></a>朴素贝叶斯分类</h3><p>朴素贝叶斯的朴素之处就是其 事件独立性假设,即<br>$$P(A \cap B)=P(A)*P(B)$$<br>$$P(A|B)=\frac{P(B|A)*P(A)}{P(B)}$$<br>假设我们通过监测词语Viagra/Money/Groceries/Unsubscribe来实现我们的垃圾邮件过滤器。首先构建出现的4个单词（记为W1、W2、W3、W4）的似然表来训练朴素贝叶斯算法. 对100封邮件分析后的似然表如下所示</p>
+<a id="more"></a>
+
+<table>
+<thead>
+<tr>
+<th align="center">-</th>
+<th align="center">Viagra(w1)</th>
+<th align="center">Money(w2)</th>
+<th align="center">Groceries(w3)</th>
+<th align="center">Unsubscrible(w4)</th>
+<th align="center">-</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">似然</td>
+<td align="center">Yes No</td>
+<td align="center">Yes No</td>
+<td align="center">Yes No</td>
+<td align="center">Yes No</td>
+<td align="center">总计</td>
+</tr>
+<tr>
+<td align="center">垃圾邮件</td>
+<td align="center">4/20 16/20</td>
+<td align="center">10/20 10/20</td>
+<td align="center">0/20 20/20</td>
+<td align="center">12/20 8/20</td>
+<td align="center">20</td>
+</tr>
+<tr>
+<td align="center">非垃圾邮件</td>
+<td align="center">1/80 79/80</td>
+<td align="center">14/80 66/80</td>
+<td align="center">8/80 72/80</td>
+<td align="center">23/80 57/80</td>
+<td align="center">80</td>
+</tr>
+<tr>
+<td align="center">总计</td>
+<td align="center">5/100 95/100</td>
+<td align="center">24/100 76/100</td>
+<td align="center">8/100 92/100</td>
+<td align="center">35/100 65/100</td>
+<td align="center">100</td>
+</tr>
+</tbody></table>
+<p>在收到新的信息后,给定文本信息中这些单词的似然,必须通过计算后验概率来确定这些消息是垃圾邮件还是非垃圾邮件. 例如,有条消息包含Viagra/Unsubscribe,不包括Money/Groceries<br>现在我们来试着求这封邮件发生的概率,在给定Viagra=YES，Money=NO，Groceries=NO和Unsubscribe=YES条件下为垃圾邮件的概率<br>$$P(垃邮 | w1 \cap \overline{w2} \cap \overline{w3} \cap w4) = \frac{P(w1 \cap \overline{w2} \cap \overline{w3} \cap w4 | 垃邮) * P(垃邮)}{P(w1 \cap \overline{w2} \cap \overline{w3} \cap w4)}$$</p>
+<p>根据朴素贝叶斯算法中关于事件独立性的假设<br>$$<br>\begin{aligned}<br>P(垃邮 | w1 \cap \overline{w2} \cap \overline{w3} \cap w4) &amp;= \frac{P(w1 \cap \overline{w2} \cap \overline{w3} \cap w4 | 垃邮) * P(垃邮)}{P(w1 \cap \overline{w2} \cap \overline{w3} \cap w4)} \<br>&amp;= \frac{P(w1|垃邮)P(\overline{w2}|垃邮)P(\overline{w3}|垃邮)P(w4|垃邮)P(垃邮)}{P(w1)P(\overline{w2})P(\overline{w3})P(w4)}<br>\end{aligned}<br>$$<br>与此同理,该邮件属于非垃圾邮件的概率为<br>$$<br>\begin{aligned}<br>P(非垃邮 | w1 \cap \overline{w2} \cap \overline{w3} \cap w4) &amp;= \frac{P(w1 \cap \overline{w2} \cap \overline{w3} \cap w4 | 非垃邮) * P(非垃邮)}{P(w1 \cap \overline{w2} \cap \overline{w3} \cap w4)} \<br>&amp;= \frac{P(w1|非垃邮)P(\overline{w2}|非垃邮)P(\overline{w3}|非垃邮)P(w4|非垃邮)P(非垃邮)}{P(w1)P(\overline{w2})P(\overline{w3})P(w4)}<br>\end{aligned}<br>$$<br>利用似然表中的数据,我们就可以为这些共识填充数据, 由于两个公式的分母是一样的,所以可以暂时忽略它<br>垃圾邮件的总似然为<br>$4/20<em>10/20</em>20/20<em>12/20</em>20/100=0.012$<br>非垃圾邮件的总似然为<br>$1/80<em>66/80</em>72/80<em>23/80</em>80/100=0.002$<br>属于垃圾邮件的概率等于该消息属于垃圾邮件的总似然除以是垃圾邮件或非垃圾邮件似然总和,即 $0.012/(0.012+0.002)=0.857$<br>属于非垃圾邮件的概率等于该消息属于非垃圾邮件的总似然除以是垃圾邮件或非垃圾邮件似然总和,即 $0.002/(0.012+0.002)=0.143$<br>根据邮件中4个单词的出现情况,我们预测该邮件属于垃圾邮件的概率为85.7%,非垃圾邮件的概率为14.3%<br>在上面的例子中，使用的朴素贝叶斯分类算法可以总结为如下公式。从本质上来说，在给定特征 $F_{1}$ 到 $F_{n}$ 提供的证据的条件下，类 C 中水平为 L 的概率等于每一条证据在类 C 的水平 L 下的条件概率的乘积，再乘以类 C 的水平 L 的先验概率和尺度因子 1/Z ，尺度因子将上述结果转换为一个概率值<br>$$P(C_{L}|F_{1},…,F_{n})=\frac{1}{Z} * P(C_{L})* \prod_{i=1}^{n}P(F_{i}|C_{L})$$</p>
+<h3 id="拉普拉斯估计"><a href="#拉普拉斯估计" class="headerlink" title="拉普拉斯估计"></a>拉普拉斯估计</h3><p>假设我们又收到一封邮件,该消息包含的单词有 Vigagra/Money/Groceries/Unsubscribe,<br>利用之前的贝叶斯算法我们可以计算其为<br>垃圾邮件的似然为 $4/20<em>10/20</em>0/20<em>12/20</em>20/100=0$<br>非垃圾邮件的似然为 $1/80<em>14/80</em>8/80<em>23/80</em>80/100=0.00005$<br>因此该邮件为垃圾邮件的概率为 $0/(0+0.00005)=0$<br>因此该邮件为非垃圾邮件的概率为 $0.00005/(0+0.00005)=1$<br>这个结果表明该邮件是垃圾邮件的概率是 0, 是非垃圾邮件的概率为 100%. 这样的预测结果不太合情理. 这个邮件信息中包含了一些经常与垃圾邮件联系的单词,包括Viagra. 而这在合法的邮件中是非常罕见的,也许该邮件被错误分类了<br>如果在一个类别中,某时间从未发生过就会出现这样的情况,就像 Groceries 之前从没出现在垃圾邮件信息中,so $P(垃圾邮件|Groceries) = 0$,而在贝叶斯算法中概率值是相乘的,导致最终的概率值也变成了0,即 Groceries 的0完全抵消或否决为了其他所有其他证据.<br>这个问题的解决涉及一种叫$拉普拉斯估计$的方法, 其本质就是在频数统计表的每个计数上加上较小的数,从而保证每个类别下每个特征的发生概率都是非0的. 一般情况下拉普拉斯估计会将加上的数值设定为1,从而保证每类特征的自合至少在数据中出现一次<br>下面我们来观察下拉普拉斯估计对上述案例的影响. 拉普拉斯估计设定值为1, 将每个似然函数的分子加上1,分母加上(分子个数x 1),从而<br>垃圾邮件的似然: $5/24<em>11/24</em>1/24<em>13/24</em>20/100=0.0004$<br>非垃圾邮件的似然: $2/84<em>15/84</em>9/84<em>24/84</em>80/100=0.0001$<br>从而 垃圾邮件概率为 $0.0004/(0.0004+0.0001)=0.8$即 80%<br>非垃圾邮件概率为$0.0001/(0.0004+0.0001)=0.2$即 20%<br>显然这个结果比单独由 Groceries 决定的结果更合理</p>
+<h2 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h2><p>问题1: 朴素贝叶斯分类中的目标变量可以是多分类吗?<br>答: 灰常阔以<br>问题2: 朴素贝叶斯分类中的预测变量可以是数值型吗？<br>答: 可以,不过数值型变量需要被分箱后才可套用贝叶斯模型<br>e1071中的naiveBayes可以自动完成这一流程</p>
+<h3 id="数字识别-类别型预测变量"><a href="#数字识别-类别型预测变量" class="headerlink" title="数字识别(类别型预测变量)"></a>数字识别(类别型预测变量)</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">load(<span class="string">&#x27;xxx/dmdata/naive/titanic.raw.rdata&#x27;</span>)</span><br><span class="line">str(titanic.raw)</span><br><span class="line"><span class="keyword">library</span>(e1071)</span><br><span class="line">bayes_model1 &lt;- naiveBayes(Survived~.,data = titanic.raw,</span><br><span class="line">                           laplace = <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">system.time(pre_bayes &lt;- predict(bayes_model1,titanic.raw)) </span><br><span class="line">用户 系统 流逝 </span><br><span class="line"><span class="number">0.61</span> <span class="number">0.02</span> <span class="number">0.62</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">library</span>(gmodels)</span><br><span class="line">CrossTable(pre_bayes,titanic.raw$Survived,</span><br><span class="line">           prop.chisq = <span class="literal">FALSE</span>, <span class="comment"># 卡方贡献</span></span><br><span class="line">           <span class="comment"># chisq = TRUE, 卡方检验</span></span><br><span class="line">           prop.t = <span class="literal">TRUE</span>, <span class="comment"># total</span></span><br><span class="line">           prop.c = <span class="literal">TRUE</span>, <span class="comment"># column</span></span><br><span class="line">           prop.r = <span class="literal">FALSE</span>, <span class="comment"># row</span></span><br><span class="line">           dnn = c(<span class="string">&#x27;predited&#x27;</span>,<span class="string">&#x27;actual&#x27;</span>))</span><br><span class="line"></span><br><span class="line">   Cell Contents</span><br><span class="line">|-------------------------|</span><br><span class="line">|                       N |</span><br><span class="line">|           N / Col Total |</span><br><span class="line">|         N / Table Total |</span><br><span class="line">|-------------------------|</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line">Total Observations <span class="keyword">in</span> Table:  <span class="number">2201</span> </span><br><span class="line"></span><br><span class="line"> </span><br><span class="line">             | actual </span><br><span class="line">    predited |        No |       Yes | Row Total | </span><br><span class="line">-------------|-----------|-----------|-----------|</span><br><span class="line">          No |      <span class="number">1364</span> |       <span class="number">362</span> |      <span class="number">1726</span> | </span><br><span class="line">             |     <span class="number">0.915</span> |     <span class="number">0.509</span> |           | </span><br><span class="line">             |     <span class="number">0.620</span> |     <span class="number">0.164</span> |           | </span><br><span class="line">-------------|-----------|-----------|-----------|</span><br><span class="line">         Yes |       <span class="number">126</span> |       <span class="number">349</span> |       <span class="number">475</span> | </span><br><span class="line">             |     <span class="number">0.085</span> |     <span class="number">0.491</span> |           | </span><br><span class="line">             |     <span class="number">0.057</span> |     <span class="number">0.159</span> |           | </span><br><span class="line">-------------|-----------|-----------|-----------|</span><br><span class="line">Column Total |      <span class="number">1490</span> |       <span class="number">711</span> |      <span class="number">2201</span> | </span><br><span class="line">             |     <span class="number">0.677</span> |     <span class="number">0.323</span> |           | </span><br><span class="line">-------------|-----------|-----------|-----------|</span><br></pre></td></tr></table></figure>
+
+<h3 id="鸢尾花分类-数值型预测变量"><a href="#鸢尾花分类-数值型预测变量" class="headerlink" title="鸢尾花分类(数值型预测变量)"></a>鸢尾花分类(数值型预测变量)</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">str(iris)</span><br><span class="line"><span class="string">&#x27;data.frame&#x27;</span>:	<span class="number">150</span> obs. of  <span class="number">5</span> variables:</span><br><span class="line"> $ Sepal.Length: num  <span class="number">5.1</span> <span class="number">4.9</span> <span class="number">4.7</span> <span class="number">4.6</span> <span class="number">5</span> <span class="number">5.4</span> <span class="number">4.6</span> <span class="number">5</span> <span class="number">4.4</span> <span class="number">4.9</span> <span class="keyword">...</span></span><br><span class="line"> $ Sepal.Width : num  <span class="number">3.5</span> <span class="number">3</span> <span class="number">3.2</span> <span class="number">3.1</span> <span class="number">3.6</span> <span class="number">3.9</span> <span class="number">3.4</span> <span class="number">3.4</span> <span class="number">2.9</span> <span class="number">3.1</span> <span class="keyword">...</span></span><br><span class="line"> $ Petal.Length: num  <span class="number">1.4</span> <span class="number">1.4</span> <span class="number">1.3</span> <span class="number">1.5</span> <span class="number">1.4</span> <span class="number">1.7</span> <span class="number">1.4</span> <span class="number">1.5</span> <span class="number">1.4</span> <span class="number">1.5</span> <span class="keyword">...</span></span><br><span class="line"> $ Petal.Width : num  <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.4</span> <span class="number">0.3</span> <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.1</span> <span class="keyword">...</span></span><br><span class="line"> $ Species     : Factor w/ <span class="number">3</span> levels <span class="string">&quot;setosa&quot;</span>,<span class="string">&quot;versicolor&quot;</span>,..: <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">library</span>(e1071)</span><br><span class="line">model_bayes &lt;- naiveBayes(Species~.,data = iris,</span><br><span class="line">                          laplace = <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">pre_bayes &lt;- predict(model_bayes,iris)</span><br><span class="line"></span><br><span class="line"><span class="comment"># total accuracy</span></span><br><span class="line">sum(pre_bayes==iris$Species)/nrow(iris)</span><br><span class="line"></span><br><span class="line">[<span class="number">1</span>] <span class="number">0.96</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># accuracy detail</span></span><br><span class="line"><span class="keyword">library</span>(gmodels)</span><br><span class="line">CrossTable(pre_bayes,iris$Species,</span><br><span class="line">           prop.chisq = <span class="literal">FALSE</span>, <span class="comment"># 卡方贡献</span></span><br><span class="line">           <span class="comment"># chisq = TRUE, 卡方检验</span></span><br><span class="line">           prop.t = <span class="literal">TRUE</span>, <span class="comment"># total</span></span><br><span class="line">           prop.c = <span class="literal">TRUE</span>, <span class="comment"># column</span></span><br><span class="line">           prop.r = <span class="literal">FALSE</span>, <span class="comment"># row</span></span><br><span class="line">           dnn = c(<span class="string">&#x27;predited&#x27;</span>,<span class="string">&#x27;actual&#x27;</span>))</span><br><span class="line"></span><br><span class="line">   Cell Contents</span><br><span class="line">|-------------------------|</span><br><span class="line">|                       N |</span><br><span class="line">|           N / Col Total |</span><br><span class="line">|         N / Table Total |</span><br><span class="line">|-------------------------|</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line">Total Observations <span class="keyword">in</span> Table:  <span class="number">150</span> </span><br><span class="line"></span><br><span class="line"> </span><br><span class="line">             | actual </span><br><span class="line">    predited |     setosa | versicolor |  virginica |  Row Total | </span><br><span class="line">-------------|------------|------------|------------|------------|</span><br><span class="line">      setosa |         <span class="number">50</span> |          <span class="number">0</span> |          <span class="number">0</span> |         <span class="number">50</span> | </span><br><span class="line">             |      <span class="number">1.000</span> |      <span class="number">0.000</span> |      <span class="number">0.000</span> |            | </span><br><span class="line">             |      <span class="number">0.333</span> |      <span class="number">0.000</span> |      <span class="number">0.000</span> |            | </span><br><span class="line">-------------|------------|------------|------------|------------|</span><br><span class="line">  versicolor |          <span class="number">0</span> |         <span class="number">47</span> |          <span class="number">3</span> |         <span class="number">50</span> | </span><br><span class="line">             |      <span class="number">0.000</span> |      <span class="number">0.940</span> |      <span class="number">0.060</span> |            | </span><br><span class="line">             |      <span class="number">0.000</span> |      <span class="number">0.313</span> |      <span class="number">0.020</span> |            | </span><br><span class="line">-------------|------------|------------|------------|------------|</span><br><span class="line">   virginica |          <span class="number">0</span> |          <span class="number">3</span> |         <span class="number">47</span> |         <span class="number">50</span> | </span><br><span class="line">             |      <span class="number">0.000</span> |      <span class="number">0.060</span> |      <span class="number">0.940</span> |            | </span><br><span class="line">             |      <span class="number">0.000</span> |      <span class="number">0.020</span> |      <span class="number">0.313</span> |            | </span><br><span class="line">-------------|------------|------------|------------|------------|</span><br><span class="line">Column Total |         <span class="number">50</span> |         <span class="number">50</span> |         <span class="number">50</span> |        <span class="number">150</span> | </span><br><span class="line">             |      <span class="number">0.333</span> |      <span class="number">0.333</span> |      <span class="number">0.333</span> |            | </span><br><span class="line">-------------|------------|------------|------------|------------|</span><br></pre></td></tr></table></figure>
+
+<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
+<li><a href="">机器学习和R语言-朴素贝叶斯分类</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.ganecheng.tech/blog/53219332.html">利用朴素贝叶斯模型识别垃圾邮件</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/19725590">怎样用非数学语言讲解贝叶斯定理</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2011/08/bayesian_inference_part_two.html">贝叶斯推断及其互联网应用（二）：过滤垃圾邮件</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.cnblogs.com/leoo2sk/archive/2010/09/17/naive-bayesian-classifier.html">算法杂货铺——分类算法之朴素贝叶斯分类(Naive Bayesian classification)</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/29431399">Iris朴素贝叶斯分类案例</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/26329951">理解朴素贝叶斯分类的拉普拉斯平滑</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/%E8%B4%9D%E5%8F%B6%E6%96%AF/" rel="tag"># 贝叶斯</a>
+              <a href="/tags/bayes/" rel="tag"># bayes</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/25/jiebar1/" rel="prev" title="R语言文本挖掘-jiebaR">
+      <i class="fa fa-chevron-left"></i> R语言文本挖掘-jiebaR
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/01/03/poisson1/" rel="next" title="R语言利用回归完成影响因素特征画像">
+      R语言利用回归完成影响因素特征画像 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B%E8%AE%B2%E8%A7%A3"><span class="nav-number">2.</span> <span class="nav-text">案例讲解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB"><span class="nav-number">2.1.</span> <span class="nav-text">朴素贝叶斯分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E4%BC%B0%E8%AE%A1"><span class="nav-number">2.2.</span> <span class="nav-text">拉普拉斯估计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">案例分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E5%AD%97%E8%AF%86%E5%88%AB-%E7%B1%BB%E5%88%AB%E5%9E%8B%E9%A2%84%E6%B5%8B%E5%8F%98%E9%87%8F"><span class="nav-number">3.1.</span> <span class="nav-text">数字识别(类别型预测变量)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%B8%A2%E5%B0%BE%E8%8A%B1%E5%88%86%E7%B1%BB-%E6%95%B0%E5%80%BC%E5%9E%8B%E9%A2%84%E6%B5%8B%E5%8F%98%E9%87%8F"><span class="nav-number">3.2.</span> <span class="nav-text">鸢尾花分类(数值型预测变量)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">4.</span> <span class="nav-text">References:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

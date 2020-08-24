@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快  消费与经济增长之间存在相互促进的作用。但是，相比之下二者中哪一个对另外一个有更强的促进作用，在各国经济发展过程中则呈现出不同的结论。就中国而言，自改革开放以来，我们都因为经济增长对消费的促进作用要大于消费对经济增长的促进作用。或者说，在我国，经济增">
+<meta property="og:type" content="article">
+<meta property="og:title" content="格兰杰因果检验R语言实现">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2018/07/17/grangertest1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿服务，请出门左转 Convenient Entrance, 合作愉快  消费与经济增长之间存在相互促进的作用。但是，相比之下二者中哪一个对另外一个有更强的促进作用，在各国经济发展过程中则呈现出不同的结论。就中国而言，自改革开放以来，我们都因为经济增长对消费的促进作用要大于消费对经济增长的促进作用。或者说，在我国，经济增">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf2b4669d05c.png">
+<meta property="article:published_time" content="2018-07-17T12:02:34.000Z">
+<meta property="article:modified_time" content="2020-08-23T13:16:24.000Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="test">
+<meta property="article:tag" content="lmtest">
+<meta property="article:tag" content="Granger">
+<meta property="article:tag" content="格兰杰因果检验">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2018/11/19/5bf2b4669d05c.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2018/07/17/grangertest1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>格兰杰因果检验R语言实现 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2018/07/17/grangertest1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          格兰杰因果检验R语言实现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-17 20:02:34" itemprop="dateCreated datePublished" datetime="2018-07-17T20:02:34+08:00">2018-07-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:16:24" itemprop="dateModified" datetime="2020-08-23T21:16:24+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Prediction/" itemprop="url" rel="index"><span itemprop="name">Prediction</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿服务，请出门左转 <a href="izuoye.taobao.com">Convenient Entrance</a>, 合作愉快 </p>
+<p>消费与经济增长之间存在相互促进的作用。<br>但是，相比之下二者中哪一个对另外一个有更强的促进作用，在各国经济发展过程中则呈现出不同的结论。<br>就中国而言，自改革开放以来，我们都因为经济增长对消费的促进作用要大于消费对经济增长的促进作用。<br>或者说，在我国，经济增长可以作为消费的格兰杰原因，反正之不成立。<br>但这一结论是否能够得到计量经济研究的支持呢？<br>下面我们就在R中通过对1978~2002年的统计数据（数据来源为国家统计局网站）进行分析，进而来回答这个问题</p>
+<p><img src="https://i.loli.net/2018/11/19/5bf2b4669d05c.png" alt="granger1.png"></p>
+<a id="more"></a>
+
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">GDP &lt;- c(<span class="number">3645.2</span>, <span class="number">4062.6</span>, <span class="number">4545.6</span>, <span class="number">4889.5</span>, <span class="number">5330.5</span>, <span class="number">5985.6</span>, <span class="number">7243.8</span>,</span><br><span class="line">         <span class="number">9040.7</span>, <span class="number">10274.4</span>, <span class="number">12050.6</span>,<span class="number">15036.8</span>, <span class="number">17000.9</span>, <span class="number">18718.3</span>,</span><br><span class="line">         <span class="number">21826.2</span>, <span class="number">26937.3</span>, <span class="number">35260.0</span>, <span class="number">48108.5</span>, <span class="number">59810.5</span>, <span class="number">70142.5</span>, </span><br><span class="line">         <span class="number">78060.8</span>,<span class="number">83024.3</span>, <span class="number">88479.2</span>, <span class="number">98000.5</span>, <span class="number">108068.2</span>, <span class="number">119095.7</span>)</span><br><span class="line">consumption &lt;- c(<span class="number">1759.1</span>, <span class="number">2014</span>, <span class="number">2336.9</span>, <span class="number">2627.5</span>, <span class="number">2867.1</span>, <span class="number">3220.9</span>, </span><br><span class="line">                 <span class="number">3689.5</span>, <span class="number">4627.4</span>, <span class="number">5293.5</span>, <span class="number">6047.6</span>, <span class="number">7532.1</span>, <span class="number">8778</span>,</span><br><span class="line">                 <span class="number">9435</span>, <span class="number">10544.5</span>, <span class="number">12312.2</span>, <span class="number">15696.2</span>, <span class="number">21446.1</span>, <span class="number">28072.9</span>, </span><br><span class="line">                 <span class="number">33660.3</span>, <span class="number">36626.3</span>, <span class="number">38821.8</span>, <span class="number">41914.9</span>, <span class="number">46987.8</span>, </span><br><span class="line">                 <span class="number">50708.8</span>, <span class="number">55076.4</span>)</span><br><span class="line">stat_data &lt;- data.frame(GDP, consumption)</span><br><span class="line">ts.data &lt;-ts(stat_data,frequency=<span class="number">1</span>,start=c(<span class="number">1978</span>))</span><br><span class="line">head(ts.data)</span><br><span class="line"></span><br><span class="line">        GDP consumption</span><br><span class="line">[<span class="number">1</span>,] <span class="number">3645.2</span>      <span class="number">1759.1</span></span><br><span class="line">[<span class="number">2</span>,] <span class="number">4062.6</span>      <span class="number">2014.0</span></span><br><span class="line">[<span class="number">3</span>,] <span class="number">4545.6</span>      <span class="number">2336.9</span></span><br><span class="line">[<span class="number">4</span>,] <span class="number">4889.5</span>      <span class="number">2627.5</span></span><br><span class="line">[<span class="number">5</span>,] <span class="number">5330.5</span>      <span class="number">2867.1</span></span><br><span class="line">[<span class="number">6</span>,] <span class="number">5985.6</span>      <span class="number">3220.9</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">library</span>(lmtest)</span><br><span class="line">grangertest(GDP ~ consumption, order = <span class="number">2</span>, data =ts.data)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Granger causality test</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Model 1: GDP ~ Lags(GDP, 1:2) + Lags(consumption, 1:2)</span></span><br><span class="line"><span class="comment"># Model 2: GDP ~ Lags(GDP, 1:2)</span></span><br><span class="line"><span class="comment">#   Res.Df Df      F Pr(&gt;F)</span></span><br><span class="line"><span class="comment"># 1     18                 </span></span><br><span class="line"><span class="comment"># 2     20 -2 1.6437  0.221</span></span><br><span class="line"></span><br><span class="line">grangertest(consumption ~ GDP, order = <span class="number">2</span>, data =ts.data)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Granger causality test</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Model 1: consumption ~ Lags(consumption, 1:2) + Lags(GDP, 1:2)</span></span><br><span class="line"><span class="comment"># Model 2: consumption ~ Lags(consumption, 1:2)</span></span><br><span class="line"><span class="comment">#   Res.Df Df      F    Pr(&gt;F)    </span></span><br><span class="line"><span class="comment"># 1     18                        </span></span><br><span class="line"><span class="comment"># 2     20 -2 13.411 0.0002717 ***</span></span><br><span class="line">---</span><br><span class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>检验结果表示，当原假设为“consumption不是引起GDP变化的Granger原因”，<br>P值为0.221&gt;0.05，我们无法拒绝原假设；<br>而当原假设为“GDP不是引起consumption变化的Granger原因”时，<br>P值为0.0002717&lt;0.05，我们可以拒绝原假设。<br>因此，可以证明：GDP是consumption的Granger原因</p>
+<p>之前计算结果中的P值也可以用下面代码算得（注意当p=2时，观测值的数量n=25-2=23）</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pf(<span class="number">1.6437</span>, <span class="number">2</span>, <span class="number">18</span>, lower.tail = <span class="literal">FALSE</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="number">0.220978</span></span><br><span class="line">pf(<span class="number">13.411</span>, <span class="number">2</span>, <span class="number">18</span>, lower.tail = <span class="literal">FALSE</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="number">0.0002716636</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/baimafujinji/article/details/6496224">格兰杰因果关系检验实例</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/test/" rel="tag"># test</a>
+              <a href="/tags/lmtest/" rel="tag"># lmtest</a>
+              <a href="/tags/Granger/" rel="tag"># Granger</a>
+              <a href="/tags/%E6%A0%BC%E5%85%B0%E6%9D%B0%E5%9B%A0%E6%9E%9C%E6%A3%80%E9%AA%8C/" rel="tag"># 格兰杰因果检验</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/03/03/class1/" rel="prev" title="R中各分类模型准确率比较">
+      <i class="fa fa-chevron-left"></i> R中各分类模型准确率比较
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/18/rouhgset1/" rel="next" title="粗糙集理论之roughset">
+      粗糙集理论之roughset <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">1.</span> <span class="nav-text">References:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
