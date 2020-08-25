@@ -192,7 +192,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-25 16:39:24" itemprop="dateModified" datetime="2020-08-25T16:39:24+08:00">2020-08-25</time>
+                <time title="修改时间：2020-08-25 16:45:10" itemprop="dateModified" datetime="2020-08-25T16:45:10+08:00">2020-08-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -223,7 +223,7 @@
 <h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><h3 id="安装-Git"><a href="#安装-Git" class="headerlink" title="安装 Git"></a>安装 Git</h3><p><a target="_blank" rel="noopener" href="https://git-scm.com/">Git文件下载源</a></p>
 <p>安装完毕之后将Git安装路径 <code>xx\Git\bin</code> 放入系统环境变量 <code>path</code> 中</p>
 <h3 id="安装-nodejs"><a href="#安装-nodejs" class="headerlink" title="安装 nodejs"></a>安装 nodejs</h3><p> <a target="_blank" rel="noopener" href="http://nodejs.cn/">nodejs 下载地址</a>; <a target="_blank" rel="noopener" href="http://nodejs.org/en/">国外地址在这里</a></p>
-<p>安装完毕之后将 nodejs的安装路径 <code>xx\nodejs</code> 放进系统变量 path 中</p>
+<p>安装完毕之后将 nodejs 安装路径 <code>xx\nodejs</code> 放进系统变量 <code>path</code> 中</p>
 <p>有任何建议或疑问,请加 QQ[1595218767]..共同探讨学习<br>如有R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动粉嫩的小爪热切期待你哦</p>
           <!--noindex-->
             <div class="post-button">
@@ -1288,6 +1288,59 @@
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
