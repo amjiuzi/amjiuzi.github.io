@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快   Lasso回归复杂度调整的程度由参数lambda来控制，lambda越大模型复杂度的惩罚力度越大，从而获得一个较少变量的模型。Lasso回归和bridge回归都是Elastic Net广义线性模型的特例。除了参数lambda，还有参数alpha，">
+  <meta name="description" content="有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习如R&#x2F;python代码编程作图等方面需要帮忙，欢迎来店咨询 之恒科技, 挥动热情的小爪爪期待你哦  Lasso回归复杂度调整的程度由参数lambda来控制，lambda越大模型复杂度的惩罚力度越大，从而获得一个较少变量的模型。Lasso回归和bridge回归都是Elastic Net广义线性模型的特例。除了参数lambda，还有参">
 <meta property="og:type" content="article">
 <meta property="og:title" content="R语言回归分析之岭回归和lasso回归">
 <meta property="og:url" content="https://amjiuzi.gitee.io/2018/11/11/lassoReg1/index.html">
 <meta property="og:site_name" content="不知为不知">
-<meta property="og:description" content="有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习如需有偿帮助，请出门左转 Convenient Entrance, 合作愉快   Lasso回归复杂度调整的程度由参数lambda来控制，lambda越大模型复杂度的惩罚力度越大，从而获得一个较少变量的模型。Lasso回归和bridge回归都是Elastic Net广义线性模型的特例。除了参数lambda，还有参数alpha，">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习如R&#x2F;python代码编程作图等方面需要帮忙，欢迎来店咨询 之恒科技, 挥动热情的小爪爪期待你哦  Lasso回归复杂度调整的程度由参数lambda来控制，lambda越大模型复杂度的惩罚力度越大，从而获得一个较少变量的模型。Lasso回归和bridge回归都是Elastic Net广义线性模型的特例。除了参数lambda，还有参">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2018/11/19/5bf2b1deeb51e.jpg">
 <meta property="og:image" content="https://i.loli.net/2018/06/29/5b358c7e72b32.png">
@@ -36,7 +36,7 @@
 <meta property="og:image" content="https://i.loli.net/2018/11/28/5bfdf06d56f44.png">
 <meta property="og:image" content="https://i.loli.net/2018/11/19/5bf2ae1d5b3ac.png">
 <meta property="article:published_time" content="2018-11-11T12:02:34.000Z">
-<meta property="article:modified_time" content="2020-08-23T13:16:28.000Z">
+<meta property="article:modified_time" content="2020-08-26T03:18:43.482Z">
 <meta property="article:author" content="amjiuzi">
 <meta property="article:tag" content="R语言">
 <meta property="article:tag" content="regression">
@@ -210,7 +210,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-23 21:16:28" itemprop="dateModified" datetime="2020-08-23T21:16:28+08:00">2020-08-23</time>
+                <time title="修改时间：2020-08-26 11:18:43" itemprop="dateModified" datetime="2020-08-26T11:18:43+08:00">2020-08-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -241,7 +241,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿帮助，请出门左转 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">Convenient Entrance</a>, 合作愉快  </p>
+        <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
 <p>Lasso回归复杂度调整的程度由参数lambda来控制，lambda越大模型复杂度的惩罚力度越大，从而获得一个较少变量的模型。Lasso回归和bridge回归都是Elastic Net广义线性模型的特例。除了参数lambda，还有参数alpha，控制对高相关性数据时建模的形状。<br>Lasso回归，alpha=1(R语言glmnet的默认值); brigde回归，alpha=0; 一般的elastic net 0&lt;alpha&lt;1</p>
 <p><img src="https://i.loli.net/2018/11/19/5bf2b1deeb51e.jpg" alt="lasso1.jpg"></p>
 <a id="more"></a>

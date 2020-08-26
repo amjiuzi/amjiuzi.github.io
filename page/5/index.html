@@ -192,7 +192,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-23 21:16:48" itemprop="dateModified" datetime="2020-08-23T21:16:48+08:00">2020-08-23</time>
+                <time title="修改时间：2020-08-26 11:23:54" itemprop="dateModified" datetime="2020-08-26T11:23:54+08:00">2020-08-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -223,7 +223,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>之前看过一些有SVD的资料,大多以原理介绍为主,本文对原理推导不再细讲(有兴趣请参考<a target="_blank" rel="noopener" href="http://www.cnblogs.com/LeftNotEasy/archive/2011/01/19/svd-and-applications.html">强大的矩阵奇异值分解(SVD)</a>), 以下是自己的学习笔记<br>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习</p>
+          <p>之前看过一些有SVD的资料,大多以原理介绍为主,本文对原理推导不再细讲(有兴趣请参考<a target="_blank" rel="noopener" href="http://www.cnblogs.com/LeftNotEasy/archive/2011/01/19/svd-and-applications.html">强大的矩阵奇异值分解(SVD)</a>), 以下是自己的学习笔记</p>
+<p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
 <h2 id="A-SVD在图像压缩上的应用"><a href="#A-SVD在图像压缩上的应用" class="headerlink" title="A. SVD在图像压缩上的应用"></a>A. SVD在图像压缩上的应用</h2><h3 id="1-原始资料"><a href="#1-原始资料" class="headerlink" title="1. 原始资料"></a>1. 原始资料</h3><p>首先上一张原始图片</p>
 <p><img src="https://i.loli.net/2017/08/17/5994f9c817c2b.gif" alt="svd0.gif"></p>
 <h3 id="2-生成数据"><a href="#2-生成数据" class="headerlink" title="2. 生成数据"></a>2. 生成数据</h3><p>如果像素是白色就取 1, 黑色就取 0.得到以下矩阵<br>细看不难发现图像其实是以下 3 部分组成的</p>
@@ -286,7 +287,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-24 18:04:28" itemprop="dateModified" datetime="2020-08-24T18:04:28+08:00">2020-08-24</time>
+                <time title="修改时间：2020-08-26 11:06:26" itemprop="dateModified" datetime="2020-08-26T11:06:26+08:00">2020-08-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -313,33 +314,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>有任何建议或疑问,请加 QQ[1595218767]..共同探讨学习<br>如有R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动粉嫩的小爪热切期待你哦  </p>
+          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦  </p>
 <blockquote>
-<p>今天回顾下 ggplot2 中条形图的简单制作</p>
+<p>今天回顾下 ggplot2 中条形图的制作</p>
 </blockquote>
 <h3 id="数据获取"><a href="#数据获取" class="headerlink" title="数据获取"></a>数据获取</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mali.xo=subset(trac.spss,trac.spss$a3==<span class="number">1</span>)</span><br><span class="line">mali.xo$a3=factor(mali.xo$a3)</span><br></pre></td></tr></table></figure>
 <h3 id="数据筛选"><a href="#数据筛选" class="headerlink" title="数据筛选"></a>数据筛选</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mean1 &lt;- apply(focus1[,<span class="number">16</span>:ncol(focus1)],<span class="number">1</span>,mean)</span><br><span class="line">max1 &lt;- apply(focus1[,<span class="number">16</span>:ncol(focus1)],<span class="number">1</span>,max)</span><br><span class="line">focus3 &lt;- focus1[-(mean1&lt;=<span class="number">3</span>&amp;max1&lt;=<span class="number">3</span>),]</span><br><span class="line">dim(focus1);dim(focus3)</span><br></pre></td></tr></table></figure>
-<h3 id="数据整理"><a href="#数据整理" class="headerlink" title="数据整理"></a>数据整理</h3><p>作图要求格式进行数据提取及整理<br>数据基本格式要求:  </p>
-<table>
-<thead>
-<tr>
-<th>type</th>
-<th>value</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>ty1</td>
-<td>4.21</td>
-</tr>
-<tr>
-<td>ty2</td>
-<td>4.05</td>
-</tr>
-<tr>
-<td>ty3</td>
-<td>4.35</td>
-</tr>
-</tbody></table>
+<h3 id="数据整理"><a href="#数据整理" class="headerlink" title="数据整理"></a>数据整理</h3><p>作图要求格式进行数据提取及整理  </p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mean2 &lt;- apply(focus3[,<span class="number">16</span>:ncol(focus3)],<span class="number">2</span>,mean)</span><br><span class="line">imp5 &lt;- data.frame(type=names(mean2),value=mean2)</span><br><span class="line">imp5 &lt;- imp5[order(imp5$value),]</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
@@ -398,7 +379,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-23 21:16:22" itemprop="dateModified" datetime="2020-08-23T21:16:22+08:00">2020-08-23</time>
+                <time title="修改时间：2020-08-26 11:17:18" itemprop="dateModified" datetime="2020-08-26T11:17:18+08:00">2020-08-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -425,7 +406,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习<br>如需有偿帮助，请出门左转 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">Convenient Entrance</a>, 合作愉快</p>
+          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
 <h2 id="数据集获取"><a href="#数据集获取" class="headerlink" title="数据集获取"></a>数据集获取</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">library</span>(dplyr)</span><br><span class="line">satis_dr3 %&gt;%</span><br><span class="line">  group_by(type) %&gt;%</span><br><span class="line">  select(type,price,price2,allowance,YouHao,XingNeng,ZhiLiang,DongLi,XiaoLv,ShiYingXing,BianJieXing,ZuoYeJianRong,ShouHou,WeiXiuFangBian,Size,outwards,brand0,reviews,ownership) %&gt;% <span class="comment"># 按照自定义分类,将变量调整位置</span></span><br><span class="line">  summarise_all(funs(mean)) -&gt; satisdt1</span><br></pre></td></tr></table></figure>
 <p>ggradar需要的数据格式为:</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">knitr::kable(satisdt1[,<span class="number">1</span>:<span class="number">8</span>])</span><br></pre></td></tr></table></figure>
