@@ -343,6 +343,98 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2019/08/14/barplot/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/08/14/barplot/" class="post-title-link" itemprop="url">ggplot2 barplot(条形图)分析元素重要度</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-08-14 19:28:13" itemprop="dateCreated datePublished" datetime="2019-08-14T19:28:13+08:00">2019-08-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 16:49:33" itemprop="dateModified" datetime="2020-08-26T16:49:33+08:00">2020-08-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Plot/" itemprop="url" rel="index"><span itemprop="name">Plot</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦  </p>
+<blockquote>
+<p>今天回顾下 ggplot2 中条形图的制作</p>
+</blockquote>
+<h3 id="数据获取"><a href="#数据获取" class="headerlink" title="数据获取"></a>数据获取</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mali.xo=subset(trac.spss,trac.spss$a3==<span class="number">1</span>)</span><br><span class="line">mali.xo$a3=factor(mali.xo$a3)</span><br></pre></td></tr></table></figure>
+<h3 id="数据筛选"><a href="#数据筛选" class="headerlink" title="数据筛选"></a>数据筛选</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mean1 &lt;- apply(focus1[,<span class="number">16</span>:ncol(focus1)],<span class="number">1</span>,mean)</span><br><span class="line">max1 &lt;- apply(focus1[,<span class="number">16</span>:ncol(focus1)],<span class="number">1</span>,max)</span><br><span class="line">focus3 &lt;- focus1[-(mean1&lt;=<span class="number">3</span>&amp;max1&lt;=<span class="number">3</span>),]</span><br><span class="line">dim(focus1);dim(focus3)</span><br></pre></td></tr></table></figure>
+<h3 id="数据整理"><a href="#数据整理" class="headerlink" title="数据整理"></a>数据整理</h3><p>作图要求格式进行数据提取及整理  </p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mean2 &lt;- apply(focus3[,<span class="number">16</span>:ncol(focus3)],<span class="number">2</span>,mean)</span><br><span class="line">imp5 &lt;- data.frame(type=names(mean2),value=mean2)</span><br><span class="line">imp5 &lt;- imp5[order(imp5$value),]</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/08/14/barplot/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2019/02/25/markdown1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1001,97 +1093,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2018/09/19/ranger1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2018/08/18/rouhgset1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar1.gif">
-      <meta itemprop="name" content="amjiuzi">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="不知为不知">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/08/18/rouhgset1/" class="post-title-link" itemprop="url">粗糙集理论之roughset</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-08-18 20:02:34" itemprop="dateCreated datePublished" datetime="2018-08-18T20:02:34+08:00">2018-08-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 11:22:09" itemprop="dateModified" datetime="2020-08-26T11:22:09+08:00">2020-08-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Algorithm/FeatherSelection/" itemprop="url" rel="index"><span itemprop="name">FeatherSelection</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
-<p>粗糙集模型可以用来 数值变量分段，分类特征提取，模式识别，规则提取等</p>
-<p>粗糙集理论<br>粗糙集是波兰理工大学Z.pawlak教授提出用来研究不完整数据，不精确知识的表达、学习，归纳等的一套理论，从数学的角度看，粗糙集是研究集合的；从编程的角度看，粗糙集的研究对象是矩阵,只不过是一些特殊的矩阵；从人工智能的角度来看，粗糙集研究的是决策表<br>当数据属于定性数据或不确定性数据，无法使用一般的统计方法时，粗糙集理论可以在信息不完整和信息不一致下，用来规约数据集合，发掘隐藏的数据阳性和数据相关性，以产生有用的分类规则。<br>粗糙集是建立在分类机制的基础上，他将分类理解成为在特定空间上的等价关系，而等价关系构成料对该空间的划分，主要思想是利用已知的知识库，将不精确或不确定的知识用已知的知识库中的知识来近似刻画。<br>该理论与其他处理不确定和不精确问题理论的最显著的区别是它无需提供问题所需处理的数据集合之外的任何先验信息，所以对问题的不确定性的描述或处理可以说比较客观<br>粗糙集理论现在主要应用在 临床医疗诊断; 电力系统和其他工业过程故障诊断; 预测与控制; 模式识别与分类; 机器学习和数据挖掘 图像处理等方面</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/08/18/rouhgset1/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
