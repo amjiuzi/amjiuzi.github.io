@@ -161,6 +161,95 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/08/21/Rselenium/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/08/21/Rselenium/" class="post-title-link" itemprop="url">R语言轻松完成 网络爬虫(rvest和Rselenium)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-21 12:07:17" itemprop="dateCreated datePublished" datetime="2017-08-21T12:07:17+08:00">2017-08-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 11:22:23" itemprop="dateModified" datetime="2020-08-26T11:22:23+08:00">2020-08-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Crawl/" itemprop="url" rel="index"><span itemprop="name">Crawl</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>以前一直以为 <em>网络爬虫</em> 是高大上的, 涉及到网页知识/编程代码/正则…等等一系列想想就头疼的物件儿，一次偶然的机会看到了rvest(<em>向 hadley 大师傅献上最真诚的膝盖</em>)，一股如厕后的畅快感油然而生,原来爬数也可以 谈笑间,樯橹灰飞烟灭…废话不多说,请看大屏幕</p>
+<p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
+<h2 id="A-Rvest"><a href="#A-Rvest" class="headerlink" title="A. Rvest"></a>A. Rvest</h2><h3 id="1-Install"><a href="#1-Install" class="headerlink" title="1. Install"></a>1. Install</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">install.package(<span class="string">&#x27;rvest&#x27;</span>)</span><br><span class="line"><span class="comment"># 想获取最新版，可以github安装</span></span><br><span class="line"><span class="comment"># install.packages(&quot;devtools&quot;)</span></span><br><span class="line">devtools::install_github(<span class="string">&quot;hadley/rvest&quot;</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="2-Frame-and-Params"><a href="#2-Frame-and-Params" class="headerlink" title="2. Frame and Params"></a>2. Frame and Params</h3><h4 id="2-1-Read-info-from-website"><a href="#2-1-Read-info-from-website" class="headerlink" title="2.1 Read info from website"></a>2.1 Read info from website</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">info1 &lt;- read_html(url/pageSource)</span><br></pre></td></tr></table></figure>
+<h4 id="2-2-Node-resolutions"><a href="#2-2-Node-resolutions" class="headerlink" title="2.2 Node resolutions"></a>2.2 Node resolutions</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">html_node(x,css/xpath) / html_nodes(x,css/xpath)</span><br><span class="line"><span class="comment"># only one node: </span></span><br><span class="line">html_node(x,css/xpath)</span><br><span class="line"><span class="comment"># 2 and  more nodes: </span></span><br><span class="line">html_nodes(x,css/xpath)</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/08/21/Rselenium/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/08/18/pca1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -635,20 +724,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-count">45</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">113</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

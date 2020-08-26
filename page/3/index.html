@@ -161,6 +161,95 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/12/10/CrawlFrame1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/12/10/CrawlFrame1/" class="post-title-link" itemprop="url">R语言爬虫项目程序结构解析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-10 20:07:17" itemprop="dateCreated datePublished" datetime="2017-12-10T20:07:17+08:00">2017-12-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 11:15:44" itemprop="dateModified" datetime="2020-08-26T11:15:44+08:00">2020-08-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Crawl/" itemprop="url" rel="index"><span itemprop="name">Crawl</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
+<h2 id="基本架构"><a href="#基本架构" class="headerlink" title="基本架构"></a>基本架构</h2><ol>
+<li>R 脚本<br>R程序可以是单一的完整运行代码文件,也可以是多个相互间协调或调用的函数/程序代码集合,本文介绍的主要是第二种</li>
+<li>Windows Powershell 调用<br>通过 windows 的 powershell 终端调用 R程序, 实现 R程序 的后台运行(Line1); 也可以将Line1对应的code放进 .bat文件,然后保存,需要运行时双击 .bat文件<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xx/xx/Rscript.exe xx/xx/run.R</span><br></pre></td></tr></table></figure></li>
+<li>Linux terminal 调用<br>Linux终端调用与windows类同,终端运行 line 1,2<br>或 run.R 首行添加 line3, 然后终端运行 line4,5<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 方案1 -- 通过 bash 激活Rscript 运行 R脚本</span></span><br><span class="line">chmod u+x ./run.R           <span class="comment"># line 1</span></span><br><span class="line">/usr/bin/Rscript  /xx/run.R <span class="comment"># line 2</span></span><br><span class="line"><span class="comment"># 方案2 -- 修改 run.R 直接运行</span></span><br><span class="line"><span class="comment">#!/usr/bin/Rscript          # line 3</span></span><br><span class="line">chmod u+x ./run.R           <span class="comment"># line 4</span></span><br><span class="line">./run.R                     <span class="comment"># line 5</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/12/10/CrawlFrame1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/12/04/arules2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -981,95 +1070,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/10/09/base_file1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar1.gif">
-      <meta itemprop="name" content="amjiuzi">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="不知为不知">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2017/10/09/base_file1/" class="post-title-link" itemprop="url">R语言与PC交互之 file/path 系列</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2017-10-09 20:02:34" itemprop="dateCreated datePublished" datetime="2017-10-09T20:02:34+08:00">2017-10-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 11:15:12" itemprop="dateModified" datetime="2020-08-26T11:15:12+08:00">2020-08-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Basic/" itemprop="url" rel="index"><span itemprop="name">Basic</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
-<h2 id="file-path-functions"><a href="#file-path-functions" class="headerlink" title="file/path functions"></a>file/path functions</h2><h3 id="创建新文件"><a href="#创建新文件" class="headerlink" title="创建新文件"></a>创建新文件</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">setwd(<span class="string">&#x27;xx/xx/xx)</span></span><br><span class="line"><span class="string"># 不存在则创建指定文件,若存在则清空重建</span></span><br><span class="line"><span class="string">file.create(&#x27;</span>./testfile.csv<span class="string">&#x27;,showWarnings = TRUE)</span></span><br><span class="line"><span class="string">[1] TRUE</span></span><br></pre></td></tr></table></figure>
-<h3 id="判断文件是否存在"><a href="#判断文件是否存在" class="headerlink" title="判断文件是否存在"></a>判断文件是否存在</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">file.exists(<span class="string">&#x27;./testfile.csv&#x27;</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="literal">TRUE</span></span><br></pre></td></tr></table></figure>
-<h3 id="删除指定文件"><a href="#删除指定文件" class="headerlink" title="删除指定文件"></a>删除指定文件</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">file.remove(c(<span class="string">&#x27;./testfile.csv&#x27;</span>,<span class="string">&#x27;file2.txt&#x27;</span>))</span><br><span class="line">[<span class="number">1</span>] <span class="literal">TRUE</span> <span class="literal">TRUE</span></span><br></pre></td></tr></table></figure>
-<h3 id="将file2-txt-bak文件名-修改为-file2-txt-包含扩展名"><a href="#将file2-txt-bak文件名-修改为-file2-txt-包含扩展名" class="headerlink" title="将file2.txt.bak文件名 修改为 file2.txt(包含扩展名)"></a>将file2.txt.bak文件名 修改为 file2.txt(包含扩展名)</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">file.rename(<span class="string">&#x27;file2.txt.bak&#x27;</span>,<span class="string">&#x27;file2.txt&#x27;</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="literal">TRUE</span></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2017/10/09/base_file1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1141,20 +1141,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-count">45</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">113</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
