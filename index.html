@@ -161,6 +161,144 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2020/03/03/CohortAnalysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/03/CohortAnalysis/" class="post-title-link" itemprop="url">Cohort Analysis (客户留存分析)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-03 00:00:00" itemprop="dateCreated datePublished" datetime="2020-03-03T00:00:00+08:00">2020-03-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 12:15:33" itemprop="dateModified" datetime="2020-08-26T12:15:33+08:00">2020-08-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Report/" itemprop="url" rel="index"><span itemprop="name">Report</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Cohort-Analysis-简介"><a href="#Cohort-Analysis-简介" class="headerlink" title="Cohort Analysis 简介"></a>Cohort Analysis 简介</h2><h3 id="cohort-analysis-的必要性"><a href="#cohort-analysis-的必要性" class="headerlink" title="cohort analysis 的必要性"></a>cohort analysis 的必要性</h3><p>公司的经营数据真的像你想的一样好吗？</p>
+<p>A和B两家公司都是做化妆品电商的平台，他们几乎在同一时间启动公司，在各自的公司运作半年以后，作为同行他们坐到一起交流数据和经营心得。</p>
+<blockquote>
+<p>“我们前半年一共有20000个用户注册了。”A公司说。<br>“我们前半年一共有30000个用户注册！”B公司说。</p>
+</blockquote>
+<p>那么，A和B两家公司谁经营的更好呢？（注册用户数高的公司，获取新用户做的更好）</p>
+<blockquote>
+<p>“我们的20000个注册里可是有18000个下单用户。”A公司说。<br>“我们的30000个注册里下单的只有15000个。”B公司说。</p>
+</blockquote>
+<p>A好还是B好？（下单用户数高的公司，注册到下单的转化过程做的更好）</p>
+<blockquote>
+<p>“但是这18000个前半年下过单的客户在上个月还下单的只有5000个了。”A公司说。<br>“我们的15000个里上个月还在下单的有10000个。”B公司说。</p>
+</blockquote>
+<p>A好还是B好？（在最近一个月下单用户数高的，能说明留存做得好吗？）</p>
+<blockquote>
+<p>“我们留下的这5000个都是最早几个月就获取的还在继续下单的客户。”A公司说。<br>“我们这10000个下单的都是上个月最新获取的客户。”B公司说。</p>
+</blockquote>
+<p>A好还是B好？</p>
+<blockquote>
+<p>实际情况是，A公司的新增做的不如B公司，而B公司的留存做的不如A公司。那么作为创业者或投资人，如果非要选择的话，A公司是优于B公司的。因为在一家早期公司，产品和用户留存的重要性是优于其他的，如果留存做的足够好，只要掌握了用户增长的方式方法，那么总能够厚积薄发。但如果只有增长、没有留存，那很可能永远都抓不住用户的痛点，最后什么都不剩。就好像B公司，一共18000个下过单的用户，上个月剩下10000个，但这10000个又都是上个月刚刚新增的下单用户，那么很可能发生的情况是，到了再下个月，这10000家也不见了。而A公司至少还会持续的有5000左右的下单用户</p>
+</blockquote>
+<p><img src="https://i.loli.net/2020/08/26/931jkvsdzVc5Cl2.jpg" alt="cohort_line0.jpg"></p>
+<p>如上图，蓝色为合理的留存变化，最终平缓的维持在一个水平，而红色为非常糟糕的需要尽快改变的情况，随着时间的延长，所有的客户都会流失。结合我们在<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/20838813">系列一(“早知道这些我的公司就不会死”系列之CAC/LTV/PBP - Everything about a startup - 知乎专栏)</a>中提到的，前一种的LTV（用户终身价值）要比后一种，不知道高到哪里去了。</p>
+<p>当然，这里基本只考虑了用户获取和留存的情况，实际上如果真的要比较两家公司，还有更多的交易数据维度等。比如每个客户的客单价是多少，采购频次如何，交付时间多长等等（根据上面我们分析的数据，想想看，客单价高就真的一定更好吗？是否可能有某几家客单价几万，而剩下的客单价几块的情况？）</p>
+<p>在创投圈里，最常用到的一种Cohort Analysis就是按照不同时期进入的用户，分别考察其后续的行为情况（比如分别统计第一个月、第二个月、第三个月……获取的新客户在后续几个月的下单情况），所以又可以叫做同期群分析。</p>
+<h3 id="Cohort-Analysis基本思路和方法"><a href="#Cohort-Analysis基本思路和方法" class="headerlink" title="Cohort Analysis基本思路和方法"></a>Cohort Analysis基本思路和方法</h3><p><img src="https://i.loli.net/2020/08/26/gUJyPZfWKpe3iNR.jpg" alt="cohort_tbl0.jpg"></p>
+<p>上图是一个最典型的Cohort Analysis表格。<br>其中第一列为自然月份的排列（按照月份为维度一般是投资人会看的时间长度，建议创业公司内部都按照周为维度来监测数据），第二列为对应每个自然月的新增用户数，右侧的表格为当月新增的用户数在后续每个月的留存情况。比如1月公司新增用户80个，在当月流失2个剩余78个（流失和留存的定义每个公司都可能不同，根据不同定义，也可能第一个月的留存都是100%），在2月又流失了3个还剩下75个，以此类推。所以比如3月份的总下单用户数是261，其实是由1月新增还剩下的72个，2月新增还剩下的86个，和3月刚刚新增的103个组成</p>
+<p><img src="https://i.loli.net/2020/08/26/aDoihS2e6pcgHlB.jpg" alt="cohort_tbl1.jpg"> </p>
+<p>上图是根据第一个表格中的留存数据计算的留存率。这里可以注意到，图2把图1的表格左右倒置了一下，而且这里表格中的时间从1月、2月、3月……改为了0、1、2……第一张表格中的1月、2月等为自然月，而这里则是间隔的月份。0代表当月，1代表1个月之后，以此类推。所以根据这张表格：<br>1）横向比较，可以看出每月新增用户在后续各月的留存率情况。</p>
+<p>2）纵向比较，可以看出不同月份新增用户，分别在当月、下个月、下下个月等的留存表现如何。</p>
+<p>对应这两点一家好的公司应该看到的趋势是：</p>
+<p>1）横向的留存数据最终会在某个月份之后停留在一个固定的留存率上，比如某个月获取的100个用户，在半年后每个月的留存率都稳定在60%，这就说明这批用户是稳定留存下来的，不然如果留存率是一直下降的（哪怕下降的速度很慢），也会在之后的某个月份归零，也就是说不管新增多少用户，最终都一个都剩不下。</p>
+<p>2）纵向的留存数据应该是越来越好的。因为公司和创始团队应该不断的根据历史情况改进产品和体验等，所以越后加入的用户，应该能享受到越好的产品和服务，后续几个月的留存率就应该更高。</p>
+<p>对比以上两点和表格中的数据，可以看到我们上面用来举例的这家公司做的还不足够好</p>
+<p><img src="https://i.loli.net/2020/08/26/Nf2uBCFVys8RK6x.jpg" alt="cohort_tbl2.jpg"></p>
+<p>上图是根据留存数据转化的流失率的表格，和留存率唯一不同的地方是，这个数据是根据前一个月的数据分别计算的流失率。比如我们留存率的表格中，1月新用户在0个月的时候的留存率是97.5%，1个月之后的留存率是93.75%，而上图中的流失率分别是2.5%和3.75%（而不是6.25%）。这样组织数据可以让我们更好的看到具体每个月的流失率的情况，也可以知道是哪个月做的最有问题</p>
+<p>根据Cohort分析我们可以更好的知道一家公司具体的运营情况，而且是分组的有时间延展性的。你可以看到每月的新增用户数量的变化情况（是否在合理增长？），不同月份新增用户在后续每个月的留存情况（留存率是否合理？是否有某个月的数据反常？比如可能某个月的新增渠道改变，造成新增用户的质量有差异，所以后续每月的流失率都下降更快），每个月的流失率情况（是否某个月因为做了什么动作而造成历史用户的流失率大幅上升？）等等。如果只看当月的总用户情况，那么上述这些问题都会被掩盖，尤其是新增用户数量大的时候，表面看起来公司用户是在增长，但很可能全都是靠新增用户拉动的</p>
+<h3 id="Cohort-Analysis-进阶"><a href="#Cohort-Analysis-进阶" class="headerlink" title="Cohort Analysis 进阶"></a>Cohort Analysis 进阶</h3><p>Cohort Analysis用于用户分析的情况基本在上面已经说清了，但其实根据分组分析的特性，Cohort Analysis还有非常多其他的用法</p>
+<p>比如对于一般公司来说，<br>当月的收入其实可以拆为：  </p>
+<p>$$当月收入 = 总下单用户数 * 每个用户的下单次数 * 单次的客单价$$  </p>
+<p>(比如当月有300个用户下单，平均每个客户下单3次，平均单次客单价100元，那么当月总收入就是90000元)</p>
+<p>这篇文章看到这里，以后每次看到“平均”两个字，你就应该警惕了。那么多客户，平均3次和100元，但实际上不同客户的情况呢？这里就也可以用Cohort Analysis来判断。比如1月获取的客户，在1月下单的次数是2次，2月下单的次数是3次，3月下单的次数是4次，那么在cohort表格中，我们就可以用下单次数来替换留存率和流失率所对应的位置</p>
+<p><img src="https://i.loli.net/2020/08/26/PCkYTq1J34I6Hjo.jpg" alt="cohort_tbl3.jpg"></p>
+<p>于是就得出上方表格所示的情况。同理，客单价也是可以分别对应到不同的位置，就不再赘述了。所以，通过不同维度的Cohort Analysis，你可以看到用户随着留存时间的增加，是否与平台建立了更深的关系？每个用户是否会购买更多地次数，或每次是否会购买更多的金额？这样，最终每个月的销售额都可以被分解到非常细的维度。<br>而且，除了按不同时间获取的客户来分类，还可以按照不同的行为分类，比如表格的第一列可以是当月app浏览时间超过10小时的用户，也可以是参与某种优惠活动的客户等等，而右侧表格可以监测该用户群体的各种行为情况，比如参与了优惠活动的客户在后续几个月的留存是否会更高？下单金额是否会更高？等等。总之，左侧是按照某种定义区分的用户群体，右侧是这些用户可被监测的某种动作。</p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><h3 id="R-实现"><a href="#R-实现" class="headerlink" title="R 实现"></a>R 实现</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">setwd(<span class="string">&#x27;xx/xx&#x27;</span>)</span><br><span class="line"><span class="keyword">library</span>(readxl)</span><br><span class="line">dt1 &lt;- readxl::read_xlsx(<span class="string">&#x27;./relay-foods.xlsx&#x27;</span>,sheet = <span class="number">2</span> ,header=<span class="literal">TRUE</span>)</span><br><span class="line">&gt; head(dt1)</span><br><span class="line"><span class="comment"># A tibble: 6 x 8</span></span><br><span class="line">  OrderId OrderDate           UserId TotalCharges CommonId PupId</span><br><span class="line">    &lt;dbl&gt; &lt;dttm&gt;               &lt;dbl&gt;        &lt;dbl&gt; &lt;chr&gt;    &lt;dbl&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">262</span> <span class="number">2009</span>-<span class="number">01</span>-<span class="number">11</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>     <span class="number">47</span>         <span class="number">50.7</span> TRQKD        <span class="number">2</span></span><br><span class="line"><span class="number">2</span>     <span class="number">278</span> <span class="number">2009</span>-<span class="number">01</span>-<span class="number">20</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>     <span class="number">47</span>         <span class="number">26.6</span> 4HH2S        <span class="number">3</span></span><br><span class="line"><span class="number">3</span>     <span class="number">294</span> <span class="number">2009</span>-<span class="number">02</span>-<span class="number">03</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>     <span class="number">47</span>         <span class="number">38.7</span> 3TRDC        <span class="number">2</span></span><br><span class="line"><span class="number">4</span>     <span class="number">301</span> <span class="number">2009</span>-<span class="number">02</span>-<span class="number">06</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>     <span class="number">47</span>         <span class="number">53.4</span> NGAZJ        <span class="number">2</span></span><br><span class="line"><span class="number">5</span>     <span class="number">302</span> <span class="number">2009</span>-<span class="number">02</span>-<span class="number">06</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>     <span class="number">47</span>         <span class="number">14.3</span> FFYHD        <span class="number">2</span></span><br><span class="line"><span class="number">6</span>     <span class="number">321</span> <span class="number">2009</span>-<span class="number">02</span>-<span class="number">17</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>     <span class="number">47</span>         <span class="number">29.5</span> HA5R3        <span class="number">3</span></span><br><span class="line"><span class="comment"># ... with 2 more variables: PickupDate &lt;dttm&gt;, OrderDate2 &lt;chr&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2020/08/25/Urt5A2SoLd6OxMV.png" alt="reten_cnt.png"></p>
+<p>i 月份客户新增/留存数量表现稳定可观<br>j 月份整体出现回落，次月留存率不高</p>
+<p><img src="https://i.loli.net/2020/08/25/Sgprm7fLiAJnkKC.png" alt="reten_rate.png"></p>
+<p>i 月份留存率整体环比上升。<br>j 月份整体回落，次月留存率不高</p>
+<p><img src="https://i.loli.net/2020/08/25/t7dxTS1wB6J4N9K.png" alt="reten_cnt2.png"></p>
+<p>i 月份 与 基准月 比较, 各期留存量都有明显提升</p>
+<p>综合看，i 月份客户留存率符合整体趋势，获取和留存数量显著提升，新客户开发方案效果明显</p>
+<p><img src="https://i.loli.net/2020/08/25/IGzBtdFgyr6DEJK.png" alt="loss_rate.png"></p>
+<p>横向看 200901/200909 流失率一直在可接受范围内，表现比较稳定；4/5 月份新增客户的流失率偏高,值得深入关注<br>纵向看 从第 3/4 个开始流失率开始出现偏高现象(200902/200912), 半年之后出现流失的情况比较严重</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
+<li><a target="_blank" rel="noopener" href="http://www.gregreda.com/2015/08/23/cohort-analysis-with-python/">Cohort Analysis with Python</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/36273277">R语言数据分析笔记—Cohort 留存分析</a></li>
+<li><a target="_blank" rel="noopener" href="https://kdboller.github.io/2017/07/09/scaling-analytical-insights-with-python.html">scaling-analytical-insights-with-python_part1</a></li>
+<li><a target="_blank" rel="noopener" href="https://kdboller.github.io/2017/10/11/scaling-analytical-insights-with-python_part2.html">scaling-analytical-insights-with-python_part2</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/20879767">公司不会死系列之Cohort Analysis</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2019/08/20/hexo_git/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -283,7 +421,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 11:19:13" itemprop="dateModified" datetime="2020-08-26T11:19:13+08:00">2020-08-26</time>
+                <time title="修改时间：2020-08-26 12:14:42" itemprop="dateModified" datetime="2020-08-26T12:14:42+08:00">2020-08-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -295,7 +433,7 @@
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/report/" itemprop="url" rel="index"><span itemprop="name">report</span></a>
+                  <a href="/categories/R/Report/" itemprop="url" rel="index"><span itemprop="name">Report</span></a>
                 </span>
             </span>
 
@@ -1020,97 +1158,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2018/07/17/grangertest1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar1.gif">
-      <meta itemprop="name" content="amjiuzi">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="不知为不知">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/07/17/grangertest1/" class="post-title-link" itemprop="url">格兰杰因果检验R语言实现</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-07-17 20:02:34" itemprop="dateCreated datePublished" datetime="2018-07-17T20:02:34+08:00">2018-07-17</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 11:17:27" itemprop="dateModified" datetime="2020-08-26T11:17:27+08:00">2020-08-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Algorithm/Prediction/" itemprop="url" rel="index"><span itemprop="name">Prediction</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
-<p>消费与经济增长之间存在相互促进的作用。<br>但是，相比之下二者中哪一个对另外一个有更强的促进作用，在各国经济发展过程中则呈现出不同的结论。<br>就中国而言，自改革开放以来，我们都因为经济增长对消费的促进作用要大于消费对经济增长的促进作用。<br>或者说，在我国，经济增长可以作为消费的格兰杰原因，反正之不成立。<br>但这一结论是否能够得到计量经济研究的支持呢？<br>下面我们就在R中通过对1978~2002年的统计数据（数据来源为国家统计局网站）进行分析，进而来回答这个问题</p>
-<p><img src="https://i.loli.net/2018/11/19/5bf2b4669d05c.png" alt="granger1.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/07/17/grangertest1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1182,20 +1229,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-count">44</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">111</span>
+        <span class="site-state-item-count">113</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
