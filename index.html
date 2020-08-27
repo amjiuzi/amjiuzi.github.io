@@ -161,6 +161,263 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2020/05/19/barplot_py/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/19/barplot_py/" class="post-title-link" itemprop="url">python里的barplot(条形图)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-05-19 19:28:13" itemprop="dateCreated datePublished" datetime="2020-05-19T19:28:13+08:00">2020-05-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-27 19:39:59" itemprop="dateModified" datetime="2020-08-27T19:39:59+08:00">2020-08-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/Plot/" itemprop="url" rel="index"><span itemprop="name">Plot</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦  </p>
+<p>之前写了 R 里的 barplot 作图，今天更新一个 python 版的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</span><br><span class="line">z1=[<span class="number">100</span>,<span class="number">200</span>,<span class="number">250</span>,<span class="number">300</span>,<span class="number">280</span>]</span><br><span class="line">indx = range(len(z1)) </span><br><span class="line">fig, ax=plt.subplots()</span><br><span class="line">plt.bar(indx,z1,color = <span class="string">&quot;#0066ff&quot;</span>) </span><br><span class="line">plt.xticks(indx,[<span class="string">&#x27;ath1&#x27;</span>,<span class="string">&#x27;ath2&#x27;</span>,<span class="string">&#x27;aathk3&#x27;</span>,<span class="string">&#x27;a4th&#x27;</span>,<span class="string">&#x27;a5th&#x27;</span>],fontsize = <span class="number">12</span>,rotation= <span class="number">45</span>)</span><br><span class="line">plt.yticks([])</span><br><span class="line">plt.title(<span class="string">&#x27;This is my barplot&#x27;</span>,loc = <span class="string">&quot;left&quot;</span>,fontsize=<span class="number">20</span>) </span><br><span class="line"><span class="comment">#去掉边框</span></span><br><span class="line">ax.spines[<span class="string">&#x27;top&#x27;</span>].set_visible(<span class="literal">False</span>)</span><br><span class="line">ax.spines[<span class="string">&#x27;right&#x27;</span>].set_visible(<span class="literal">False</span>)</span><br><span class="line">ax.spines[<span class="string">&#x27;bottom&#x27;</span>].set_visible(<span class="literal">False</span>)</span><br><span class="line">ax.spines[<span class="string">&#x27;left&#x27;</span>].set_visible(<span class="literal">False</span>)</span><br><span class="line"><span class="comment"># 添加标签</span></span><br><span class="line"><span class="keyword">for</span> a,b <span class="keyword">in</span> zip(indx,z1):</span><br><span class="line">    plt.text(a,b+<span class="number">10</span>,<span class="string">&#x27;%.0f&#x27;</span>%b,ha = <span class="string">&#x27;center&#x27;</span>,va = <span class="string">&#x27;bottom&#x27;</span>,fontsize=<span class="number">10</span>)</span><br><span class="line"><span class="comment"># &gt;&gt;&gt; plt.savefig(&#x27;images\squares.png&#x27;)</span></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2020/08/27/m7u3NWrPoRgULp8.png" alt="Figure_1.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2020/04/22/plt_pyCN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/22/plt_pyCN/" class="post-title-link" itemprop="url">matplotlib 作图中文标签值解决方案</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-22 19:28:13" itemprop="dateCreated datePublished" datetime="2020-04-22T19:28:13+08:00">2020-04-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-27 19:30:23" itemprop="dateModified" datetime="2020-08-27T19:30:23+08:00">2020-08-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/Plot/" itemprop="url" rel="index"><span itemprop="name">Plot</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦  </p>
+<h2 id="中文无法显示"><a href="#中文无法显示" class="headerlink" title="中文无法显示"></a>中文无法显示</h2><h3 id="—-way1"><a href="#—-way1" class="headerlink" title="— way1"></a>— way1</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</span><br><span class="line">plt.rc(<span class="string">&quot;font&quot;</span>, family = <span class="string">&quot;MicroSoft YaHei&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="—-way2"><a href="#—-way2" class="headerlink" title="— way2"></a>— way2</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> font_manager</span><br><span class="line">my_font = font_manager.FontProperties(fname=<span class="string">r&quot;C:\Windows\Fonts\msyh.ttc&quot;</span>)</span><br><span class="line">plt.xticks(indx,[<span class="string">&#x27;ath1&#x27;</span>,<span class="string">&#x27;ath2&#x27;</span>,<span class="string">&#x27;aathk3&#x27;</span>,<span class="string">&#x27;a4th&#x27;</span>,<span class="string">&#x27;a5th&#x27;</span>],FontProperties = my_font)</span><br></pre></td></tr></table></figure>
+
+<h2 id="标签值太长-无法完整显示"><a href="#标签值太长-无法完整显示" class="headerlink" title="标签值太长 无法完整显示"></a>标签值太长 无法完整显示</h2><p>调整字体大小 和 字体显示方向 即可</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> font_manager</span><br><span class="line">my_font = font_manager.FontProperties(fname=<span class="string">r&quot;C:\Windows\Fonts\msyh.ttc&quot;</span>)</span><br><span class="line">plt.xticks(indx,[<span class="string">&#x27;ath1&#x27;</span>,<span class="string">&#x27;ath2&#x27;</span>,<span class="string">&#x27;aathk3&#x27;</span>,<span class="string">&#x27;a4th&#x27;</span>,<span class="string">&#x27;a5th&#x27;</span>],FontProperties = my_font,fontsize = <span class="number">10</span>,rotation= <span class="number">45</span>)</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2020/04/17/CohortAnalysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/17/CohortAnalysis/" class="post-title-link" itemprop="url">Cohort Analysis (客户留存分析)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-17 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-17T00:00:00+08:00">2020-04-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 17:43:54" itemprop="dateModified" datetime="2020-08-26T17:43:54+08:00">2020-08-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Report/" itemprop="url" rel="index"><span itemprop="name">Report</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><img src="https://i.loli.net/2020/08/26/nawuCQir35gZAym.png" alt="image.png"><br>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦  </p>
+<h2 id="Cohort-Analysis-简介"><a href="#Cohort-Analysis-简介" class="headerlink" title="Cohort Analysis 简介"></a>Cohort Analysis 简介</h2><h3 id="cohort-analysis-的必要性"><a href="#cohort-analysis-的必要性" class="headerlink" title="cohort analysis 的必要性"></a>cohort analysis 的必要性</h3><p>公司的经营数据真的像你想的一样好吗？</p>
+<p>A和B两家公司都是做化妆品电商的平台，他们几乎在同一时间启动公司，在各自的公司运作半年以后，作为同行他们坐到一起交流数据和经营心得。</p>
+<blockquote>
+<p>“我们前半年一共有20000个用户注册了。”A公司说。<br>“我们前半年一共有30000个用户注册！”B公司说。</p>
+</blockquote>
+<p>那么，A和B两家公司谁经营的更好呢？（注册用户数高的公司，获取新用户做的更好）</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/17/CohortAnalysis/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2020/03/14/barplot/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -230,97 +487,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/03/14/barplot/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2020/03/03/CohortAnalysis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar1.gif">
-      <meta itemprop="name" content="amjiuzi">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="不知为不知">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/03/CohortAnalysis/" class="post-title-link" itemprop="url">Cohort Analysis (客户留存分析)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-03 00:00:00" itemprop="dateCreated datePublished" datetime="2020-03-03T00:00:00+08:00">2020-03-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 17:20:13" itemprop="dateModified" datetime="2020-08-26T17:20:13+08:00">2020-08-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Report/" itemprop="url" rel="index"><span itemprop="name">Report</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><img src="https://i.loli.net/2020/08/26/nawuCQir35gZAym.png" alt="image.png"><br>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦  </p>
-<h2 id="Cohort-Analysis-简介"><a href="#Cohort-Analysis-简介" class="headerlink" title="Cohort Analysis 简介"></a>Cohort Analysis 简介</h2><h3 id="cohort-analysis-的必要性"><a href="#cohort-analysis-的必要性" class="headerlink" title="cohort analysis 的必要性"></a>cohort analysis 的必要性</h3><p>公司的经营数据真的像你想的一样好吗？</p>
-<p>A和B两家公司都是做化妆品电商的平台，他们几乎在同一时间启动公司，在各自的公司运作半年以后，作为同行他们坐到一起交流数据和经营心得。</p>
-<blockquote>
-<p>“我们前半年一共有20000个用户注册了。”A公司说。<br>“我们前半年一共有30000个用户注册！”B公司说。</p>
-</blockquote>
-<p>那么，A和B两家公司谁经营的更好呢？（注册用户数高的公司，获取新用户做的更好）</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/03/03/CohortAnalysis/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -487,7 +653,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 17:24:25" itemprop="dateModified" datetime="2020-08-26T17:24:25+08:00">2020-08-26</time>
+                <time title="修改时间：2020-08-26 17:42:27" itemprop="dateModified" datetime="2020-08-26T17:42:27+08:00">2020-08-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -499,7 +665,7 @@
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Tools/git/" itemprop="url" rel="index"><span itemprop="name">git</span></a>
+                  <a href="/categories/Tools/Github/" itemprop="url" rel="index"><span itemprop="name">Github</span></a>
                 </span>
             </span>
 
@@ -957,185 +1123,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2018/11/11/lassoReg1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar1.gif">
-      <meta itemprop="name" content="amjiuzi">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="不知为不知">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/11/11/lassoReg1/" class="post-title-link" itemprop="url">R语言回归分析之岭回归和lasso回归</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-11-11 20:02:34" itemprop="dateCreated datePublished" datetime="2018-11-11T20:02:34+08:00">2018-11-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 11:18:43" itemprop="dateModified" datetime="2020-08-26T11:18:43+08:00">2020-08-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Algorithm/FeatherSelection/" itemprop="url" rel="index"><span itemprop="name">FeatherSelection</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
-<p>Lasso回归复杂度调整的程度由参数lambda来控制，lambda越大模型复杂度的惩罚力度越大，从而获得一个较少变量的模型。Lasso回归和bridge回归都是Elastic Net广义线性模型的特例。除了参数lambda，还有参数alpha，控制对高相关性数据时建模的形状。<br>Lasso回归，alpha=1(R语言glmnet的默认值); brigde回归，alpha=0; 一般的elastic net 0&lt;alpha&lt;1</p>
-<p><img src="https://i.loli.net/2018/11/19/5bf2b1deeb51e.jpg" alt="lasso1.jpg"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/11/11/lassoReg1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2018/10/10/gephi1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar1.gif">
-      <meta itemprop="name" content="amjiuzi">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="不知为不知">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/10/10/gephi1/" class="post-title-link" itemprop="url">社会网络关系分析 By gephi</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-10-10 20:02:34" itemprop="dateCreated datePublished" datetime="2018-10-10T20:02:34+08:00">2018-10-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 11:17:05" itemprop="dateModified" datetime="2020-08-26T11:17:05+08:00">2020-08-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Plot/" itemprop="url" rel="index"><span itemprop="name">Plot</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
-<p>Gephi是一款开源免费跨平台基于JVM的复杂网络分析软件, 其主要用于各种网络和复杂系统，动态和分层图的交互可视化与探测开源工具。<br>可用作：探索性数据分析，链接分析，社交网络分析，生物网络分析等。  </p>
-<p><img src="http://gomexsi.tamucc.edu/wp-content/uploads/Gephi-logo.png" alt="gephi"></p>
-<p>本文主要用 gephi 实现了对 某subway早高峰的 人流流动性分析 </p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/10/10/gephi1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1207,20 +1194,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-count">48</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">116</span>
+        <span class="site-state-item-count">119</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

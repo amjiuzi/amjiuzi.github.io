@@ -161,6 +161,185 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/12/25/jiebar1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/12/25/jiebar1/" class="post-title-link" itemprop="url">R语言文本挖掘-jiebaR</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-25 20:02:34" itemprop="dateCreated datePublished" datetime="2017-12-25T20:02:34+08:00">2017-12-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 11:18:23" itemprop="dateModified" datetime="2020-08-26T11:18:23+08:00">2020-08-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Text/" itemprop="url" rel="index"><span itemprop="name">Text</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
+<h2 id="1-jiebaR-常规功能"><a href="#1-jiebaR-常规功能" class="headerlink" title="1. jiebaR 常规功能"></a>1. jiebaR 常规功能</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># --- 通过CRAN安装:</span></span><br><span class="line">install.packages(<span class="string">&quot;jiebaR&quot;</span>)</span><br><span class="line"><span class="keyword">library</span>(jiebaR)</span><br><span class="line"><span class="comment"># --- 通过Github安装最新版</span></span><br><span class="line">devtools::install_github(<span class="string">&quot;qinwf/jiebaRD&quot;</span>)</span><br><span class="line">devtools::install_github(<span class="string">&quot;qinwf/jiebaR&quot;</span>)</span><br><span class="line"><span class="keyword">library</span>(jiebaR)</span><br></pre></td></tr></table></figure>
+
+<h3 id="简单分词"><a href="#简单分词" class="headerlink" title="简单分词"></a>简单分词</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="keyword">library</span>(jiebaR)</span><br><span class="line"><span class="comment"># --- 简单分词</span></span><br><span class="line">&gt; fenci &lt;- worker()</span><br><span class="line">&gt; segment(c(<span class="string">&#x27;从前的锁也好看 ，钥匙精美有样子 。 你锁了，人家就懂了&#x27;</span>),fenci)</span><br><span class="line"> [<span class="number">1</span>] <span class="string">&quot;从前&quot;</span> <span class="string">&quot;的&quot;</span>   <span class="string">&quot;锁&quot;</span>   <span class="string">&quot;也&quot;</span>   <span class="string">&quot;好看&quot;</span> <span class="string">&quot;钥匙&quot;</span> <span class="string">&quot;精美&quot;</span> <span class="string">&quot;有&quot;</span>   <span class="string">&quot;样子&quot;</span> <span class="string">&quot;你&quot;</span>  </span><br><span class="line">[<span class="number">11</span>] <span class="string">&quot;锁&quot;</span>   <span class="string">&quot;了&quot;</span>   <span class="string">&quot;人家&quot;</span> <span class="string">&quot;就&quot;</span>   <span class="string">&quot;懂&quot;</span>   <span class="string">&quot;了&quot;</span> </span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 逐行分词 bylines</span></span><br><span class="line">&gt; fenci &lt;- worker(bylines = <span class="literal">TRUE</span>)</span><br><span class="line">&gt; segment(c(<span class="string">&#x27;从前的锁也好看 ，钥匙精美有样子&#x27;</span>,</span><br><span class="line">+           <span class="string">&#x27;你锁了，人家就懂了&#x27;</span>),fenci)</span><br><span class="line">[[<span class="number">1</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;从前&quot;</span> <span class="string">&quot;的&quot;</span>   <span class="string">&quot;锁&quot;</span>   <span class="string">&quot;也&quot;</span>   <span class="string">&quot;好看&quot;</span> <span class="string">&quot;钥匙&quot;</span> <span class="string">&quot;精美&quot;</span> <span class="string">&quot;有&quot;</span>   <span class="string">&quot;样子&quot;</span></span><br><span class="line"></span><br><span class="line">[[<span class="number">2</span>]]</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;你&quot;</span>   <span class="string">&quot;锁&quot;</span>   <span class="string">&quot;了&quot;</span>   <span class="string">&quot;人家&quot;</span> <span class="string">&quot;就&quot;</span>   <span class="string">&quot;懂&quot;</span>   <span class="string">&quot;了&quot;</span>  </span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/12/25/jiebar1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/12/19/dongman1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/12/19/dongman1/" class="post-title-link" itemprop="url">高点播动漫的特征画像</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-19 20:02:34" itemprop="dateCreated datePublished" datetime="2017-12-19T20:02:34+08:00">2017-12-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 11:16:37" itemprop="dateModified" datetime="2020-08-26T11:16:37+08:00">2020-08-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Classify/" itemprop="url" rel="index"><span itemprop="name">Classify</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>特征画像,在电商中俗称用户画像,是对不同类别群体的特征描述方法<br>做特征画像的方法非常多,今天抛砖引玉一下<br>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
+<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>从网上抓取了部分动漫的基本信息/周边及竞品数量信息<br>希望能从中获取高点播动漫的分布特征</p>
+<h3 id="解题步骤"><a href="#解题步骤" class="headerlink" title="解题步骤"></a>解题步骤</h3><h4 id="数据准备"><a href="#数据准备" class="headerlink" title="数据准备"></a>数据准备</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">setwd(<span class="string">&#x27;./20171222dongman&#x27;</span>)</span><br><span class="line"><span class="keyword">library</span>(readxl)</span><br><span class="line"><span class="keyword">library</span>(data.table)</span><br><span class="line">dongman1 &lt;- data.table(read_xlsx(<span class="string">&#x27;./dongman.xlsx&#x27;</span>,sheet = <span class="number">1</span>))</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/12/19/dongman1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/12/15/woe1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -904,181 +1083,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/10/25/dataIO1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar1.gif">
-      <meta itemprop="name" content="amjiuzi">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="不知为不知">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2017/10/25/dataIO1/" class="post-title-link" itemprop="url">R中数据的读取与保存</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2017-10-25 20:02:34" itemprop="dateCreated datePublished" datetime="2017-10-25T20:02:34+08:00">2017-10-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 11:16:06" itemprop="dateModified" datetime="2020-08-26T11:16:06+08:00">2020-08-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Basic/" itemprop="url" rel="index"><span itemprop="name">Basic</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
-<h2 id="数据读取"><a href="#数据读取" class="headerlink" title="数据读取"></a>数据读取</h2><h3 id="A-单文件读取"><a href="#A-单文件读取" class="headerlink" title="A.单文件读取"></a>A.单文件读取</h3><h4 id="1-读取-粘贴板-上的数据"><a href="#1-读取-粘贴板-上的数据" class="headerlink" title="1. 读取 粘贴板 上的数据"></a>1. 读取 粘贴板 上的数据</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">city <span class="number">2014</span> <span class="number">2015</span> <span class="number">2016</span></span><br><span class="line">杭州 <span class="number">71931420480</span> <span class="number">95514868977</span> <span class="number">105324687949</span></span><br><span class="line">嘉兴 <span class="number">44450947862</span> <span class="number">81076443747</span> <span class="number">105079982305</span></span><br><span class="line">杭州 <span class="number">498040800</span> <span class="number">2576895282</span> <span class="number">3197487831</span></span><br><span class="line">嘉兴 <span class="number">167516573</span> <span class="number">599211189</span> <span class="number">772218225</span></span><br><span class="line"></span><br><span class="line">dat1 &lt;- readClipboard()</span><br><span class="line">dat2 &lt;- do.call(rbind,strsplit(dat1,split = <span class="string">&#x27; &#x27;</span>))</span><br><span class="line"><span class="comment"># dat2 &lt;- do.call(rbind,strsplit(dat1,split = &#x27;\t&#x27;))</span></span><br><span class="line">dat3 &lt;- data.table::data.table(dat2[-<span class="number">1</span>,])</span><br><span class="line">colnames(dat3) &lt;- stringr::str_trim(dat2[<span class="number">1</span>,])</span><br><span class="line"></span><br><span class="line">dat3[,lapply(.SD,<span class="keyword">function</span>(x)mean(as.numeric(x))),city]</span><br><span class="line">   city        <span class="number">2014</span>        <span class="number">2015</span>        <span class="number">2016</span></span><br><span class="line"><span class="number">1</span>: 杭州 <span class="number">36214730640</span> <span class="number">49045882130</span> <span class="number">54261087890</span></span><br><span class="line"><span class="number">2</span>: 嘉兴 <span class="number">22309232218</span> <span class="number">40837827468</span> <span class="number">52926100265</span></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2017/10/25/dataIO1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/10/21/barplot2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar1.gif">
-      <meta itemprop="name" content="amjiuzi">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="不知为不知">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2017/10/21/barplot2/" class="post-title-link" itemprop="url">R中的 柱形图</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2017-10-21 20:02:34" itemprop="dateCreated datePublished" datetime="2017-10-21T20:02:34+08:00">2017-10-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 11:08:53" itemprop="dateModified" datetime="2020-08-26T11:08:53+08:00">2020-08-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Plot/" itemprop="url" rel="index"><span itemprop="name">Plot</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
-<p>在日常作图中，柱形图就像白开水，没有特异之处，却处处责任担当<br>今天我们就尝试通过R来展示各种柱形图</p>
-<h4 id="数据准备"><a href="#数据准备" class="headerlink" title="数据准备"></a>数据准备</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&gt; xs &lt;- c(<span class="number">17.0</span>,<span class="number">4.6</span>,<span class="number">22</span>,<span class="number">10.2</span>,<span class="number">19.6</span>)</span><br><span class="line">&gt; qw &lt;- c(<span class="number">37.2</span>,<span class="number">33</span>,<span class="number">6</span>,<span class="number">14.8</span>,<span class="number">19.8</span>)</span><br><span class="line">&gt; jk &lt;- c(<span class="number">24.2</span>,<span class="number">28</span>,<span class="number">7</span>,<span class="number">39.2</span>,<span class="number">5.4</span>)</span><br><span class="line">&gt; nf &lt;- letters[<span class="number">1</span>:<span class="number">5</span>]</span><br><span class="line">&gt; (dt1 &lt;- data.table::data.table(nf,xs,qw,jk))</span><br><span class="line">   nf   xs   qw   jk</span><br><span class="line"><span class="number">1</span>:  a <span class="number">17.0</span> <span class="number">37.2</span> <span class="number">24.2</span></span><br><span class="line"><span class="number">2</span>:  b  <span class="number">4.6</span> <span class="number">33.0</span> <span class="number">28.0</span></span><br><span class="line"><span class="number">3</span>:  c <span class="number">22.0</span>  <span class="number">6.0</span>  <span class="number">7.0</span></span><br><span class="line"><span class="number">4</span>:  d <span class="number">10.2</span> <span class="number">14.8</span> <span class="number">39.2</span></span><br><span class="line"><span class="number">5</span>:  e <span class="number">19.6</span> <span class="number">19.8</span>  <span class="number">5.4</span></span><br><span class="line">&gt; <span class="keyword">library</span>(reshape2)</span><br><span class="line">&gt; (dt2 &lt;- melt(dt1,id.vars=c(<span class="string">&#x27;nf&#x27;</span>)))</span><br><span class="line">   nf variable value</span><br><span class="line"><span class="number">1</span>   a       xs  <span class="number">17.0</span></span><br><span class="line"><span class="number">2</span>   b       xs   <span class="number">4.6</span></span><br><span class="line"><span class="number">3</span>   c       xs  <span class="number">22.0</span></span><br><span class="line"><span class="number">4</span>   d       xs  <span class="number">10.2</span></span><br><span class="line">......</span><br></pre></td></tr></table></figure>
-<h4 id="簇状柱形图1"><a href="#簇状柱形图1" class="headerlink" title="簇状柱形图1"></a>簇状柱形图1</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="keyword">library</span>(ggplot2)</span><br><span class="line">&gt; ggplot(dt2,aes(x=nf,y=value,fill=variable))+</span><br><span class="line">  geom_bar(stat=<span class="string">&#x27;identity&#x27;</span>,position=<span class="string">&#x27;dodge&#x27;</span>,alpha=<span class="number">.5</span>)+</span><br><span class="line">  geom_text(aes(x=rep(<span class="number">1</span>:<span class="number">5</span>,<span class="number">3</span>)+rep(c(-<span class="number">0.3</span>,<span class="number">0</span>,<span class="number">0.3</span>),each=<span class="number">5</span>),</span><br><span class="line">                y=value+<span class="number">2</span>,label=value),size=<span class="number">3</span>,col=<span class="string">&#x27;darkgray&#x27;</span>)+</span><br><span class="line">  labs(title=<span class="string">&#x27;Bar with Dodge&#x27;</span>,x=<span class="string">&#x27;&#x27;</span>,y=<span class="string">&#x27;&#x27;</span>)+</span><br><span class="line">  theme(legend.position = <span class="string">&#x27;top&#x27;</span>,</span><br><span class="line">        legend.justification = <span class="string">&#x27;right&#x27;</span>,</span><br><span class="line">        legend.key.height = unit(<span class="number">0.1</span>,<span class="string">&#x27;cm&#x27;</span>),</span><br><span class="line">        axis.ticks.x = element_blank(),</span><br><span class="line">        axis.ticks.y = element_blank(),</span><br><span class="line">        axis.text.y = element_blank(),</span><br><span class="line">        panel.background = element_blank())+</span><br><span class="line">  scale_fill_grey(start = <span class="number">0</span>,end=<span class="number">0.6</span>)</span><br></pre></td></tr></table></figure>
-<p><img src="https://i.loli.net/2017/11/20/5a12767bef83d.png" alt="bar_dg"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2017/10/21/barplot2/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1150,20 +1154,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-count">48</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">116</span>
+        <span class="site-state-item-count">119</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
