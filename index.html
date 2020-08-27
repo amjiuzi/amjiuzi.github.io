@@ -364,7 +364,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 17:43:54" itemprop="dateModified" datetime="2020-08-26T17:43:54+08:00">2020-08-26</time>
+                <time title="修改时间：2020-08-27 22:49:31" itemprop="dateModified" datetime="2020-08-27T22:49:31+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -438,7 +438,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/03/14/barplot/" class="post-title-link" itemprop="url">ggplot2 barplot(条形图)分析元素重要度</a>
+            <a href="/2020/03/14/barplot/" class="post-title-link" itemprop="url">ggplot2 条形图(barplot)</a>
         </h2>
 
         <div class="post-meta">
@@ -455,7 +455,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 17:18:34" itemprop="dateModified" datetime="2020-08-26T17:18:34+08:00">2020-08-26</time>
+                <time title="修改时间：2020-08-27 22:28:43" itemprop="dateModified" datetime="2020-08-27T22:28:43+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -483,13 +483,8 @@
 
       
           <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦  </p>
-<blockquote>
-<p>今天回顾下 ggplot2 中条形图的制作</p>
-</blockquote>
-<h3 id="数据获取"><a href="#数据获取" class="headerlink" title="数据获取"></a>数据获取</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mali.xo=subset(trac.spss,trac.spss$a3==<span class="number">1</span>)</span><br><span class="line">mali.xo$a3=factor(mali.xo$a3)</span><br></pre></td></tr></table></figure>
-<h3 id="数据筛选"><a href="#数据筛选" class="headerlink" title="数据筛选"></a>数据筛选</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mean1 &lt;- apply(focus1[,<span class="number">16</span>:ncol(focus1)],<span class="number">1</span>,mean)</span><br><span class="line">max1 &lt;- apply(focus1[,<span class="number">16</span>:ncol(focus1)],<span class="number">1</span>,max)</span><br><span class="line">focus3 &lt;- focus1[-(mean1&lt;=<span class="number">3</span>&amp;max1&lt;=<span class="number">3</span>),]</span><br><span class="line">dim(focus1);dim(focus3)</span><br></pre></td></tr></table></figure>
-<h3 id="数据整理"><a href="#数据整理" class="headerlink" title="数据整理"></a>数据整理</h3><p>作图要求格式进行数据提取及整理  </p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mean2 &lt;- apply(focus3[,<span class="number">16</span>:ncol(focus3)],<span class="number">2</span>,mean)</span><br><span class="line">imp5 &lt;- data.frame(type=names(mean2),value=mean2)</span><br><span class="line">imp5 &lt;- imp5[order(imp5$value),]</span><br></pre></td></tr></table></figure>
+<p>今天更新了一版 ggplot 制作 barplot ，前后还是有差异的，大道至简，信甚焉。</p>
+<p><img src="https://i.loli.net/2020/08/26/nFEGQWNe5Tz4Ybp.png" alt="barplot_r.png"></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/03/14/barplot/#more" rel="contents">
@@ -547,7 +542,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 17:40:17" itemprop="dateModified" datetime="2020-08-26T17:40:17+08:00">2020-08-26</time>
+                <time title="修改时间：2020-08-27 22:48:53" itemprop="dateModified" datetime="2020-08-27T22:48:53+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -577,39 +572,14 @@
           <p>Any problem? connect QQ: 1595218767<br>If u need help in R/python coding/plot ，Just find me <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">J.Hans</a>, Looking forward …</p>
 <p><img src="https://i.loli.net/2020/08/26/wjEFNQMcO8aHg2R.png" alt="image.png"></p>
 <p>How to push/pull project to github by rstudio</p>
-<h3 id="1-Install-R-and-rstudio"><a href="#1-Install-R-and-rstudio" class="headerlink" title="1. Install R and rstudio"></a>1. Install R and rstudio</h3><h3 id="2-Install-git-and-register-it-into-Rstudio-get-through-them"><a href="#2-Install-git-and-register-it-into-Rstudio-get-through-them" class="headerlink" title="2. Install git and register it into Rstudio, get through them"></a>2. Install git and register it into Rstudio, get through them</h3><ul>
-<li>2.1 Install git</li>
-<li>2.2 Rstudio – tools – global options – git/SVN – git executable (xx/Git/bin/git.exe) – apply</li>
-<li>2.3 Rstudio – tools – global options – git/SVN – SSH RSA key – Create RSA key – ok – view public key – copy public keys</li>
-<li>2.4 Rstudio – tools – version control – Project Setup – git/SVN – git – ok</li>
-</ul>
-<h3 id="3-Signup-a-account-in-github"><a href="#3-Signup-a-account-in-github" class="headerlink" title="3. Signup a account in github"></a>3. Signup a account in github</h3><ul>
-<li>3.1 Signup a github account</li>
-<li>3.2 Login github – settings – SSH and GPG keys – ssh keys – new ssh keys – paste keys from clipboard in step 2.3</li>
-</ul>
-<h3 id="4-Create-a-new-project-by-rstudio-and-pull-files-from-github"><a href="#4-Create-a-new-project-by-rstudio-and-pull-files-from-github" class="headerlink" title="4. Create a new project by rstudio and pull files from github"></a>4. Create a new project by rstudio and pull files from github</h3><ul>
-<li>4.1 Create new project<br>rstudio – files – new project – new direction</li>
-<li>4.2 Pull files from github<br>rstudio – git – pull(blue arrow with download direction)</li>
-</ul>
-<h3 id="5-Another-way-for-2-3-and-3-2-setting-by-bash-exe"><a href="#5-Another-way-for-2-3-and-3-2-setting-by-bash-exe" class="headerlink" title="5. Another way for 2.3 and 3.2 ( setting by bash.exe )"></a>5. Another way for 2.3 and 3.2 ( setting by bash.exe )</h3><ul>
-<li>5.1 Click xx/Git/bin/bash.exe and write code in it</li>
-<li>5.2 Coding in bash<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> xx/xx/proj1  <span class="comment"># cd path to new project created above(or cd xx\\xx\\proj1)</span></span><br><span class="line"></span><br><span class="line">git init  <span class="comment"># init the proj1 in git</span></span><br><span class="line"></span><br><span class="line">git remote -v   <span class="comment"># to check connection between local and github,if return blank run below:</span></span><br><span class="line"></span><br><span class="line">git remote add origin https://github.com/amjiuzi/tb01.git   <span class="comment"># url is from github&#x27;s proj1, by click &#x27;clone or download&#x27;</span></span><br><span class="line">git config --global user <span class="string">&quot;amjiuzi&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;zheguzai100@yeah.net&quot;</span></span><br><span class="line"></span><br><span class="line">git remote -v <span class="comment"># after adding origin, check connection between local and github again, always bingo like below !!</span></span><br><span class="line"><span class="comment"># origin  https://github.com/amjiuzi/tb01.git (fetch)</span></span><br><span class="line"><span class="comment"># origin  https://github.com/amjiuzi/tb01.git (push)</span></span><br><span class="line"></span><br><span class="line">git pull origin master   <span class="comment"># la 1stly, get files from github to make sure  all files local more complete than github</span></span><br><span class="line"><span class="comment"># after this, change yr readme.rmd to describe proj framework</span></span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="5-Bring-or-create-edit-project-files-in-proj1-file"><a href="#5-Bring-or-create-edit-project-files-in-proj1-file" class="headerlink" title="5. Bring or create/edit project files in proj1 file"></a>5. Bring or create/edit project files in proj1 file</h3><h3 id="6-Select-files-u-like-to-commit-and-write-sm-changing-records-in-rstudio"><a href="#6-Select-files-u-like-to-commit-and-write-sm-changing-records-in-rstudio" class="headerlink" title="6. Select files u like to commit and write sm changing records in rstudio"></a>6. Select files u like to commit and write sm changing records in rstudio</h3><h3 id="7-Push-files-to-github"><a href="#7-Push-files-to-github" class="headerlink" title="7. Push files to github"></a>7. Push files to github</h3><ul>
-<li><p>7.1 Push in rstudio<br>rstudio – git – commit – push (green arrow with upload direction)  </p>
-</li>
-<li><p>7.2 Push in bash.exe  </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push --<span class="built_in">set</span>-upstream origin master <span class="comment"># tuisong 2ndly, bring local files into github,smtimes u should sign yr username and pswd</span></span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/30335806">RStudio Git GitHub配合使用</a></li>
-<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/35804160">如何在Rstudio中运用Git进行版本控制</a></li>
-</ul>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/10/13/rstudio4github/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -659,7 +629,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 17:42:27" itemprop="dateModified" datetime="2020-08-26T17:42:27+08:00">2020-08-26</time>
+                <time title="修改时间：2020-08-27 22:49:05" itemprop="dateModified" datetime="2020-08-27T22:49:05+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -687,43 +657,20 @@
 
       
           <p>Any problem? connect QQ: 1595218767<br>If u need help in R/python coding/plot ，Just find me <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">J.Hans</a>, Looking forward …</p>
-<p><img src="https://i.loli.net/2020/08/26/wjEFNQMcO8aHg2R.png" alt="image.png"></p>
+<p><img src="https://i.loli.net/2020/08/27/TZVSU3kMf1HcuEL.png" alt="image.png"></p>
 <p>Find a easy ways to push projects to Github</p>
 <h3 id="1-Install-Git"><a href="#1-Install-Git" class="headerlink" title="1. Install Git"></a>1. Install Git</h3><h4 id="Download-Git-and-Install"><a href="#Download-Git-and-Install" class="headerlink" title="Download Git and Install"></a>Download Git and Install</h4><ul>
 <li><a target="_blank" rel="noopener" href="https://git-scm.com/">Git download page</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/fee5baf756c8">install git and set system global envirenment</a></li>
 </ul>
-<h3 id="2-Create-a-project-in-github"><a href="#2-Create-a-project-in-github" class="headerlink" title="2. Create a project in github"></a>2. Create a project in github</h3><p><img src="./imgs/git_proj.jpg" alt="CreateProjinGit"></p>
-<h3 id="3-Create-a-Local-File-Folder-for-Project"><a href="#3-Create-a-Local-File-Folder-for-Project" class="headerlink" title="3. Create a Local File Folder for Project"></a>3. Create a Local File Folder for Project</h3><ul>
-<li>3.1 Create a Local File Folder</li>
-</ul>
-<p>Create a project folder and write yr project files here, like xxx.py xxx.md xxx.php …..</p>
-<ul>
-<li>3.2 Initialize Project in Git</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /localpath/to/project</span><br><span class="line">bash</span><br><span class="line"><span class="comment">### -- Coding in git-bash window</span></span><br><span class="line">git init  <span class="comment"># .git folder created in local path, means this folder is in control of git now</span></span><br><span class="line">git remote <span class="literal">-v</span>   <span class="comment"># to check connection between local and github,if return blank run below:</span></span><br><span class="line">git remote add origin https://amjiuzi:nado1.<span class="number">7</span>@github.com/amjiuzi/LearningNotes.git   <span class="comment"># url is from github&#x27;s proj, by click &#x27;clone or download&#x27;</span></span><br><span class="line">git config -<span class="literal">-global</span> user <span class="string">&quot;amjiuzi&quot;</span></span><br><span class="line">git config -<span class="literal">-global</span> user.email <span class="string">&quot;xxxx@yeah.net&quot;</span></span><br><span class="line">git pull origin master <span class="comment"># pull readme.md to local  git pull origin master --allow-unrelated-histories</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## always used in ftuture</span></span><br><span class="line">git add .</span><br><span class="line">git commit <span class="literal">-m</span> <span class="string">&quot;sm change logs&quot;</span> <span class="comment"># change logs </span></span><br><span class="line">git push <span class="literal">-u</span> origin master </span><br></pre></td></tr></table></figure>
-<p><img src="./imgs/git_res1.jpg" alt="git_res1"></p>
-<ul>
-<li>3.3 add gitee branch</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">bash</span><br><span class="line">git remote <span class="built_in">rm</span> origin</span><br><span class="line"><span class="variable">$</span> git remote <span class="literal">-v</span></span><br><span class="line">git remote add github https://amjiuzi:nado1.<span class="number">7</span>@github.com/amjiuzi/LearningNotes.git</span><br><span class="line">git remote add gitee https://amjiuzi:.<span class="number">6</span>d@gitee.com/amjiuzi/LearningNotes.git</span><br><span class="line">git remote <span class="literal">-v</span></span><br><span class="line"><span class="comment"># gitee   https://amjiuzi:.6d@gitee.com/amjiuzi/LearningNotes.git (fetch)</span></span><br><span class="line"><span class="comment"># gitee   https://amjiuzi:.6d@gitee.com/amjiuzi/LearningNotes.git (push)</span></span><br><span class="line"><span class="comment"># github  https://amjiuzi:nado1.7@github.com/amjiuzi/LearningNotes.git (fetch)</span></span><br><span class="line"><span class="comment"># github  https://amjiuzi:nado1.7@github.com/amjiuzi/LearningNotes.git (push)</span></span><br><span class="line">git add .</span><br><span class="line">git commit <span class="literal">-m</span> <span class="string">&#x27;tee.update&#x27;</span></span><br><span class="line">git pull gitee master</span><br><span class="line">git push gitee master</span><br><span class="line">git push github master</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="4-Mishaps"><a href="#4-Mishaps" class="headerlink" title="4. Mishaps"></a>4. Mishaps</h3><h4 id="Mis1"><a href="#Mis1" class="headerlink" title="Mis1."></a>Mis1.</h4><p>If get error like this</p>
-<p><img src="./imgs/error_gitpush1.jpg" alt="error_gitpush1"></p>
-<p>Find .git folder, delete index file and run code again</p>
-<p><img src="./imgs/error_gitpush2.jpg" alt="error_gitpush2"></p>
-<h4 id="Mis2"><a href="#Mis2" class="headerlink" title="Mis2."></a>Mis2.</h4><p>If get error like this</p>
-<p><img src="./imgs/error_gitpull1.jpg" alt="error_gitpull1"></p>
-<p>Add <strong>‘–allow-unrelated-histories’</strong> at the end of command</p>
-<p><img src="./imgs/error_gitpull2.jpg" alt="error_gitpull2"></p>
-<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/xcyht/article/details/105726102">Vscode配置git上传代码到GitHub</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/bf37a3fdf480">软件技术-零基础-VSCode同步推送Github</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/154322554d9d">如何利用VSCode优雅的使用Git提交至GitHub</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/amjiuzi/rstudio4github">rstudio4github</a></li>
-</ul>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/09/23/vscode4github/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -773,7 +720,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 11:17:45" itemprop="dateModified" datetime="2020-08-26T11:17:45+08:00">2020-08-26</time>
+                <time title="修改时间：2020-08-27 22:49:46" itemprop="dateModified" datetime="2020-08-27T22:49:46+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -800,13 +747,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p><img src="https://i.loli.net/2020/08/24/cLyIzAThGEFpot3.png" alt="gitee01.png"></p>
-<p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
+          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
+<p><img src="https://i.loli.net/2020/08/24/cLyIzAThGEFpot3.png" alt="gitee01.png"></p>
 <h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><h3 id="安装-Git"><a href="#安装-Git" class="headerlink" title="安装 Git"></a>安装 Git</h3><p><a target="_blank" rel="noopener" href="https://git-scm.com/">Git文件下载源</a></p>
 <p>安装完毕之后将Git安装路径 <code>xx\Git\bin</code> 放入系统环境变量 <code>path</code> 中</p>
-<h3 id="安装-nodejs"><a href="#安装-nodejs" class="headerlink" title="安装 nodejs"></a>安装 nodejs</h3><p> <a target="_blank" rel="noopener" href="http://nodejs.cn/">nodejs 下载地址</a>; <a target="_blank" rel="noopener" href="http://nodejs.org/en/">国外地址在这里</a></p>
-<p>安装完毕之后将 nodejs 安装路径 <code>xx\nodejs</code> 放进系统变量 <code>path</code> 中</p>
-<p>有任何建议或疑问,请加 QQ[1595218767]..共同探讨学习<br>如有R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动粉嫩的小爪热切期待你哦</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2019/08/20/hexo_git/#more" rel="contents">
@@ -847,7 +791,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/02/25/markdown1/" class="post-title-link" itemprop="url">markdown 语法学习笔记</a>
+            <a href="/2019/02/25/markdown1/" class="post-title-link" itemprop="url">Markdown 语法笔记</a>
         </h2>
 
         <div class="post-meta">
@@ -864,7 +808,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 12:14:42" itemprop="dateModified" datetime="2020-08-26T12:14:42+08:00">2020-08-26</time>
+                <time title="修改时间：2020-08-27 22:48:23" itemprop="dateModified" datetime="2020-08-27T22:48:23+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -872,11 +816,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                  <a href="/categories/Tools/" itemprop="url" rel="index"><span itemprop="name">Tools</span></a>
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Report/" itemprop="url" rel="index"><span itemprop="name">Report</span></a>
+                  <a href="/categories/Tools/Markdown/" itemprop="url" rel="index"><span itemprop="name">Markdown</span></a>
                 </span>
             </span>
 
@@ -1207,13 +1151,13 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">119</span>
+        <span class="site-state-item-count">120</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
