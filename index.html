@@ -253,6 +253,137 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2020/06/21/wgtR_AHP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/06/21/wgtR_AHP/" class="post-title-link" itemprop="url">层次分析法(AHP)在R中的实现</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-06-21 12:07:17" itemprop="dateCreated datePublished" datetime="2020-06-21T12:07:17+08:00">2020-06-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-01 21:05:25" itemprop="dateModified" datetime="2020-09-01T21:05:25+08:00">2020-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Weights/" itemprop="url" rel="index"><span itemprop="name">Weights</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
+<p>AHP把一个复杂的问题表示为一个有序的递阶层次结构，并通过主观判断和科学计算给出备选方案的优劣顺序（或权重）。简而言之，层次分析法人如其名，首先要构建合理的层次，其次要分析层次内部各因素的优劣</p>
+<p><img src="https://i.loli.net/2020/09/01/plBjurQKR3HXqmS.png" alt="ahp00.png"></p>
+<h2 id="根据需求对目标层进行分解"><a href="#根据需求对目标层进行分解" class="headerlink" title="根据需求对目标层进行分解"></a>根据需求对目标层进行分解</h2><p>如作者总分可以分解为5个一级指标  </p>
+<h2 id="建立层次结构图及判断矩阵"><a href="#建立层次结构图及判断矩阵" class="headerlink" title="建立层次结构图及判断矩阵"></a>建立层次结构图及判断矩阵</h2><p>在确定各层次各因素之间的权重时，如果只是定性的结果，则常常不容易被别人接受，因而Saaty等人提出：一致矩阵法<br>即：不把所有因素放在一起比较，而是两两相互比较。对比时采用相对尺度，以尽可能减少性质不同因素相互比较的困难，以提高准确度</p>
+<p>判断矩阵 $a_{i,j}$ 的标度方法</p>
+<p><img src="https://i.loli.net/2020/09/01/tUPRI9rVlmdLTQ5.jpg" alt="ahp01.jpg"></p>
+<p>举旅游的例子，结构如下图所示:</p>
+<p><img src="https://i.loli.net/2020/09/01/h8RHYXcEWOM6fvr.png" alt="image.png"></p>
+<p>在旅游问题中第二层A的各个因素对目标层Z的影响两两比较的结果如下图：</p>
+<p><img src="https://i.loli.net/2020/09/01/PXkVvIMdT2lBoeK.png" alt="image.png"></p>
+<p>比如 $a_{14} = 3$ 则表示的是景色因素比居住因素对于选择旅游地来说稍微重要</p>
+<h2 id="计算权重"><a href="#计算权重" class="headerlink" title="计算权重"></a>计算权重</h2><p>将矩阵A的各行向量进行几何平均（方根法），然后进行归一化，即得到各评价指标权重和特征向量W</p>
+<ul>
+<li><p>way1</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; (weight1 &lt;- mean_sqrt/sum(mean_sqrt))</span><br><span class="line">[<span class="number">1</span>] <span class="number">0.26363280</span> <span class="number">0.47726387</span> <span class="number">0.05307416</span> <span class="number">0.09883999</span> <span class="number">0.10718918</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>way2</p>
+</li>
+</ul>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; (weight1 &lt;- apply(mx2,<span class="number">1</span>,mean))</span><br><span class="line">[<span class="number">1</span>] <span class="number">0.26228108</span> <span class="number">0.47439499</span> <span class="number">0.05449210</span> <span class="number">0.09853357</span> <span class="number">0.11029827</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>以下的计算结果参考方案1的计算结果  </p>
+</blockquote>
+<h2 id="一致性检验"><a href="#一致性检验" class="headerlink" title="一致性检验"></a>一致性检验</h2><p>判断矩阵的一致性检验，所谓一致性是指判断思维的逻辑一致性。如当甲比丙是强烈重要，而乙比丙是稍微重要时，显然甲一定比乙重要。这就是判断思维的逻辑一致性，否则判断就会有矛盾</p>
+<p>定理：n阶互反阵A的最大特征根λ≥n,当且仅当λ=n时,A为一致阵  </p>
+<blockquote>
+<p>这里的成对比较矩阵有两种可能，一致阵或者不是一致阵：</p>
+<ul>
+<li>如果成对比较矩阵是一致阵，则我们自然回取对应于最大特征根 <code>n</code> 的归一化特征向量</li>
+<li>若成对比较矩阵不是一致阵，Saaty等人建议用其最大特征根对应的归一化特征向量作为权向量，这样确定权向量的方法称为特征根法</li>
+</ul>
+</blockquote>
+<p>计算最大特征根   </p>
+<ul>
+<li>way1<br>由 $A * w  = \lambda * w$   </li>
+</ul>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lambda1 &lt;- mx1 * weight1/ weight1</span><br><span class="line">(lambda_max &lt;- mean(lambda1))</span><br><span class="line">[<span class="number">1</span>] <span class="number">5.0717</span></span><br></pre></td></tr></table></figure>
+
+
+<p>一致性指标 $CI = \frac{\lambda_{max} - n}{n-1}=\frac{5.072-5}{5-1} = 0.018$<br>一致性检验：利用一致性指标和一致性比率&lt;0.1及随机一致性指标的数值表，对A进行检验的过程</p>
+<p>定义一致性比率：$CR= \frac{CI}{RI}=\frac{0.018}{1.12}=0.0015$<br>一般认为一致性比率 <code>CR&lt;0.1</code> 时，认为A的不一致程度在容许范围之内，有满意的一致性，通过一致性检验。可用其归一化特征向量作为权向量，否则要重新构造成对比较矩阵A，对$a_{ij}$加以调整</p>
+<p>题中 <code>CR =0.0015 &lt; 0.1</code> , 所以 第二层(准则层)对第一层(目标层)的权重分别为 <code>0.26363280 0.47726387 0.05307416 0.09883999 0.10718918</code></p>
+<p>RI 详情<br>|n    |1    |2    |3    |4    |5    |6    |7    |8    |9    |10    |11 |<br>|:—-:|:—-:|:—-:|:—-:|:—-:|:—-:|:—-:|:—-:|:—-:|:—-:|:—-:|:—-:|<br>|RI    |0    |0    |0.58    |0.90    |1.12    |1.24    |1.32    |1.41    |1.45    |1.49    |1.51|</p>
+<h2 id="计算综合重要度"><a href="#计算综合重要度" class="headerlink" title="计算综合重要度"></a>计算综合重要度</h2><p>同理, 第三层(方案层)各方案 对第二层(准则层)每个元素的权重依次计算为:</p>
+<p>以方案1,2,3 对 景色 准则的权重计算为例</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; (weight1 &lt;- mean_sqrt/sum(mean_sqrt))</span><br><span class="line">[<span class="number">1</span>] <span class="number">0.5953790</span> <span class="number">0.2763505</span> <span class="number">0.1282705</span></span><br><span class="line">&gt; (CI &lt;- (lambda_max-<span class="number">3</span>)/(<span class="number">3</span>-<span class="number">1</span>))</span><br><span class="line">[<span class="number">1</span>] <span class="number">0.002767556</span></span><br><span class="line">&gt; (CR &lt;- CI/<span class="number">0.58</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="number">0.004771648</span></span><br></pre></td></tr></table></figure>
+<p><code>CR = 0.004 &lt; 0.1</code> , 可以通过一致性检验,故 各方案在准则1下的权重 <code> 0.5953790 0.2763505 0.1282705</code> 有效<br>同理可得,<br><img src="https://i.loli.net/2020/09/01/nwFIpZhCximU98Q.png" alt="image.png"></p>
+<p> 方案 1,2,3 得分分别为 <code>0.29426 0.244176 0.454917</code>, 很明显 方案3 得分更高，更值得选择</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/38207837">层次分析法(AHP)</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/93109898">层次分析法（AHP）研究方法与步骤分解，及案例详解</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2020/04/22/plt_pyCN/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -956,94 +1087,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2019/01/19/ocr1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar1.gif">
-      <meta itemprop="name" content="amjiuzi">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="不知为不知">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/19/ocr1/" class="post-title-link" itemprop="url">R语言数据处理之读取pdf</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-01-19 20:02:34" itemprop="dateCreated datePublished" datetime="2019-01-19T20:02:34+08:00">2019-01-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-26 11:19:33" itemprop="dateModified" datetime="2020-08-26T11:19:33+08:00">2020-08-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Basic/" itemprop="url" rel="index"><span itemprop="name">Basic</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
-<p>偶尔遇到几次想将大量pdf内信息批量提取的任务，记录于此共享</p>
-<p>R中读取pdf常用有2个包:<br>pdftools,tesseract，二者处理方式不尽相同<br>前者可以处理非图片格式的pdf，后者是无论什么格式，统一transfer成image,然后OCR出结果</p>
-<p><img src="https://i.loli.net/2019/03/12/5c8740f3c582a.png" alt="tesseract-ocr1"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/19/ocr1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1115,20 +1158,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-count">50</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">121</span>
+        <span class="site-state-item-count">125</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

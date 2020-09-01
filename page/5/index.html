@@ -161,6 +161,95 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/09/07/quadrant1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/09/07/quadrant1/" class="post-title-link" itemprop="url">简约而不简单的 象限图 在R中的产生过程</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-09-07 20:02:34" itemprop="dateCreated datePublished" datetime="2017-09-07T20:02:34+08:00">2017-09-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 11:20:37" itemprop="dateModified" datetime="2020-08-26T11:20:37+08:00">2020-08-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Plot/" itemprop="url" rel="index"><span itemprop="name">Plot</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>首先看看 象限图 的素颜<br>是不是有点素的让人提不起兴趣? 如此,我们追求的效果就达到了</p>
+<p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
+<p><img src="https://i.loli.net/2017/09/12/59b754c084a89.png" alt="final1"></p>
+<p>想知道这个素人 是怎么制作出来的么？ let’s go</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mx1 &lt;- matrix(c(<span class="number">5</span>,<span class="number">6</span>,<span class="number">6</span>,<span class="number">13</span>),ncol=<span class="number">2</span>)</span><br><span class="line">     [,<span class="number">1</span>] [,<span class="number">2</span>]</span><br><span class="line">[<span class="number">1</span>,]    <span class="number">5</span>    <span class="number">6</span></span><br><span class="line">[<span class="number">2</span>,]    <span class="number">6</span>   <span class="number">13</span></span><br><span class="line">dt1 &lt;- reshape2::melt(mx1)</span><br><span class="line">  Var1 Var2 value</span><br><span class="line"><span class="number">1</span>    <span class="number">1</span>    <span class="number">1</span>     <span class="number">5</span></span><br><span class="line"><span class="number">2</span>    <span class="number">2</span>    <span class="number">1</span>     <span class="number">6</span></span><br><span class="line"><span class="number">3</span>    <span class="number">1</span>    <span class="number">2</span>     <span class="number">6</span></span><br><span class="line"><span class="number">4</span>    <span class="number">2</span>    <span class="number">2</span>    <span class="number">13</span></span><br><span class="line"><span class="keyword">library</span>(ggplot2)</span><br><span class="line">ggplot(data=dt1)+geom_raster(aes(Var1,Var2,fill=value)) <span class="comment">#基本作图</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/09/07/quadrant1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/09/05/imgEm1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1101,20 +1190,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-count">50</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">121</span>
+        <span class="site-state-item-count">125</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
