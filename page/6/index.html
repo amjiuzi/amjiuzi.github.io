@@ -161,6 +161,189 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/08/21/Rselenium/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/08/21/Rselenium/" class="post-title-link" itemprop="url">R语言轻松完成 网络爬虫(rvest和Rselenium)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-21 12:07:17" itemprop="dateCreated datePublished" datetime="2017-08-21T12:07:17+08:00">2017-08-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-22 17:42:36" itemprop="dateModified" datetime="2020-09-22T17:42:36+08:00">2020-09-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Crawl/" itemprop="url" rel="index"><span itemprop="name">Crawl</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>以前一直以为 <em>网络爬虫</em> 是高大上的, 涉及到网页知识/编程代码/正则…等等一系列想想就头疼的物件儿，一次偶然的机会看到了rvest(<em>向 hadley 大师傅献上最真诚的膝盖</em>)，一股如厕后的畅快感油然而生,原来爬数也可以 谈笑间,樯橹灰飞烟灭…废话不多说,请看大屏幕</p>
+<p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
+<h2 id="A-Rvest"><a href="#A-Rvest" class="headerlink" title="A. Rvest"></a>A. Rvest</h2><h3 id="1-Install"><a href="#1-Install" class="headerlink" title="1. Install"></a>1. Install</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">install.package(<span class="string">&#x27;rvest&#x27;</span>)</span><br><span class="line"><span class="comment"># 想获取最新版，可以github安装</span></span><br><span class="line"><span class="comment"># install.packages(&quot;devtools&quot;)</span></span><br><span class="line">devtools::install_github(<span class="string">&quot;hadley/rvest&quot;</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="2-Frame-and-Params"><a href="#2-Frame-and-Params" class="headerlink" title="2. Frame and Params"></a>2. Frame and Params</h3><h4 id="2-1-Read-info-from-website"><a href="#2-1-Read-info-from-website" class="headerlink" title="2.1 Read info from website"></a>2.1 Read info from website</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">info1 &lt;- read_html(url/pageSource)</span><br></pre></td></tr></table></figure>
+<h4 id="2-2-Node-resolutions"><a href="#2-2-Node-resolutions" class="headerlink" title="2.2 Node resolutions"></a>2.2 Node resolutions</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">html_node(x,css/xpath) / html_nodes(x,css/xpath)</span><br><span class="line"><span class="comment"># only one node: </span></span><br><span class="line">html_node(x,css/xpath)</span><br><span class="line"><span class="comment"># 2 and  more nodes: </span></span><br><span class="line">html_nodes(x,css/xpath)</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/08/21/Rselenium/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/08/18/pca1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/08/18/pca1/" class="post-title-link" itemprop="url">PCA(主成分分析)的SVD诠释</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-18 21:19:26" itemprop="dateCreated datePublished" datetime="2017-08-18T21:19:26+08:00">2017-08-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-22 17:35:32" itemprop="dateModified" datetime="2020-09-22T17:35:32+08:00">2020-09-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Algorithm/Prediction/" itemprop="url" rel="index"><span itemprop="name">Prediction</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>主成分分析（principal component analysis,PCA）是一种降维技术，他可以把多个原始变量化为少数几个新生主成分来反映原始变量大部分信息<br>奇异值分解(Singular Value Decomposition,PCA)是线性代数中一种重要的矩阵(可以泛化到任意形式的矩阵)分解,在信号处理、统计学等领域有重要应用.它将任意形式的矩阵 M 分解成以下3 者的乘积：<br>$$M = U \times d \times V^\mathrm{T}$$<br>$U$ 为 $M^\mathrm{T} \times M$的特征向量<br>$d$ 为 $M^\mathrm{T} \times M$ 和 $M \times M^\mathrm{T}$的特征值的非负平方根<br>$V^\mathrm{T}$ 为 $M \times M^\mathrm{T}$的特征向量</p>
+<p>有任何建议或疑问,请加 QQ群..[174225475]..共同探讨学习</p>
+<h2 id="pca的R实现"><a href="#pca的R实现" class="headerlink" title="pca的R实现"></a>pca的R实现</h2><h3 id="1-数据生成"><a href="#1-数据生成" class="headerlink" title="1. 数据生成"></a>1. 数据生成</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">d &lt;- matrix(c(<span class="number">148</span>,<span class="number">41</span>,<span class="number">72</span>,<span class="number">78</span>,<span class="number">139</span>,<span class="number">34</span>,<span class="number">71</span>,<span class="number">76</span>,<span class="number">160</span>,<span class="number">49</span>,<span class="number">77</span>,<span class="number">86</span>,<span class="number">149</span>,<span class="number">36</span>,<span class="number">67</span>,<span class="number">79</span>,</span><br><span class="line">              <span class="number">159</span>,<span class="number">45</span>,<span class="number">80</span>,<span class="number">86</span>,<span class="number">142</span>,<span class="number">31</span>,<span class="number">66</span>,<span class="number">76</span>,<span class="number">153</span>,<span class="number">43</span>,<span class="number">76</span>,<span class="number">83</span>,<span class="number">150</span>,<span class="number">43</span>,<span class="number">77</span>,<span class="number">79</span>,</span><br><span class="line">              <span class="number">151</span>,<span class="number">42</span>,<span class="number">77</span>,<span class="number">80</span>,<span class="number">139</span>,<span class="number">31</span>,<span class="number">68</span>,<span class="number">74</span>,<span class="number">140</span>,<span class="number">29</span>,<span class="number">64</span>,<span class="number">74</span>,<span class="number">161</span>,<span class="number">47</span>,<span class="number">78</span>,<span class="number">84</span>,</span><br><span class="line">              <span class="number">158</span>,<span class="number">49</span>,<span class="number">78</span>,<span class="number">83</span>,<span class="number">140</span>,<span class="number">33</span>,<span class="number">67</span>,<span class="number">77</span>,<span class="number">137</span>,<span class="number">31</span>,<span class="number">66</span>,<span class="number">73</span>,<span class="number">152</span>,<span class="number">35</span>,<span class="number">73</span>,<span class="number">79</span>,</span><br><span class="line">              <span class="number">149</span>,<span class="number">47</span>,<span class="number">82</span>,<span class="number">79</span>,<span class="number">145</span>,<span class="number">35</span>,<span class="number">70</span>,<span class="number">77</span>,<span class="number">160</span>,<span class="number">47</span>,<span class="number">74</span>,<span class="number">87</span>,<span class="number">156</span>,<span class="number">44</span>,<span class="number">78</span>,<span class="number">85</span>,</span><br><span class="line">              <span class="number">151</span>,<span class="number">42</span>,<span class="number">73</span>,<span class="number">82</span>,<span class="number">147</span>,<span class="number">38</span>,<span class="number">73</span>,<span class="number">78</span>,<span class="number">157</span>,<span class="number">39</span>,<span class="number">68</span>,<span class="number">80</span>,<span class="number">147</span>,<span class="number">30</span>,<span class="number">65</span>,<span class="number">75</span>,</span><br><span class="line">              <span class="number">157</span>,<span class="number">48</span>,<span class="number">80</span>,<span class="number">88</span>,<span class="number">151</span>,<span class="number">36</span>,<span class="number">74</span>,<span class="number">80</span>,<span class="number">144</span>,<span class="number">36</span>,<span class="number">68</span>,<span class="number">76</span>,<span class="number">141</span>,<span class="number">30</span>,<span class="number">67</span>,<span class="number">76</span>,</span><br><span class="line">              <span class="number">139</span>,<span class="number">32</span>,<span class="number">68</span>,<span class="number">73</span>,<span class="number">148</span>,<span class="number">38</span>,<span class="number">70</span>,<span class="number">78</span>),ncol=<span class="number">4</span>,byrow=<span class="literal">TRUE</span>)</span><br><span class="line">colnames(d) &lt;- c(<span class="string">&#x27;x1身高&#x27;</span>,<span class="string">&#x27;x2体重&#x27;</span>,<span class="string">&#x27;x3胸围&#x27;</span>,<span class="string">&#x27;x4坐高&#x27;</span>)</span><br><span class="line">head(d)</span><br><span class="line">sd1 &lt;- scale(d)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2017/08/18/5996b2bb6ce26.png" alt="mx1"></p>
+<h3 id="2-确定关键主成分数量"><a href="#2-确定关键主成分数量" class="headerlink" title="2. 确定关键主成分数量"></a>2. 确定关键主成分数量</h3><h4 id="a-画碎石土"><a href="#a-画碎石土" class="headerlink" title="a. 画碎石土"></a>a. 画碎石土</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pca1 &lt;- princomp(sd1,cor=<span class="literal">TRUE</span>)</span><br><span class="line">screeplot(pca1,type=<span class="string">&#x27;line&#x27;</span>,main=<span class="string">&#x27;ScreePlot&#x27;</span>,lwd=<span class="number">2</span>)</span><br><span class="line">abline(h=<span class="number">1</span>,lty=<span class="number">2</span>,col=<span class="string">&#x27;orange&#x27;</span>)</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/08/18/pca1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/08/17/pca2svd/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -541,7 +724,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">53</span>
+          <span class="site-state-item-count">55</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -554,7 +737,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">131</span>
+        <span class="site-state-item-count">137</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

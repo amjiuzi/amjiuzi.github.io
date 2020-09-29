@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习如R&#x2F;python代码编程作图等方面需要帮忙，欢迎来店咨询 之恒科技, 挥动热情的小爪爪期待你哦   T testt-test 主要用于样本含量较小（例如n &lt; 30），总体标准差σ未知的正态分布。t-test 是用t分布理论来推论差异发生的概率，从而比较在符合正态分布的样本中两个平均数的差异是否显著 t.test(x,y,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="R语言中 组内差异比较(活动效果比较)">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2020/09/19/Rcompare/index.html">
+<meta property="og:site_name" content="不知为不知">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习如R&#x2F;python代码编程作图等方面需要帮忙，欢迎来店咨询 之恒科技, 挥动热情的小爪爪期待你哦   T testt-test 主要用于样本含量较小（例如n &lt; 30），总体标准差σ未知的正态分布。t-test 是用t分布理论来推论差异发生的概率，从而比较在符合正态分布的样本中两个平均数的差异是否显著 t.test(x,y,">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/09/29/mev5cE2surzoQ3f.png">
+<meta property="article:published_time" content="2020-09-19T04:07:17.000Z">
+<meta property="article:modified_time" content="2020-09-29T04:02:08.770Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="statics">
+<meta property="article:tag" content="confidence">
+<meta property="article:tag" content="t.test">
+<meta property="article:tag" content="pairwise">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/09/29/mev5cE2surzoQ3f.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2020/09/19/Rcompare/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>R语言中 组内差异比较(活动效果比较) | 不知为不知</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">不知为不知</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">鱼跃天门，过而为龙，唯鲤或然</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>文章标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>文章分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章目录</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2020/09/19/Rcompare/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          R语言中 组内差异比较(活动效果比较)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-19 12:07:17" itemprop="dateCreated datePublished" datetime="2020-09-19T12:07:17+08:00">2020-09-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-29 12:02:08" itemprop="dateModified" datetime="2020-09-29T12:02:08+08:00">2020-09-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Basic/" itemprop="url" rel="index"><span itemprop="name">Basic</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
+<p><img src="https://i.loli.net/2020/09/29/mev5cE2surzoQ3f.png" alt="statics.png"></p>
+<h2 id="T-test"><a href="#T-test" class="headerlink" title="T test"></a>T test</h2><p>t-test 主要用于样本含量较小（例如n &lt; 30），总体标准差σ未知的正态分布。t-test 是用t分布理论来推论差异发生的概率，从而比较在符合正态分布的样本中两个平均数的差异是否显著</p>
+<p>t.test(x,y,mu,alternative,paired,var.equal)</p>
+<p><code>paired = true, 对具有相同样本量的2组数据做对比;false(默认)对比非相同数目的2组数据</code><br><code>var.equal = false, x&amp;y 不具有相同方差; true 具备相同方差</code></p>
+<table>
+<thead>
+<tr>
+<th align="center">alternative</th>
+<th align="center">two.sided</th>
+<th align="center">less</th>
+<th align="center">greater</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">不设置y</td>
+<td align="center">检验定值mu==x</td>
+<td align="center">检验定值mu &lt; x</td>
+<td align="center">检验定值mu &gt; x</td>
+</tr>
+<tr>
+<td align="center">设置y</td>
+<td align="center">检验y均值==x均值</td>
+<td align="center">检验y均值 &lt; x均值</td>
+<td align="center">检验y均值 &gt; x均值</td>
+</tr>
+</tbody></table>
+<p>&lt;~–more–&gt;</p>
+<h3 id="单样本均值t检验"><a href="#单样本均值t检验" class="headerlink" title="单样本均值t检验"></a>单样本均值t检验</h3><p>一鱼塘多年水中含氧量平均值为4.5 mg/L，现随机在该鱼塘采集10个样本，试检验该次抽样的均值是否与多年均值有显著差别</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">r$&gt; X &lt;- c(<span class="number">4.33</span>, <span class="number">4.62</span>, <span class="number">3.89</span>, <span class="number">4.14</span>, <span class="number">4.78</span>, <span class="number">4.64</span>, <span class="number">4.52</span>, <span class="number">4.55</span>, <span class="number">4.48</span>, <span class="number">4.26</span>)</span><br><span class="line">    t.test(X, mu=<span class="number">4.5</span>) <span class="comment"># mu 已知的总样本均值</span></span><br><span class="line"></span><br><span class="line">        One Sample t-test</span><br><span class="line"></span><br><span class="line">data:  X</span><br><span class="line">t = -<span class="number">0.93574</span>, df = <span class="number">9</span>, p-value = <span class="number">0.3738</span></span><br><span class="line">alternative hypothesis: true mean is not equal to <span class="number">4.5</span></span><br><span class="line"><span class="number">95</span> percent confidence interval:</span><br><span class="line"> <span class="number">4.230016</span> <span class="number">4.611984</span></span><br><span class="line">sample estimates:</span><br><span class="line">mean of x</span><br><span class="line">    <span class="number">4.421</span></span><br></pre></td></tr></table></figure>
+<p><code>我们可以看到t.test函数给出的结果中包含了计算出的检验值(t= xxx)、自由度(df)、p值以及检验的原假设，由于p值大于 0.05, 否定原假设 ，则现状与之前没有显著性差异。通过现均值 4.421, 原均值 4.5 都落在95%置信区间 [4.23,4.61] 范围内，也可以证明无显著性差异</code></p>
+<h3 id="双样本t检验"><a href="#双样本t检验" class="headerlink" title="双样本t检验"></a>双样本t检验</h3><h4 id="相同样本量对比"><a href="#相同样本量对比" class="headerlink" title="相同样本量对比"></a>相同样本量对比</h4><p>在投放广告之后 希望知道事件对网站流量pv是否有显著的影响。 不知道推广前pv均值，取前后各15天的数据做比较时</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">r$&gt; x1 &lt;- c(<span class="number">10231</span>,<span class="number">12874</span>,<span class="number">11229</span>,<span class="number">9870</span>,<span class="number">11804</span>,<span class="number">11652</span>,<span class="number">13259</span>,<span class="number">11891</span>,<span class="number">12876</span>,<span class="number">14562</span>,<span class="number">12933</span>,<span class="number">13548</span>,<span class="number">15230</span>,<span class="number">13815</span>,<span class="number">15766</span>)</span><br><span class="line">    x2 &lt;- c(<span class="number">10740</span>,<span class="number">13368</span>,<span class="number">11730</span>,<span class="number">10384</span>,<span class="number">12302</span>,<span class="number">12159</span>,<span class="number">13735</span>,<span class="number">12389</span>,<span class="number">13381</span>,<span class="number">15067</span>,<span class="number">13415</span>,<span class="number">14034</span>,<span class="number">15729</span>,<span class="number">14327</span>,<span class="number">16267</span>)</span><br><span class="line"></span><br><span class="line">    t.test(x = x1 ,y = x2, paired = <span class="literal">TRUE</span>)</span><br><span class="line"></span><br><span class="line">        Paired t-test</span><br><span class="line"></span><br><span class="line">data:  x1 and x2     </span><br><span class="line">t = -<span class="number">177.97</span>, df = <span class="number">14</span>, p-value &lt; <span class="number">2.2e-16</span></span><br><span class="line">alternative hypothesis: true difference <span class="keyword">in</span> means is not equal to <span class="number">0</span></span><br><span class="line"><span class="number">95</span> percent confidence interval:</span><br><span class="line"> -<span class="number">505.1485</span> -<span class="number">493.1182</span></span><br><span class="line">sample estimates:</span><br><span class="line">mean of the differences</span><br><span class="line">              -<span class="number">499.1333</span></span><br></pre></td></tr></table></figure>
+
+<p><code>p值 2.2e-16 &lt; 0.05, 故推广前后pv均值有显著差异，即本次推广明显影响了网站的流量指标</code></p>
+<h4 id="不同样本量对比"><a href="#不同样本量对比" class="headerlink" title="不同样本量对比"></a>不同样本量对比</h4><p>如果是推广前20天，推广后15天的数据作比较</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">r$&gt; x1 &lt;- c(<span class="number">10231</span>,<span class="number">12874</span>,<span class="number">11229</span>,<span class="number">9870</span>,<span class="number">11804</span>,<span class="number">11652</span>,<span class="number">13259</span>,<span class="number">11891</span>,<span class="number">12876</span>,<span class="number">14562</span>,<span class="number">12933</span>,<span class="number">13548</span>,<span class="number">15230</span>,<span class="number">13815</span>,<span class="number">15766</span>,<span class="number">10500</span>,<span class="number">12509</span>,<span class="number">12737</span>,<span class="number">11216</span>,<span class="number">14117</span>)</span><br><span class="line">    x2 &lt;- c(<span class="number">10740</span>,<span class="number">13368</span>,<span class="number">11730</span>,<span class="number">10384</span>,<span class="number">12302</span>,<span class="number">12159</span>,<span class="number">13735</span>,<span class="number">12389</span>,<span class="number">13381</span>,<span class="number">15067</span>,<span class="number">13415</span>,<span class="number">14034</span>,<span class="number">15729</span>,<span class="number">14327</span>,<span class="number">16267</span>)</span><br><span class="line"></span><br><span class="line">    t.test(x = x1 ,y = x2, paired = <span class="literal">FALSE</span>)</span><br><span class="line"></span><br><span class="line">        Welch Two Sample t-test</span><br><span class="line"></span><br><span class="line">data:  x1 and x2</span><br><span class="line">t = -<span class="number">1.1236</span>, df = <span class="number">29.459</span>, p-value = <span class="number">0.2703</span></span><br><span class="line">alternative hypothesis: true difference <span class="keyword">in</span> means is not equal to <span class="number">0</span></span><br><span class="line"><span class="number">95</span> percent confidence interval:</span><br><span class="line"> -<span class="number">1797.2016</span>   <span class="number">522.1683</span></span><br><span class="line">sample estimates:</span><br><span class="line">mean of x mean of y</span><br><span class="line"> <span class="number">12630.95</span>  <span class="number">13268.47</span> </span><br></pre></td></tr></table></figure>
+<p>p值 0.2703 &gt; 0.05, 故推广前后pv均值没有显著差异，即本次推广对提升网站的流量指标没什么效果</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">r$&gt; df1 &lt;- data.frame(grp = c(rep(<span class="string">&#x27;A&#x27;</span>,length(x1)),rep(<span class="string">&#x27;B&#x27;</span>,length(x2))),value = c(x1,x2))</span><br><span class="line"></span><br><span class="line">    t.test(value ~ grp, data =df1, paired = <span class="literal">FALSE</span>)</span><br><span class="line"></span><br><span class="line">        Welch Two Sample t-test</span><br><span class="line"></span><br><span class="line">data:  value by grp</span><br><span class="line">t = -<span class="number">1.1236</span>, df = <span class="number">29.459</span>, p-value = <span class="number">0.2703</span></span><br><span class="line">alternative hypothesis: true difference <span class="keyword">in</span> means is not equal to <span class="number">0</span></span><br><span class="line"><span class="number">95</span> percent confidence interval:</span><br><span class="line"> -<span class="number">1797.2016</span>   <span class="number">522.1683</span></span><br><span class="line">sample estimates:</span><br><span class="line">mean <span class="keyword">in</span> group A mean <span class="keyword">in</span> group B</span><br><span class="line">       <span class="number">12630.95</span>        <span class="number">13268.47</span></span><br></pre></td></tr></table></figure>
+
+<p><code>结果跟上面是一样的</code></p>
+<h2 id="Anova"><a href="#Anova" class="headerlink" title="Anova"></a>Anova</h2><p>T检验只能分析两个类别的数据，比如性别（男、女），甲公司与乙公司，A组和B组之间数据的差异等<br>方差分析可分析三组及三组以上的数据，比如学历（本科以下、本科、本科以上）、专业（理科、工科、文科等）</p>
+<h3 id="基本步骤"><a href="#基本步骤" class="headerlink" title="基本步骤"></a>基本步骤</h3><ol>
+<li>箱线图查看各类别下数据分布情况</li>
+<li>各类别下 指标值 正态分布检验    </li>
+<li>各类别下 指标值 方差齐性检验    </li>
+<li>各类别下 Kruskal-Wallis 检验   </li>
+<li>方差分析                       aov()</li>
+<li>多重T检验                      pairwise.t.test()   </li>
+<li>多重wlicox检验                 pairwise.wlicox.test()   </li>
+</ol>
+<ul>
+<li><p>方差齐性检验<br><code>方差比、Hartley检验、Bartlett检验都需要原始数据是正态分布，Levene检验和BF法对正态分布不是很依赖。比较常用的是Levene检验，适用于多组方差的比较，且对正态性没要求</code> </p>
+</li>
+<li><p>多重比较<br><code>TukeyHSD 要求各组样本量一致, pairwise.t.test 可以容忍各组样本量不一致， 二者同属于 参数检验的范畴</code><br><code>pairwise.wilcox.test 可以容忍各组样本量不一致，它属于非参数检验的范畴</code></p>
+</li>
+</ul>
+<h3 id="案例-Code"><a href="#案例-Code" class="headerlink" title="案例 Code"></a>案例 Code</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">compare.func &lt;- <span class="keyword">function</span>(force=<span class="literal">FALSE</span>) &#123;</span><br><span class="line">  xxx <span class="keyword">...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="参数比较-anova"><a href="#参数比较-anova" class="headerlink" title="参数比较(anova)"></a>参数比较(anova)</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">## aov analysis</span></span><br><span class="line">    kpi &lt;- c(rnorm(<span class="number">20</span>,<span class="number">80</span>,<span class="number">5</span>),rnorm(<span class="number">25</span>,<span class="number">195</span>,<span class="number">5</span>),rnorm(<span class="number">23</span>,<span class="number">256</span>,<span class="number">5</span>))</span><br><span class="line">    <span class="comment"># kpi[c(10,13,30,36,37,40,48,52)] &lt;- sample(c(500:600),8)</span></span><br><span class="line">    grp &lt;- factor(rep(<span class="number">1</span>:<span class="number">3</span>,c(<span class="number">20</span>,<span class="number">25</span>,<span class="number">23</span>)))</span><br><span class="line">    data1 &lt;- data.frame(grp,kpi)</span><br><span class="line"></span><br><span class="line">    compare.func(data = data1,value = <span class="string">&#x27;kpi&#x27;</span>,group = <span class="string">&#x27;grp&#x27;</span>,boxplt=<span class="literal">FALSE</span>)</span><br><span class="line"></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;各组样本 服从 正态分布, 检验通过 !!&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;各组样本方差相同 符合 齐次性要求, 检验通过 !!&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;-----------------------------------------&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;========= 方差分析结果 ========&quot;</span></span><br><span class="line">            Df Sum Sq Mean Sq <span class="literal">F</span> value Pr(&gt;<span class="literal">F</span>)    </span><br><span class="line">grp          <span class="number">2</span> <span class="number">337830</span>  <span class="number">168915</span>    <span class="number">7366</span> &lt;<span class="number">2e-16</span> ***</span><br><span class="line">Residuals   <span class="number">65</span>   <span class="number">1491</span>      <span class="number">23</span></span><br><span class="line">---</span><br><span class="line">Signif. codes:  <span class="number">0</span> <span class="string">&#x27;***&#x27;</span> <span class="number">0.001</span> <span class="string">&#x27;**&#x27;</span> <span class="number">0.01</span> <span class="string">&#x27;*&#x27;</span> <span class="number">0.05</span> <span class="string">&#x27;.&#x27;</span> <span class="number">0.1</span> <span class="string">&#x27; &#x27;</span> <span class="number">1</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;方差分析下 P.value = 2.45109733476765e-77 &lt; 0.05 :各水平下指标有明显差别&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;========= 多重 T检验 =========&quot;</span></span><br><span class="line">             <span class="number">1</span>            <span class="number">2</span></span><br><span class="line"><span class="number">2</span> <span class="number">1.214059e-66</span>           <span class="literal">NA</span></span><br><span class="line"><span class="number">3</span> <span class="number">1.542625e-77</span> <span class="number">1.749859e-49</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;&quot;</span></span><br><span class="line">  <span class="number">1</span>          <span class="number">2</span></span><br><span class="line"><span class="number">2</span> <span class="string">&quot;显著差异&quot;</span> <span class="literal">NA</span></span><br><span class="line"><span class="number">3</span> <span class="string">&quot;显著差异&quot;</span> <span class="string">&quot;显著差异&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="非参数比较"><a href="#非参数比较" class="headerlink" title="非参数比较"></a>非参数比较</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">r$&gt; kpi &lt;- c(rnorm(<span class="number">20</span>,<span class="number">80</span>,<span class="number">5</span>),rnorm(<span class="number">25</span>,<span class="number">195</span>,<span class="number">5</span>),rnorm(<span class="number">23</span>,<span class="number">256</span>,<span class="number">5</span>))</span><br><span class="line">    kpi[c(<span class="number">10</span>,<span class="number">13</span>,<span class="number">30</span>,<span class="number">36</span>,<span class="number">37</span>,<span class="number">40</span>,<span class="number">48</span>,<span class="number">52</span>)] &lt;- sample(c(<span class="number">500</span>:<span class="number">600</span>),<span class="number">8</span>)</span><br><span class="line">    grp &lt;- factor(rep(<span class="number">1</span>:<span class="number">3</span>,c(<span class="number">20</span>,<span class="number">25</span>,<span class="number">23</span>)))</span><br><span class="line">    data1 &lt;- data.frame(grp,kpi)</span><br><span class="line"></span><br><span class="line">    compare.func(data = data1,value = <span class="string">&#x27;kpi&#x27;</span>,group = <span class="string">&#x27;grp&#x27;</span>,boxplt=<span class="literal">FALSE</span>)</span><br><span class="line"></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;Error: Group 1 不服从正态分布&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;Error: Group 2 不服从正态分布&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;Error: Group 3 不服从正态分布&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;-----------------------------------------&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;数据不满足方差分析前提,将使用更稳健的非参数 Kruskal-Wallis H 检验&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;Kruskal-Wallis test, p.value =  1.29783346863155e-08 &lt; 0.05 证明 总体检验有统计学意义&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;========= 多重 wilcox检验 =========&quot;</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;&quot;</span></span><br><span class="line">             <span class="number">1</span>            <span class="number">2</span></span><br><span class="line"><span class="number">2</span> <span class="number">1.331365e-06</span>           <span class="literal">NA</span></span><br><span class="line"><span class="number">3</span> <span class="number">1.453587e-06</span> <span class="number">1.020145e-05</span></span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;&quot;</span></span><br><span class="line">  <span class="number">1</span>          <span class="number">2</span></span><br><span class="line"><span class="number">2</span> <span class="string">&quot;显著差异&quot;</span> <span class="literal">NA</span></span><br><span class="line"><span class="number">3</span> <span class="string">&quot;显著差异&quot;</span> <span class="string">&quot;显著差异&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="R-2-的计算公式"><a href="#R-2-的计算公式" class="headerlink" title="$R^{2}$ 的计算公式"></a>$R^{2}$ 的计算公式</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># fitted value or predicted value  for y_fitted, real y value for y_true</span></span><br><span class="line">R2&lt;-<span class="keyword">function</span>(y_fitted, y_true)&#123;</span><br><span class="line">    r2 &lt;- <span class="number">1</span> - (sum((y_fitted - y_true)^<span class="number">2</span>)/sum((y_true - mean(y_true))^<span class="number">2</span>))</span><br><span class="line">    <span class="keyword">return</span> (r2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/d2080c89ccbd">简单的学生检验 t-test</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/endlesscoding/p/9863790.html">实验的方差分析(R语言)</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/statics/" rel="tag"># statics</a>
+              <a href="/tags/confidence/" rel="tag"># confidence</a>
+              <a href="/tags/t-test/" rel="tag"># t.test</a>
+              <a href="/tags/pairwise/" rel="tag"># pairwise</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/23/Rplt_veen/" rel="prev" title="韦恩图(多圆交汇重合图) 在R中的实现">
+      <i class="fa fa-chevron-left"></i> 韦恩图(多圆交汇重合图) 在R中的实现
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#T-test"><span class="nav-number">1.</span> <span class="nav-text">T test</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E6%A0%B7%E6%9C%AC%E5%9D%87%E5%80%BCt%E6%A3%80%E9%AA%8C"><span class="nav-number">1.1.</span> <span class="nav-text">单样本均值t检验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8C%E6%A0%B7%E6%9C%ACt%E6%A3%80%E9%AA%8C"><span class="nav-number">1.2.</span> <span class="nav-text">双样本t检验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B8%E5%90%8C%E6%A0%B7%E6%9C%AC%E9%87%8F%E5%AF%B9%E6%AF%94"><span class="nav-number">1.2.1.</span> <span class="nav-text">相同样本量对比</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8D%E5%90%8C%E6%A0%B7%E6%9C%AC%E9%87%8F%E5%AF%B9%E6%AF%94"><span class="nav-number">1.2.2.</span> <span class="nav-text">不同样本量对比</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Anova"><span class="nav-number">2.</span> <span class="nav-text">Anova</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.1.</span> <span class="nav-text">基本步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B-Code"><span class="nav-number">2.2.</span> <span class="nav-text">案例 Code</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E6%AF%94%E8%BE%83-anova"><span class="nav-number">2.2.1.</span> <span class="nav-text">参数比较(anova)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%9E%E5%8F%82%E6%95%B0%E6%AF%94%E8%BE%83"><span class="nav-number">2.2.2.</span> <span class="nav-text">非参数比较</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R-2-%E7%9A%84%E8%AE%A1%E7%AE%97%E5%85%AC%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">$R^{2}$ 的计算公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">4.</span> <span class="nav-text">References:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">137</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
