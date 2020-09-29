@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2020/09/29/mev5cE2surzoQ3f.png">
 <meta property="article:published_time" content="2020-09-19T04:07:17.000Z">
-<meta property="article:modified_time" content="2020-09-29T04:02:08.770Z">
+<meta property="article:modified_time" content="2020-09-29T04:44:33.701Z">
 <meta property="article:author" content="amjiuzi">
 <meta property="article:tag" content="R语言">
 <meta property="article:tag" content="statics">
@@ -203,7 +203,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-29 12:02:08" itemprop="dateModified" datetime="2020-09-29T12:02:08+08:00">2020-09-29</time>
+                <time title="修改时间：2020-09-29 12:44:33" itemprop="dateModified" datetime="2020-09-29T12:44:33+08:00">2020-09-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -257,7 +257,8 @@
 <td align="center">检验y均值 &gt; x均值</td>
 </tr>
 </tbody></table>
-<p>&lt;~–more–&gt;</p>
+<a id="more"></a>
+
 <h3 id="单样本均值t检验"><a href="#单样本均值t检验" class="headerlink" title="单样本均值t检验"></a>单样本均值t检验</h3><p>一鱼塘多年水中含氧量平均值为4.5 mg/L，现随机在该鱼塘采集10个样本，试检验该次抽样的均值是否与多年均值有显著差别</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">r$&gt; X &lt;- c(<span class="number">4.33</span>, <span class="number">4.62</span>, <span class="number">3.89</span>, <span class="number">4.14</span>, <span class="number">4.78</span>, <span class="number">4.64</span>, <span class="number">4.52</span>, <span class="number">4.55</span>, <span class="number">4.48</span>, <span class="number">4.26</span>)</span><br><span class="line">    t.test(X, mu=<span class="number">4.5</span>) <span class="comment"># mu 已知的总样本均值</span></span><br><span class="line"></span><br><span class="line">        One Sample t-test</span><br><span class="line"></span><br><span class="line">data:  X</span><br><span class="line">t = -<span class="number">0.93574</span>, df = <span class="number">9</span>, p-value = <span class="number">0.3738</span></span><br><span class="line">alternative hypothesis: true mean is not equal to <span class="number">4.5</span></span><br><span class="line"><span class="number">95</span> percent confidence interval:</span><br><span class="line"> <span class="number">4.230016</span> <span class="number">4.611984</span></span><br><span class="line">sample estimates:</span><br><span class="line">mean of x</span><br><span class="line">    <span class="number">4.421</span></span><br></pre></td></tr></table></figure>
 <p><code>我们可以看到t.test函数给出的结果中包含了计算出的检验值(t= xxx)、自由度(df)、p值以及检验的原假设，由于p值大于 0.05, 否定原假设 ，则现状与之前没有显著性差异。通过现均值 4.421, 原均值 4.5 都落在95%置信区间 [4.23,4.61] 范围内，也可以证明无显著性差异</code></p>
