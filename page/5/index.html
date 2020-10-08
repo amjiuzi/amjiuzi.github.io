@@ -161,6 +161,94 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/10/13/string1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/10/13/string1/" class="post-title-link" itemprop="url">R语言基础之 字符串系列</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-10-13 20:02:34" itemprop="dateCreated datePublished" datetime="2017-10-13T20:02:34+08:00">2017-10-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-22 17:43:07" itemprop="dateModified" datetime="2020-09-22T17:43:07+08:00">2020-09-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Text/" itemprop="url" rel="index"><span itemprop="name">Text</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
+<h2 id="strings"><a href="#strings" class="headerlink" title="strings"></a>strings</h2><h3 id="基本函数"><a href="#基本函数" class="headerlink" title="基本函数"></a>基本函数</h3><h4 id="字符串首尾空格清理"><a href="#字符串首尾空格清理" class="headerlink" title="字符串首尾空格清理"></a>字符串首尾空格清理</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">trimws(<span class="string">&#x27; hao de &#x27;</span>,<span class="string">&#x27;left&#x27;</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;hao de &quot;</span></span><br><span class="line">trimws(<span class="string">&#x27; hao de &#x27;</span>,<span class="string">&#x27;right&#x27;</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot; hao de&quot;</span></span><br><span class="line">trimws(<span class="string">&#x27; hao de &#x27;</span>,<span class="string">&#x27;both&#x27;</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="string">&quot;hao de&quot;</span></span><br></pre></td></tr></table></figure>
+<h4 id="字符串与向量匹配-grep"><a href="#字符串与向量匹配-grep" class="headerlink" title="字符串与向量匹配 grep()"></a>字符串与向量匹配 grep()</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 发现pattern是否存在向量集中,返回该向量的位置索引</span></span><br><span class="line">grep(<span class="string">&#x27;好的|是么|[a-zA-Z0-9]+&#x27;</span>,c(<span class="string">&#x27;真的么&#x27;</span>,<span class="string">&#x27;是好的&#x27;</span>,<span class="string">&#x27;你是么&#x27;</span>,<span class="string">&#x27;KASJD&#x27;</span>))</span><br><span class="line">[<span class="number">1</span>] <span class="number">2</span> <span class="number">3</span> <span class="number">4</span></span><br></pre></td></tr></table></figure>
+<h4 id="字符串与字符串匹配-regexpr-gregexpr"><a href="#字符串与字符串匹配-regexpr-gregexpr" class="headerlink" title="字符串与字符串匹配 regexpr()/gregexpr()"></a>字符串与字符串匹配 regexpr()/gregexpr()</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">regexpr(<span class="string">&#x27;go&#x27;</span>,<span class="string">&quot;let&#x27;s go,go,go!&quot;</span>)</span><br><span class="line">[<span class="number">1</span>] <span class="number">7</span> <span class="comment"># 返回与pattern匹配的第一个子字符串的起始位置</span></span><br><span class="line">gregexpr(<span class="string">&#x27;go&#x27;</span>,<span class="string">&quot;let&#x27;s go,go,go!&quot;</span>)</span><br><span class="line">[[<span class="number">1</span>]] <span class="comment"># 返回与pattern匹配的所有子字符串的起始位置</span></span><br><span class="line">[<span class="number">1</span>]  <span class="number">7</span> <span class="number">10</span> <span class="number">13</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/10/13/string1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/10/09/base_file1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -985,95 +1073,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2017/08/26/dplyr1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar1.gif">
-      <meta itemprop="name" content="amjiuzi">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="不知为不知">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2017/08/26/dplyr1/" class="post-title-link" itemprop="url">流式处理 dplyr 在R中的使用</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2017-08-26 20:02:34" itemprop="dateCreated datePublished" datetime="2017-08-26T20:02:34+08:00">2017-08-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-22 17:39:19" itemprop="dateModified" datetime="2020-09-22T17:39:19+08:00">2020-09-22</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/Basic/" itemprop="url" rel="index"><span itemprop="name">Basic</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
-<h2 id="基本函数解析"><a href="#基本函数解析" class="headerlink" title="基本函数解析"></a>基本函数解析</h2><h3 id="1-分组和统计-Grouping-and-counting"><a href="#1-分组和统计-Grouping-and-counting" class="headerlink" title="1. 分组和统计 (Grouping and counting)"></a>1. 分组和统计 (Grouping and counting)</h3><blockquote>
-<p>summarise, tally, count, group_size, n_groups, ungroup, do</p>
-</blockquote>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&gt; a1 &lt;- data.frame(a1=c(<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">4</span>),a2=letters[<span class="number">1</span>:<span class="number">6</span>],b3=c(<span class="number">0</span>,<span class="number">1</span>,<span class="number">5</span>,<span class="number">7</span>,<span class="literal">NA</span>,<span class="number">9</span>))</span><br><span class="line">&gt; a1</span><br><span class="line">  a1 a2 b3</span><br><span class="line"><span class="number">1</span>  <span class="number">1</span>  a  <span class="number">0</span></span><br><span class="line"><span class="number">2</span>  <span class="number">1</span>  b  <span class="number">1</span></span><br><span class="line"><span class="number">3</span>  <span class="number">2</span>  c  <span class="number">5</span></span><br><span class="line"><span class="number">4</span>  <span class="number">2</span>  d  <span class="number">7</span></span><br><span class="line"><span class="number">5</span>  <span class="number">2</span>  e <span class="literal">NA</span></span><br><span class="line"><span class="number">6</span>  <span class="number">4</span>  f  <span class="number">9</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% summarise(cnt1=n())</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1  cnt1</span><br><span class="line">  &lt;dbl&gt; &lt;int&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>     <span class="number">2</span></span><br><span class="line"><span class="number">2</span>     <span class="number">2</span>     <span class="number">3</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">1</span></span><br><span class="line">&gt; a1 %&gt;% group_by(a1) %&gt;% tally()</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1     n</span><br><span class="line">  &lt;dbl&gt; &lt;int&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>     <span class="number">2</span></span><br><span class="line"><span class="number">2</span>     <span class="number">2</span>     <span class="number">3</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">1</span></span><br><span class="line">&gt; a1 %&gt;% count(a1)</span><br><span class="line"><span class="comment"># A tibble: 3 x 2</span></span><br><span class="line">     a1     n</span><br><span class="line">  &lt;dbl&gt; &lt;int&gt;</span><br><span class="line"><span class="number">1</span>     <span class="number">1</span>     <span class="number">2</span></span><br><span class="line"><span class="number">2</span>     <span class="number">2</span>     <span class="number">3</span></span><br><span class="line"><span class="number">3</span>     <span class="number">4</span>     <span class="number">1</span></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2017/08/26/dplyr1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1145,7 +1144,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-count">56</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1158,7 +1157,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">137</span>
+        <span class="site-state-item-count">139</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

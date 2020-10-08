@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"amjiuzi.gitee.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习如R&#x2F;python代码编程作图等方面需要帮忙，欢迎来店咨询 之恒科技, 挥动热情的小爪爪期待你哦   KANO 模型，研究的是功能或服务 提供程度 与 满意程度 之间的关系，而提供程度可以划分为两个：要么提供，要么不提供；满意程度可以划分为5个：满意度高，满意度较高，满意度为零，满意度较低，满意度低">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kano模型功能模块分析在R中的实现">
+<meta property="og:url" content="https://amjiuzi.gitee.io/2020/10/09/Rkano/index.html">
+<meta property="og:site_name" content="不知为不知">
+<meta property="og:description" content="有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习如R&#x2F;python代码编程作图等方面需要帮忙，欢迎来店咨询 之恒科技, 挥动热情的小爪爪期待你哦   KANO 模型，研究的是功能或服务 提供程度 与 满意程度 之间的关系，而提供程度可以划分为两个：要么提供，要么不提供；满意程度可以划分为5个：满意度高，满意度较高，满意度为零，满意度较低，满意度低">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/09/21/zn54IGw6gdjCM98.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/21/RtUMsrX2e57Pb3o.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/21/GnFcTpElSYyzOH4.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/21/kWCdPJUyYKequTz.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/21/GM4PXlZs1hjw2Fr.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/21/cOBZNSUuPIn2qXQ.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/21/l7YFoRqBfti1uek.png">
+<meta property="article:published_time" content="2020-10-09T04:07:17.000Z">
+<meta property="article:modified_time" content="2020-10-08T13:16:59.123Z">
+<meta property="article:author" content="amjiuzi">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="kano">
+<meta property="article:tag" content="better-worse">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/09/21/zn54IGw6gdjCM98.png">
+
+<link rel="canonical" href="https://amjiuzi.gitee.io/2020/10/09/Rkano/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>kano模型功能模块分析在R中的实现 | 不知为不知</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">不知为不知</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">鱼跃天门，过而为龙，唯鲤或然</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>文章标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>文章分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章目录</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amjiuzi.gitee.io/2020/10/09/Rkano/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar1.gif">
+      <meta itemprop="name" content="amjiuzi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不知为不知">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          kano模型功能模块分析在R中的实现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-10-09 12:07:17" itemprop="dateCreated datePublished" datetime="2020-10-09T12:07:17+08:00">2020-10-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-08 21:16:59" itemprop="dateModified" datetime="2020-10-08T21:16:59+08:00">2020-10-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index"><span itemprop="name">R</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/Weights/" itemprop="url" rel="index"><span itemprop="name">Weights</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有任何建议或疑问,请加 QQ: 1595218767 ,共同探讨学习<br>如R/python代码编程作图等方面需要帮忙，欢迎来店咨询 <a target="_blank" rel="noopener" href="https://izuoye.taobao.com/">之恒科技</a>, 挥动热情的小爪爪期待你哦 </p>
+<p><img src="https://i.loli.net/2020/09/21/zn54IGw6gdjCM98.png" alt="kano1.png"></p>
+<p>KANO 模型，研究的是功能或服务 提供程度 与 满意程度 之间的关系，而提供程度可以划分为两个：要么提供，要么不提供；满意程度可以划分为5个：满意度高，满意度较高，满意度为零，满意度较低，满意度低 </p>
+<a id="more"></a>
+
+<p>因为用户满意度很难衡量，所以将“满意度较高/满意度为零/满意度较低”都大致看做“无所谓”</p>
+<p>KANO 模型打分的5个层次</p>
+<p><img src="https://i.loli.net/2020/09/21/RtUMsrX2e57Pb3o.png" alt="level-kano.png"></p>
+<p>以「京东店铺评分是否应该包含商品质量考核」为例（京东店铺评分是店铺商品质量、店铺售后服务质量、店铺物流速度等多个维度的综合指数，目前店铺评分已修改为店铺星级，如下图所示），简要说明 KANO 模型的具体应用方法</p>
+<p><img src="https://i.loli.net/2020/09/21/GnFcTpElSYyzOH4.png" alt="qry-kano.png"></p>
+<p>对数据进行清洗后，数据分析时主要利用交叉表来统计不同选项上的用户比例<br>交叉表中各个单元格的属性定义来统计计算「商品质量考核」在各个属性上的用户选择比例，交叉表及各个单元格的属性定义具体实例如图所示。<br><code>A：魅力属性 O：期望属性 M：必备属性</code><br><code>I：无差异属性 R：反向属性 Q：可疑结果</code><br>其中S（A）、S（I）、S（O）、S（M）、S（Q）、S（R）分别表示所调研的功能/需求在魅力属性、无差异属性、期望属性、必备属性、可疑属性、反向属性上的用户比例之和。<br>从案例中可以得出，「商品质量考核」在S（M）上的用户比例最高，因此属于必备属性。由此，我们可以得出如果店铺评分包含「商品质量考核」，用户满意度并不会明显提升，但如果店铺评分不包含「商品质量考核」，用户满意度会急剧下降</p>
+<p><img src="https://i.loli.net/2020/09/21/kWCdPJUyYKequTz.png" alt="tbl-kano.png"></p>
+<p>计算 Better-Worse 系数<br>为了进一步验证功能/需求的增加或消除对满意度的影响程度，可以分别计算其 Better-Worse 系数来进行分析<br>Better 系数 可以理解为增加功能/需求后的满意度系数，数值通常为正，代表如果提供某种功能的话，用户满意度会提升；正值越大或越接近 1，表示对用户满意度的影响越大，用户满意度提升得也就越快<br>Worse 系数 可以理解为消除功能/需求后的不满意度系数，其数值通常为负，代表如果不提供某种功能的话，用户的满意度会降低；值越接近 -1，表示对用户不满意度的影响越大，满意度下降得越快</p>
+<p><img src="https://i.loli.net/2020/09/21/GM4PXlZs1hjw2Fr.png" alt="sc-kano.png"></p>
+<p><img src="https://i.loli.net/2020/09/21/cOBZNSUuPIn2qXQ.png" alt="image.png"></p>
+<p>增加后的满意系数：<br>$Better/SI=\frac{A+O}{A+O+M+I}$  </p>
+<p>消除后的不满意系数：<br>$Worse/DSI= \frac{-1*(O+M)}{(A+O+M+I)}$</p>
+<p><img src="https://i.loli.net/2020/09/21/l7YFoRqBfti1uek.png" alt="image.png"></p>
+<p>由此可见，如果店铺评分不包含商品质量考核，会导致用户满意度快速的下降</p>
+<h2 id="R-Code"><a href="#R-Code" class="headerlink" title="R Code"></a>R Code</h2><p>kano 表格转化</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">r$&gt; (qry1 &lt;- matrix(c(<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>),byrow = <span class="literal">TRUE</span>,ncol = <span class="number">5</span>,</span><br><span class="line">                  dimnames = list(c(<span class="string">&#x27;提供&#x27;</span>,<span class="string">&#x27;不提供&#x27;</span>),c(<span class="string">&#x27;很喜欢&#x27;</span>,<span class="string">&#x27;理应如此&#x27;</span>,<span class="string">&#x27;无所谓&#x27;</span>,<span class="string">&#x27;勉强接受&#x27;</span>,<span class="string">&#x27;很不喜欢&#x27;</span>))))</span><br><span class="line">    (qry2 &lt;- matrix(c(<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>),byrow = <span class="literal">TRUE</span>,ncol = <span class="number">5</span>,</span><br><span class="line">                  dimnames = list(c(<span class="string">&#x27;提供&#x27;</span>,<span class="string">&#x27;不提供&#x27;</span>),c(<span class="string">&#x27;很喜欢&#x27;</span>,<span class="string">&#x27;理应如此&#x27;</span>,<span class="string">&#x27;无所谓&#x27;</span>,<span class="string">&#x27;勉强接受&#x27;</span>,<span class="string">&#x27;很不喜欢&#x27;</span>))))</span><br><span class="line">    (qry3 &lt;- matrix(c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>),byrow = <span class="literal">TRUE</span>,ncol = <span class="number">5</span>,</span><br><span class="line">                  dimnames = list(c(<span class="string">&#x27;提供&#x27;</span>,<span class="string">&#x27;不提供&#x27;</span>),c(<span class="string">&#x27;很喜欢&#x27;</span>,<span class="string">&#x27;理应如此&#x27;</span>,<span class="string">&#x27;无所谓&#x27;</span>,<span class="string">&#x27;勉强接受&#x27;</span>,<span class="string">&#x27;很不喜欢&#x27;</span>))))</span><br><span class="line">       很喜欢 理应如此 无所谓 勉强接受 很不喜欢</span><br><span class="line">提供        <span class="number">1</span>        <span class="number">0</span>      <span class="number">0</span>        <span class="number">0</span>        <span class="number">0</span></span><br><span class="line">不提供      <span class="number">0</span>        <span class="number">0</span>      <span class="number">1</span>        <span class="number">0</span>        <span class="number">0</span></span><br><span class="line">       很喜欢 理应如此 无所谓 勉强接受 很不喜欢</span><br><span class="line">提供        <span class="number">0</span>        <span class="number">1</span>      <span class="number">0</span>        <span class="number">0</span>        <span class="number">0</span></span><br><span class="line">不提供      <span class="number">0</span>        <span class="number">0</span>      <span class="number">0</span>        <span class="number">1</span>        <span class="number">0</span></span><br><span class="line">       很喜欢 理应如此 无所谓 勉强接受 很不喜欢</span><br><span class="line">提供        <span class="number">0</span>        <span class="number">0</span>      <span class="number">1</span>        <span class="number">0</span>        <span class="number">0</span></span><br><span class="line">不提供      <span class="number">0</span>        <span class="number">0</span>      <span class="number">1</span>        <span class="number">0</span>        <span class="number">0</span></span><br><span class="line"></span><br><span class="line">r$&gt; xxxxx</span><br><span class="line"></span><br><span class="line">r$&gt;  res0</span><br><span class="line">              不提供_很喜欢 不提供_理应如此 不提供_无所谓 不提供_勉强接受 不提供_很不喜欢</span><br><span class="line">提供_很喜欢               <span class="number">1</span>               <span class="number">0</span>             <span class="number">0</span>               <span class="number">0</span>               <span class="number">0</span></span><br><span class="line">提供_理应如此             <span class="number">0</span>               <span class="number">1</span>             <span class="number">0</span>               <span class="number">0</span>               <span class="number">0</span></span><br><span class="line">提供_无所谓               <span class="number">0</span>               <span class="number">0</span>             <span class="number">1</span>               <span class="number">0</span>               <span class="number">0</span></span><br><span class="line">提供_勉强接受             <span class="number">0</span>               <span class="number">0</span>             <span class="number">0</span>               <span class="number">0</span>               <span class="number">0</span></span><br><span class="line">提供_很不喜欢             <span class="number">0</span>               <span class="number">0</span>             <span class="number">0</span>               <span class="number">0</span>               <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">r$&gt; df2</span><br><span class="line">  AOMIRQ count</span><br><span class="line"><span class="number">1</span>      A     <span class="number">0</span></span><br><span class="line"><span class="number">2</span>      I     <span class="number">2</span></span><br><span class="line"><span class="number">3</span>      M     <span class="number">0</span></span><br><span class="line"><span class="number">4</span>      O     <span class="number">0</span></span><br><span class="line"><span class="number">5</span>      Q     <span class="number">1</span></span><br><span class="line"><span class="number">6</span>      R     <span class="number">0</span></span><br><span class="line"></span><br><span class="line">r$&gt; SI ; DSI </span><br></pre></td></tr></table></figure>
+
+
+<h2 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/linrf1111/article/details/105365786">KANO模型分析法简介与应用</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.xueui.cn/experience/xueshengbikan/demand-analysis-kano-model.html">产品设计师必懂需求分析法—KANO模型</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="amjiuzi 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="amjiuzi 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+              <a href="/tags/kano/" rel="tag"># kano</a>
+              <a href="/tags/better-worse/" rel="tag"># better-worse</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/09/19/Rcompare/" rel="prev" title="R语言中 组内差异比较(活动效果比较)">
+      <i class="fa fa-chevron-left"></i> R语言中 组内差异比较(活动效果比较)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#R-Code"><span class="nav-number">1.</span> <span class="nav-text">R Code</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">2.</span> <span class="nav-text">References:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="amjiuzi"
+      src="/images/avatar1.gif">
+  <p class="site-author-name" itemprop="name">amjiuzi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">139</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amjiuzi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amjiuzi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:izuoye@qq.com" title="E-Mail → mailto:izuoye@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amjiuzi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
